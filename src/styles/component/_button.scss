@@ -1,0 +1,17 @@
+@use '../foundation' as *;
+
+.c-button {
+    height: 30px;
+    width: 100px;
+    background-color: $blue;
+    color: $white;
+    border-radius: 4px;
+    box-shadow: none;
+    font-size: $fs-small;
+    text-align: center;
+    cursor: pointer;
+
+    &.-inactive {
+        cursor: default;
+    }
+}

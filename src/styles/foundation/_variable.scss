@@ -1,0 +1,73 @@
+//colors
+
+$white: #ffffff;
+$black: #1e1e1e;
+
+$gray: #bababa;
+$dark-gray: #636363;
+$pale-gray: #e1e1e1;
+$soft-gray: #E8E8E8;
+$light-gray: #f7f7f7;
+
+$blue: #004df2;
+$light-blue: #437fff;
+$pale-blue: #eaf1ff;
+
+$yellow: #f2f200;
+$red: #ff437f;
+$green: #7fff43;
+
+$colors: (
+    wt: $white,
+    bk: $black,
+    gy: $gray,
+    lg: $light-gray,
+    pg: $pale-gray,
+    dg: $dark-gray,
+    bl: $blue,
+    pb: $pale-blue,
+    lb: $light-blue,
+    yw: $yellow,
+    re: $red,
+    gr: $green
+);
+
+//font size
+
+$fs-title: 20px;
+$fs-sub_title: 18px;
+$fs-text: 14px;
+$fs-input: 16px;
+$fs-medium: 16px;
+$fs-small: 12px;
+$fs-smaller: 10px;
+$fs-x-small: 8px;
+
+// font weight
+$fw-bold: 600;
+
+//spaces
+$spaces: 0, 4, 8, 16, 24, 36, 48, 64, 80;
+
+$space-zero: 0;
+$space-tiny: 4px;
+$space-x-small: 8px;
+$space-small: 16px;
+$space-medium: 24px;
+$space-large: 36px;
+$space-x-large: 48px;
+$space-xx-large: 64px;
+$space-xxx-large: 80px;
+
+
+
+//sizes
+$sizes: 40, 56, 100, 150, 200, 300, 500;
+// break points
+
+$breakpoints: (
+    pc: 1280px,
+    tb: 960px,
+    sp: 560px,
+    min: 320px,
+    ) !default;

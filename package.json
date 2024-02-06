@@ -1,0 +1,43 @@
+{
+  "name": "simufection",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint --ignore-path .gitignore",
+    "lint:fix": "next lint --ignore-path .gitignore --fix",
+    "lint:style": "stylelint --ignore-path .gitignore './**/*.{css,scss}'",
+    "lint:style:fix": "stylelint --ignore-path .gitignore --fix './**/*.{css,scss}'",
+    "format": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json,css,scss}'"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.8.1",
+    "@vercel/postgres": "^0.7.2",
+    "docker-compose": "^0.24.3",
+    "dotenv": "^16.4.1",
+    "next": "14.1.0",
+    "promise-mysql": "^5.2.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-use": "^17.5.0",
+    "rooks": "^7.14.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.10",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.0",
+    "prisma": "^5.8.1",
+    "sass": "^1.70.0",
+    "stylelint": "^16.2.0",
+    "stylelint-config-recess-order": "^4.4.0",
+    "stylelint-config-recommended-scss": "^14.0.0",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-standard-scss": "^13.0.0",
+    "stylelint-scss": "^6.1.0",
+    "typescript": "^5.3.3"
+  }
+}
