@@ -1,6 +1,8 @@
-import { ParamsModel, PlayerModel } from "../_types/Models";
+import { ParamsModel } from "../_params/params";
 
-export type Player = PlayerModel;
+export type Player = {
+  points: number;
+};
 
 export const updatePoint = (
   currentPlayer: Player,
@@ -10,7 +12,10 @@ export const updatePoint = (
 ) => {
   const player = { ...currentPlayer };
   if (turns) {
-    if (turns % params.TURNS_REQUIRED_FOR_POINT == 0) {
+    if (
+      turns % params.TURNS_REQUIRED_FOR_POINT == 0 &&
+      player.points < params.MAX_POINTS
+    ) {
       player.points += pt;
     }
   } else {

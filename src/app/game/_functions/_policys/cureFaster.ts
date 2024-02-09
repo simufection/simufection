@@ -3,6 +3,8 @@ import { GameState } from "../../_states/state";
 
 export const cureFaster = (state: GameState) => {
   const virus = state.virus;
-  virus.turnsRequiredForHeal *= EFFECT_PARAMS.CURE_FASTER_EFFECT;
+  virus.turnsRequiredForHeal = Math.floor(
+    virus.turnsRequiredForHeal * EFFECT_PARAMS.CURE_FASTER_EFFECT
+  );
   return virus;
 };

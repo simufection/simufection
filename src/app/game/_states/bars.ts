@@ -1,8 +1,15 @@
 import { COLORS } from "../_params/colors";
-import { BarModel, ColorsModel, ParamsModel } from "../_types/Models";
+import { ParamsModel } from "../_params/params";
 import { Ball } from "./balls";
 
-export type Bar = BarModel;
+export type Bar = {
+  isVertical: boolean;
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  color?: string;
+};
 
 export const createBar = (
   isVertical: boolean,

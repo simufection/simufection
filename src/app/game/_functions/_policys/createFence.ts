@@ -1,10 +1,10 @@
 import { COLORS } from "../../_params/colors";
+import { ParamsModel } from "../../_params/params";
 import { POLICY_PARAMS } from "../../_params/policyParams";
 import { Bar, closeToBars, updatePosition } from "../../_states/bars";
 import { Fence, createFence } from "../../_states/fences";
 import { Player, updatePoint } from "../../_states/player";
 import { GameState } from "../../_states/state";
-import { ParamsModel } from "../../_types/Models";
 
 export const createFenceFunc = (
   state: GameState,
@@ -25,6 +25,7 @@ export const createFenceFunc = (
   };
 
   if (down.has("Escape")) {
+    popAll();
     return { bars: bars, res: true, fences: fences };
   }
 

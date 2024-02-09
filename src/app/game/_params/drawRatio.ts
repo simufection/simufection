@@ -1,4 +1,10 @@
-import { DrawRatioModel, ParamsModel } from "../_types/Models";
+import { ParamsModel } from "./params";
+
+export interface DrawRatioModel {
+  INFECTED_INCREMENTAL: number;
+  WIDTH: number;
+  HEIGHT: number;
+}
 
 export const DrawRatio = (
   params: ParamsModel,

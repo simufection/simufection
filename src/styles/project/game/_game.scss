@@ -4,8 +4,6 @@
     display: flex;
     position: relative;
     overflow: scroll;
-    height: 100%;
-    width: 100%;
     justify-content: center;
     align-items: flex-start;
 
@@ -15,23 +13,28 @@
         overflow: hidden;
     }
 
-    &__props {
-        width: 300px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+    &__start-button {
+        width: 50px;
+        position: absolute;
+        right: 70px;
+        top: 10px;
+
+        &.-start {
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+        }
+
+        &.-inactive {
+            display: none;
+        }
     }
 
-    &__buttons {
-        width: 100%;
-        margin-top: $space-large;
-        display: flex;
-        justify-content: space-around;
-    }
-
-    &__button {
-        width: 80px;
+    &__pause-button {
+        width: 50px;
+        position: absolute;
+        right: 10px;
+        top: 10px
     }
 
     &__input {
@@ -74,4 +77,13 @@
         font-size: $fs-title;
         cursor: pointer;
     }
+
+    &__policy-button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        margin-top: 10px;
+    }
+
+    &__policy_button {}
 }
