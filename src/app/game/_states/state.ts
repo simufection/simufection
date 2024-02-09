@@ -7,7 +7,6 @@ import {
 import { cureFaster } from "../_functions/_policys/cureFaster";
 import { vaccine } from "../_functions/_policys/vaccine";
 import { POLICY_PARAMS } from "../_params/policyParams";
-import { ParamsModel } from "../_types/Models";
 import { Ball, createBalls, updateBalls } from "./balls";
 import { Bar, createBar, updateBars } from "./bars";
 import { Fence, updateFences } from "./fences";
@@ -16,6 +15,10 @@ import { Player, updatePlayer } from "./player";
 import { RNote, updateRNote } from "./rNote";
 import { SceneState, updateSceneState } from "./sceneState";
 import { Virus, updateVirus } from "./virus";
+import { ParamsModel } from "../_params/params";
+import { policies } from "../_functions/_policys/policies";
+import { Map } from "./maps";
+import { kantoMap } from "../_maps/kanto/map";
 
 export enum PlayingState {
   waiting = 0,
@@ -32,6 +35,7 @@ export enum Objects {
 }
 
 export type GameState = {
+  map: Map;
   playingState: PlayingState;
   sceneState: SceneState;
   player: Player;
@@ -44,8 +48,11 @@ export type GameState = {
   editing: Objects;
 };
 
+export const maps: { [name: string]: Map } = { kanto: kantoMap };
+
 export const initializeGameState = (params: ParamsModel): GameState => {
   return {
+    map: maps.kanto,
     playingState: PlayingState.waiting,
     player: {
       points: 0,
@@ -58,7 +65,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       infectedCount: 0,
       healedCount: 0,
     },
-    balls: createBalls(params),
+    balls: createBalls(params, maps.kanto),
     bars: [
       createBar(true, -INF, -INF, INF, INF * 2),
       createBar(true, params.MAX_WIDTH, -INF, INF, INF * 2),
@@ -67,9 +74,9 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     ],
     fences: [],
     virus: {
-      prob: 0.1,
+      prob: 0.01,
       probPower: 10,
-      turnEvent: { 250: 0, 350: 1 },
+      turnEvent: { 250: 0, 350: 1, 450: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
     },
     rNote: {
@@ -90,46 +97,13 @@ export const initializeGameState = (params: ParamsModel): GameState => {
   };
 };
 
-export const usePolicy = (state: GameState, params: ParamsModel) => {
+export const usePolicy = (state: GameState, params: ParamsModel): Object => {
   const { keys } = state;
-  if (keys.down.has("b") && state.playingState == PlayingState.playing) {
-    if (state.player.points >= POLICY_PARAMS.POINTS_FOR_BAR) {
-      createBarInit(state.bars, params);
-      return { playingState: PlayingState.editing, editing: Objects.bar };
-    }
-  }
-
-  if (keys.down.has("f") && state.playingState == PlayingState.playing) {
-    if (state.player.points >= POLICY_PARAMS.POINTS_FOR_FENCE) {
-      createFenceInit(state.fences, state.bars, params);
-      return { playingState: PlayingState.editing, editing: Objects.fence };
-    }
-  }
-
-  if (keys.down.has("v") && state.playingState == PlayingState.playing) {
-    if (state.player.points >= POLICY_PARAMS.POINTS_FOR_VACCINE) {
-      const { player } = state;
-      player.points -= POLICY_PARAMS.POINTS_FOR_VACCINE;
-      const virus = vaccine(state);
-      return { player: player, virus: virus };
-    }
-  }
-  if (keys.down.has("c") && state.playingState == PlayingState.playing) {
-    if (state.player.points >= POLICY_PARAMS.POINTS_FOR_CURE_FASTER) {
-      const { player } = state;
-      player.points -= POLICY_PARAMS.POINTS_FOR_CURE_FASTER;
-      const virus = cureFaster(state);
-      return { player: player, virus: virus };
-    }
-  }
-};
-
-export const updatePlayingState = (
-  currentState: GameState,
-  playingState: PlayingState
-) => {
-  const state = { ...currentState };
-  state.playingState = playingState;
+  policies
+    .filter((policy) => policy.isActive)
+    .forEach((policy) => {
+      if (keys.down.has(policy.key)) return policy.func(state, params);
+    });
   return state;
 };
 
@@ -159,7 +133,8 @@ export const updateGameState = (
       state.bars,
       params,
       sceneState.turns,
-      state.virus
+      state.virus,
+      state.map
     );
     const bars = updateBars(state.bars);
     const virus = updateVirus(state.virus, sceneState.turns);

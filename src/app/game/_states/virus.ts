@@ -1,7 +1,11 @@
 import { EFFECT_PARAMS } from "../_params/policyParams";
-import { VirusModel } from "../_types/Models";
 
-export type Virus = VirusModel;
+export type Virus = {
+  prob: number;
+  turnEvent: { [turn: number]: number };
+  probPower: number;
+  turnsRequiredForHeal: number;
+};
 
 const virusEvents = (currentVirus: Virus, turn: number): Virus => {
   const virus = { ...currentVirus };

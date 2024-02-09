@@ -1,6 +1,12 @@
-import { RNoteModel } from "../_types/Models";
-
-export type RNote = RNoteModel;
+export type RNote = {
+  resultsWIDTH: number;
+  termTurn: number;
+  termIncremental: number;
+  value: number;
+  valueMax: number;
+  valueMaxTurnBegin: number;
+  valueMaxTurnEnd: number;
+};
 
 const updateRNoteValues = (
   rNote: RNote,
