@@ -19,7 +19,6 @@ const Home = () => {
   }, [ctx]);
 
   const plotDistribution = (data: number[]) => {
-    console.log(data);
     const chart = new Chart(ctx, {
       type: "bar",
       data: {
