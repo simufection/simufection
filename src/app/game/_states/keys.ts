@@ -1,6 +1,9 @@
-import { KeyModel } from "../_types/Models";
-
-export type Keys = KeyModel;
+export type Keys = {
+  id?: number;
+  down: Set<string>;
+  up: Set<string>;
+  downAll: Set<string>;
+};
 
 const updateKey = (currentKeys: Keys, inputKeys: Set<string>): Keys => {
   const { down, up, downAll, id } = currentKeys;

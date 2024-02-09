@@ -1,38 +1,63 @@
 import { getRandomInt } from "@/services/random";
-import { BallModel, ParamsModel } from "../_types/Models";
 import { Bar, contains } from "./bars";
 import { Virus } from "./virus";
+import { ParamsModel } from "../_params/params";
+import { levyDist, randLevy } from "../_stats/levy";
+import { Map } from "./maps";
 
-export type Ball = BallModel;
+export type Ball = {
+  forecolor: string;
+  radius: number;
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  stop: boolean;
+  contacted: boolean;
+  healed: boolean;
+  turnHeal: number;
+  remainLevy: number;
+};
 
-const createBall = (flag_stop: boolean, params: ParamsModel): Ball => {
+const createBall = (
+  flag_stop: boolean,
+  params: ParamsModel,
+  map: number[][],
+  prefId?: number
+): Ball => {
+  const maxX = map.length;
+  const maxY = map[0].length;
+  let x = getRandomInt(params.RADIUS, maxX - params.RADIUS);
+  let y = getRandomInt(params.RADIUS, maxY - params.RADIUS);
+  if (prefId) {
+    while (map[x][y] != prefId) {
+      x = getRandomInt(params.RADIUS, maxX - params.RADIUS);
+      y = getRandomInt(params.RADIUS, maxY - params.RADIUS);
+    }
+  } else {
+    while (map[x][y] == 0) {
+      x = getRandomInt(params.RADIUS, maxX - params.RADIUS);
+      y = getRandomInt(params.RADIUS, maxY - params.RADIUS);
+    }
+  }
   return {
     forecolor: params.COLOR_UNINFECTED,
     radius: params.RADIUS,
-    x: getRandomInt(params.RADIUS, params.MAX_WIDTH - params.RADIUS),
-    y: getRandomInt(params.RADIUS, params.MAX_HEIGHT - params.RADIUS),
-    addX: flag_stop
-      ? 0
-      : getRandomInt(
-          params.MOVEMENT[0],
-          params.MOVEMENT[1] + 1,
-          params.MOVEMENT[2]
-        ),
-    addY: flag_stop
-      ? 0
-      : getRandomInt(
-          params.MOVEMENT[0],
-          params.MOVEMENT[1] + 1,
-          params.MOVEMENT[2]
-        ),
+    x: x,
+    y: y,
+    dx: 0,
+    dy: 0,
+    stop: flag_stop,
     contacted: false,
     healed: false,
     turnHeal: 0,
+    remainLevy: 0,
   };
 };
 
-export const createBalls = (params: ParamsModel): Ball[] => {
+export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
   const balls: Ball[] = [];
+  const mp = map.map;
 
   const targetMax = Math.floor(
     params.MAX_BALLS * (1.0 - params.RATIO_OF_BALLS_STOPPED)
@@ -41,59 +66,60 @@ export const createBalls = (params: ParamsModel): Ball[] => {
   const randNum = getRandomInt(0, targetMax);
 
   for (let i = 0; i < targetMax; i++) {
-    balls.push(createBall(false, params));
+    const randPref = map.func();
+    balls.push(createBall(false, params, mp, randPref));
   }
 
   setContacted(balls[randNum], 0, params, params.TURNS_REQUIRED_FOR_HEAL);
 
   for (let i = 0; i < params.MAX_BALLS - targetMax; i++) {
-    balls.push(createBall(true, params));
+    const randPref = map.func();
+    balls.push(createBall(true, params, mp, randPref));
   }
 
   return balls;
 };
 
-const updatePosition = (currentBalls: Ball[], bars: Bar[]) => {
+const updatePosition = (
+  currentBalls: Ball[],
+  map: Map,
+  params: ParamsModel
+) => {
   const balls = [...currentBalls];
   const newBalls = [] as Ball[];
+  const mp = map.map;
 
   balls.forEach((ball) => {
-    let { x, y, addX, addY } = ball;
-    const nextX = x + addX;
-    const nextY = y + addY;
-    let flagVer = false;
-    let flagHor = false;
+    const newBall = { ...ball };
+    let { x, y, dx, dy, remainLevy, stop } = newBall;
 
-    bars.forEach((bar) => {
-      if (contains(bar, nextX, nextY)) {
-        if (bar.isVertical) {
-          flagVer = true;
-          addX *= -1;
-          if (x < bar.x) {
-            x = 2 * bar.x - nextX;
-          } else {
-            x = 2 * (bar.x + bar.dx) - nextX;
-          }
-        } else {
-          flagHor = true;
-          addY *= -1;
+    if (stop) {
+      newBalls.push(ball);
+      return;
+    }
 
-          if (y < bar.y) {
-            y = 2 * bar.y - nextY;
-          } else {
-            y = 2 * (bar.y + bar.dy) - nextY;
-          }
-        }
-      }
+    let [randDeg, randDis] = [0, 0];
+
+    if (mp[Math.floor(x)][Math.floor(y)] == 0) {
+      [dx, dy, stop] = [0, 0, true];
+    }
+
+    while (mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 || remainLevy == 0) {
+      randDeg = Math.random() * Math.PI * 2;
+      randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
+      dx = Math.cos(randDeg);
+      dy = Math.sin(randDeg);
+      remainLevy = Math.floor(randDis);
+    }
+
+    x += dx;
+    y += dy;
+    remainLevy--;
+
+    newBalls.push({
+      ...ball,
+      ...{ x: x, y: y, dx: dx, dy: dy, remainLevy: remainLevy, stop: stop },
     });
-
-    if (!flagVer) {
-      x = nextX;
-    }
-    if (!flagHor) {
-      y = nextY;
-    }
-    newBalls.push({ ...ball, ...{ x: x, y: y, addX: addX, addY: addY } });
   });
   return newBalls;
 };
@@ -168,9 +194,10 @@ export const updateBalls = (
   bars: Bar[],
   params: ParamsModel,
   turns: number,
-  virus: Virus
+  virus: Virus,
+  map: Map
 ): Ball[] => {
-  const tmpBalls = updatePosition(currentBalls, bars);
+  const tmpBalls = updatePosition(currentBalls, map, params);
   const balls = updateBallState(tmpBalls, params, turns, virus);
   return balls;
 };

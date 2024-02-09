@@ -1,4 +1,4 @@
-import { ParamsModel } from "../_types/Models";
+import { ParamsModel } from "../_params/params";
 import { Ball } from "./balls";
 import { PlayingState } from "./state";
 

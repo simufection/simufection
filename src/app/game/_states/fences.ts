@@ -1,8 +1,16 @@
 import { COLORS } from "../_params/colors";
-import { FenceModel, ParamsModel } from "../_types/Models";
+import { ParamsModel } from "../_params/params";
 import { Bar } from "./bars";
 
-export type Fence = FenceModel;
+export type Fence = {
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  color?: string;
+  width: number;
+  barIndex: number[];
+};
 
 export const createFence = (
   x: number,

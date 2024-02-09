@@ -1,4 +1,6 @@
-import { ColorsModel } from "../_types/Models";
+export interface ColorsModel {
+  [name: string]: string;
+}
 
 export const COLORS: ColorsModel = {
   BLACK: "#000000",
@@ -10,4 +12,5 @@ export const COLORS: ColorsModel = {
   YELLOW: "#ffff00",
   WHITE: "#ffffff",
   GRAY: "#bababa",
+  LIGHT_GREEN: "#99ff99",
 };

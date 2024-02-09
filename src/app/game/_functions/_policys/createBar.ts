@@ -1,4 +1,5 @@
 import { COLORS } from "../../_params/colors";
+import { ParamsModel } from "../../_params/params";
 import { POLICY_PARAMS } from "../../_params/policyParams";
 import {
   Bar,
@@ -10,7 +11,6 @@ import {
 } from "../../_states/bars";
 import { Player, updatePoint } from "../../_states/player";
 import { GameState } from "../../_states/state";
-import { ParamsModel } from "../../_types/Models";
 
 export const createBarFunc = (
   state: GameState,

@@ -12,6 +12,8 @@
     cursor: pointer;
 
     &.-inactive {
+        background-color: $light-blue;
+        color: $pale-gray;
         cursor: default;
     }
 }
