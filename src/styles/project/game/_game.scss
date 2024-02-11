@@ -67,6 +67,20 @@
         }
     }
 
+    &__restart-button {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+
+        @include mq(sp) {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+
     &__input {
         width: 200px;
         height: 40px;
@@ -129,6 +143,47 @@
 
         @include mq(tb) {
             width: 100px;
+        }
+    }
+
+    &__result-input {
+        position: absolute;
+        width: 200px;
+        height: 30px;
+        left: 50%;
+        top: 70%;
+        translate: -50% -50%;
+
+        &::placeholder {
+            color: $dark-gray
+        }
+
+        &:disabled {
+            color: $gray;
+            border: 1px solid $gray;
+
+            &::placeholder {
+                color: $gray
+            }
+
+        }
+    }
+
+    &__result-submit {
+        position: absolute;
+        width: 200px;
+        height: 30px;
+        left: 50%;
+        top: 80%;
+        translate: -50% -50%;
+
+        background-color: transparent;
+        color: $black;
+        border: 1px solid $black;
+
+        &:disabled {
+            color: $gray;
+            border: 1px solid $gray;
         }
     }
 }

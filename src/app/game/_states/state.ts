@@ -18,12 +18,12 @@ import { Map } from "./maps";
 import { kantoMap } from "../_maps/kanto/map";
 
 export enum PlayingState {
-  loading = -1,
-  waiting = 0,
-  playing = 1,
-  pausing = 2,
-  finishing = 3,
-  editing = 4,
+  loading = 0,
+  waiting = 1,
+  playing = 2,
+  pausing = 3,
+  finishing = 4,
+  editing = 5,
 }
 
 export enum Objects {

@@ -6,9 +6,17 @@ import {
 } from "@/app/game/_states/state";
 import { useState, useCallback } from "react";
 
+export enum SendScoreState {
+  before = 0,
+  sending = 1,
+  done = 2,
+}
+
 function useGameControl() {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
+
+  const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
     (params: ParamsModel, onReady: boolean) => {
@@ -16,6 +24,7 @@ function useGameControl() {
         return;
       }
 
+      setSendScoreState(SendScoreState.before);
       setScore(null);
       setGameState({
         ...initializeGameState(params),
@@ -49,11 +58,13 @@ function useGameControl() {
   return {
     score,
     gameState,
+    sendScoreState,
     startSimulate,
     quitSimulate,
     updateGameStateFromGameView,
     setGameState,
     setScore,
+    setSendScoreState,
   };
 }
 

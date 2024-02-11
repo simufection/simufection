@@ -13,13 +13,8 @@ export const drawGameScreen = (
   const { balls, bars } = gameState;
   const { turns } = gameState.sceneState;
 
-  ctx.fillStyle = "white";
-  ctx.fillRect(
-    0,
-    0,
-    params.MAX_WIDTH,
-    params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT
-  );
+  drawWhite(ctx, params);
+
   ctx.drawImage(offCvs, 0, 0);
 
   if (bars.length > params.DEFAULT_BARS) {
@@ -78,39 +73,31 @@ const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {
 export const drawResult = (
   ctx: CanvasRenderingContext2D,
   results: number[][],
-  params: ParamsModel
+  state: GameState,
+  params: ParamsModel,
+  score: number
 ) => {
-  const drawRatio = DrawRatio(params);
-  let pre_x = 0;
-  let pre_data = 0;
+  const { turns, contactedCount } = state.sceneState;
+  drawWhite(ctx, params);
 
-  for (const data of results) {
-    const x = Math.floor(data[0] / drawRatio.WIDTH);
-    const y = params.MAX_HEIGHT + params.CHART_HEIGHT + params.RADIUS;
-    const incremental_data = data[1] - pre_data;
-    const incremental_x = x - pre_x;
+  ctx.save();
 
-    if (incremental_x > 0) {
-      ctx.beginPath();
-      ctx.strokeStyle = COLORS.BLUE;
-      ctx.lineWidth = 1;
-      ctx.moveTo(x, y);
-      ctx.lineTo(
-        x,
-        y -
-          Math.floor(
-            (incremental_data / incremental_x) * drawRatio.INFECTED_INCREMENTAL
-          )
-      );
-      ctx.stroke();
-      ctx.closePath();
-    }
+  ctx.font = "30px Arial";
+  ctx.fillStyle = COLORS.BLACK;
 
-    pre_x = x;
-    pre_data = data[1];
-  }
+  let posX = 100;
+  let posY = 100;
 
-  drawScaleLine(ctx, params);
+  ctx.fillText(`turn : ${turns}`, posX, posY);
+  posY += 100;
+
+  ctx.fillText(`survivor : ${params.MAX_BALLS - contactedCount}`, posX, posY);
+  posY += 100;
+
+  ctx.fillText(`score : ${score}`, posX, posY);
+  posY += 100;
+
+  ctx.restore();
 };
 
 export const drawWhite = (
@@ -144,16 +131,16 @@ export const drawBackground = (map: number[][], params: ParamsModel) => {
   canvas.height = params.MAX_HEIGHT;
   const ctx = canvas.getContext("2d");
   if (ctx) {
-    ctx.save();
     map.forEach((rows, indexX) => {
       rows.forEach((item, indexY) => {
+        ctx.beginPath();
         ctx.rect(indexX * 1, indexY * 1, 1, 1);
         ctx.fillStyle =
           item == -1 ? COLORS.BLACK : item == 0 ? COLORS.GRAY : COLORS.WHITE;
         ctx.fill();
+        ctx.closePath();
       });
     });
-    ctx.restore();
   }
   return canvas;
 };

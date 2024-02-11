@@ -5,6 +5,7 @@ import { GameState, PlayingState } from "../_states/state";
 import pauseImage from "@/assets/img/pause-icon.png";
 import startImage from "@/assets/img/start-icon.png";
 import quitImage from "@/assets/img/quit-icon.png";
+import homeImage from "@/assets/img/home-icon.png";
 import { ParamsModel } from "../_params/params";
 import { stateIsPlaying } from "../_params/consts";
 import { useContext } from "react";
@@ -62,6 +63,15 @@ export const GameButtons = (props: Props) => {
                   playingState: PlayingState.pausing,
                 });
           }}
+        />
+      ) : null}
+      {gameState.playingState == PlayingState.finishing ? (
+        <Button
+          className="p-game__restart-button u-tr"
+          image={homeImage}
+          onClick={() =>
+            updateGameStateFromGameView({ playingState: PlayingState.waiting })
+          }
         />
       ) : null}
     </>

@@ -19,19 +19,19 @@ export const calcScore = (state: GameState, params: ParamsModel) => {
   return score;
 };
 
-export const sendScore = async (score: number, urName: string) => {
-  const { updateGameStateFromGameView } = useContext(GameStateContext);
+export const sendScore = async (
+  score: number,
+  urName: string
+): Promise<boolean> => {
   const body = JSON.stringify({
     urName: urName,
     score: score,
   });
-  await Axios.post("/api/sendScore", body).then(async (response) => {
-    updateGameStateFromGameView({ playingState: PlayingState.waiting });
-    const res = await response.data;
-    if (res.success) {
-      alert("登録完了しました");
-    } else {
-      alert(res.error);
-    }
-  });
+
+  try {
+    const res = await Axios.post("/api/sendScore", body);
+    return res.data.success;
+  } catch (error) {
+    return false;
+  }
 };
