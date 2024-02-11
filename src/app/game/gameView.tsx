@@ -96,10 +96,10 @@ const GameView = () => {
   }, [params, w, h]);
 
   useEffect(() => {
-    if (onReady && gameState.playingState == PlayingState.loading) {
+    if (onReady && gameState.playingState == PlayingState.waiting) {
       drawWhite(ctx, params);
       setOffCvs(drawBackground(gameState.map.map, params));
-      updateGameStateFromGameView({ playingState: PlayingState.waiting });
+      // updateGameStateFromGameView({ playingState: PlayingState.waiting });
     }
   }, [ctx, params]);
 
