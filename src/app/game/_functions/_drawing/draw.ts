@@ -4,7 +4,7 @@ import { drawBar } from "../../_states/bars";
 import { DrawRatio } from "../../_params/drawRatio";
 import { ParamsModel } from "../../_params/params";
 
-export const draw = (
+export const drawGameScreen = (
   ctx: CanvasRenderingContext2D,
   gameState: GameState,
   params: ParamsModel,
@@ -13,49 +13,40 @@ export const draw = (
   const { balls, bars } = gameState;
   const { turns } = gameState.sceneState;
 
-  const render = () => {
-    ctx.fillStyle = "white";
-    ctx.fillRect(
-      0,
-      0,
-      params.MAX_WIDTH,
-      params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT
-    );
-    ctx.drawImage(offCvs, 0, 0);
+  drawWhite(ctx, params);
 
-    if (bars.length > params.DEFAULT_BARS) {
-      for (let i = params.DEFAULT_BARS; i < bars.length; i++) {
-        drawBar(bars[i], ctx);
-      }
+  ctx.drawImage(offCvs, 0, 0);
+
+  if (bars.length > params.DEFAULT_BARS) {
+    for (let i = params.DEFAULT_BARS; i < bars.length; i++) {
+      drawBar(bars[i], ctx);
     }
+  }
 
-    const ballNum = balls.length;
-    for (let i = 0; i < ballNum; i++) {
-      ctx.beginPath();
-      ctx.arc(balls[i].x, balls[i].y, balls[i].radius, 0, Math.PI * 2);
-      ctx.fillStyle = balls[i].forecolor;
-      ctx.fill();
-      ctx.closePath();
-    }
+  const ballNum = balls.length;
+  for (let i = 0; i < ballNum; i++) {
+    ctx.beginPath();
+    ctx.arc(balls[i].x, balls[i].y, balls[i].radius, 0, Math.PI * 2);
+    ctx.fillStyle = balls[i].forecolor;
+    ctx.fill();
+    ctx.closePath();
+  }
 
-    drawPoints(ctx, gameState, params);
+  drawPoints(ctx, gameState, params);
 
-    ctx.font = "15px Arial";
-    ctx.fillStyle = COLORS.BLACK;
+  ctx.font = "15px Arial";
+  ctx.fillStyle = COLORS.BLACK;
 
-    ctx.fillText((50 * Math.floor(turns / 50)).toString(), 10, 30);
+  ctx.fillText((50 * Math.floor(turns / 50)).toString(), 10, 30);
 
-    // drawChart(ctx, gameState, params);
+  // drawChart(ctx, gameState, params);
 
-    // drawScaleLine(ctx, params);
-  };
-
-  return {
-    render: render,
-  };
+  // drawScaleLine(ctx, params);
 };
 
 const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {
+  ctx.save();
+
   ctx.strokeStyle = "rgb(128, 128, 128)";
   ctx.lineWidth = 1;
 
@@ -76,44 +67,37 @@ const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {
     ctx.lineTo(params.MAX_WIDTH, y);
     ctx.stroke();
   }
+  ctx.restore();
 };
 
 export const drawResult = (
   ctx: CanvasRenderingContext2D,
   results: number[][],
-  params: ParamsModel
+  state: GameState,
+  params: ParamsModel,
+  score: number
 ) => {
-  const drawRatio = DrawRatio(params);
-  let pre_x = 0;
-  let pre_data = 0;
+  const { turns, contactedCount } = state.sceneState;
+  drawWhite(ctx, params);
 
-  for (const data of results) {
-    const x = Math.floor(data[0] / drawRatio.WIDTH);
-    const y = params.MAX_HEIGHT + params.CHART_HEIGHT + params.RADIUS;
-    const incremental_data = data[1] - pre_data;
-    const incremental_x = x - pre_x;
+  ctx.save();
 
-    if (incremental_x > 0) {
-      ctx.beginPath();
-      ctx.strokeStyle = COLORS.BLUE;
-      ctx.lineWidth = 1;
-      ctx.moveTo(x, y);
-      ctx.lineTo(
-        x,
-        y -
-          Math.floor(
-            (incremental_data / incremental_x) * drawRatio.INFECTED_INCREMENTAL
-          )
-      );
-      ctx.stroke();
-      ctx.closePath();
-    }
+  ctx.font = "30px Arial";
+  ctx.fillStyle = COLORS.BLACK;
 
-    pre_x = x;
-    pre_data = data[1];
-  }
+  let posX = 100;
+  let posY = 100;
 
-  drawScaleLine(ctx, params);
+  ctx.fillText(`turn : ${turns}`, posX, posY);
+  posY += 100;
+
+  ctx.fillText(`survivor : ${params.MAX_BALLS - contactedCount}`, posX, posY);
+  posY += 100;
+
+  ctx.fillText(`score : ${score}`, posX, posY);
+  posY += 100;
+
+  ctx.restore();
 };
 
 export const drawWhite = (
@@ -127,6 +111,17 @@ export const drawWhite = (
     params.MAX_WIDTH,
     params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT
   );
+};
+
+export const drawOverLay = (
+  ctx: CanvasRenderingContext2D,
+  params: ParamsModel
+) => {
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  ctx.fillStyle = COLORS.GRAY;
+  ctx.fillRect(0, 0, params.MAX_WIDTH, params.MAX_HEIGHT + params.RADIUS);
+  ctx.restore();
 };
 
 export const drawBackground = (map: number[][], params: ParamsModel) => {

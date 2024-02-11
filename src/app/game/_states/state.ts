@@ -4,9 +4,6 @@ import {
   createFenceFunc,
   createFenceInit,
 } from "../_functions/_policys/createFence";
-import { cureFaster } from "../_functions/_policys/cureFaster";
-import { vaccine } from "../_functions/_policys/vaccine";
-import { POLICY_PARAMS } from "../_params/policyParams";
 import { Ball, createBalls, updateBalls } from "./balls";
 import { Bar, createBar, updateBars } from "./bars";
 import { Fence, updateFences } from "./fences";
@@ -21,11 +18,12 @@ import { Map } from "./maps";
 import { kantoMap } from "../_maps/kanto/map";
 
 export enum PlayingState {
-  waiting = 0,
-  playing = 1,
-  pausing = 2,
-  finishing = 3,
-  editing = 4,
+  loading = 0,
+  waiting = 1,
+  playing = 2,
+  pausing = 3,
+  finishing = 4,
+  editing = 5,
 }
 
 export enum Objects {
@@ -53,7 +51,7 @@ export const maps: { [name: string]: Map } = { kanto: kantoMap };
 export const initializeGameState = (params: ParamsModel): GameState => {
   return {
     map: maps.kanto,
-    playingState: PlayingState.waiting,
+    playingState: PlayingState.loading,
     player: {
       points: 0,
     },
@@ -74,8 +72,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     ],
     fences: [],
     virus: {
-      prob: 0.01,
-      probPower: 10,
+      prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
     },
@@ -137,7 +134,7 @@ export const updateGameState = (
       state.map
     );
     const bars = updateBars(state.bars);
-    const virus = updateVirus(state.virus, sceneState.turns);
+    const virus = updateVirus(state.virus, sceneState.turns, params);
 
     const keys = updateKeys(state.keys, inputKeys);
 
