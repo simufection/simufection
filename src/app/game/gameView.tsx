@@ -140,9 +140,7 @@ const GameView = () => {
         }}
       >
         <canvas id="screen">サポートされていません</canvas>
-        {[PlayingState.loading, PlayingState.waiting].includes(
-          gameState?.playingState
-        ) ? (
+        {PlayingState.waiting == gameState?.playingState ? (
           <Image
             className="p-game__title-img"
             src={titleImage}
