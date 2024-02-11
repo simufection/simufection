@@ -2,39 +2,69 @@
 
 .p-game {
     display: flex;
-    position: relative;
     overflow: scroll;
     justify-content: center;
     align-items: flex-start;
 
     flex-direction: row;
 
+    @include mq(tb) {
+        flex-direction: column;
+    }
+
     &.-no-overflow {
         overflow: hidden;
     }
 
+    &__title-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
     &__start-button {
         width: 50px;
+        height: 50px;
+        position: absolute;
+        left: 50%;
+        top: 88%;
+        translate: -50% 0;
+
+        color: $black;
+
+        font-size: $fs-text;
+
+        @include mq(sp) {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    &__quit-button {
+        width: 50px;
+        height: 50px;
         position: absolute;
         right: 70px;
         top: 10px;
 
-        &.-start {
-            left: 50%;
-            top: 50%;
-            translate: -50% -50%;
-        }
-
-        &.-inactive {
-            display: none;
+        @include mq(sp) {
+            right: 50px;
+            width: 30px;
+            height: 30px;
         }
     }
 
     &__pause-button {
         width: 50px;
+        height: 50px;
         position: absolute;
         right: 10px;
-        top: 10px
+        top: 10px;
+
+        @include mq(sp) {
+            width: 30px;
+            height: 30px;
+        }
     }
 
     &__input {
@@ -48,7 +78,7 @@
     }
 
     &__canvas-container {
-        flex-grow: 1;
+        position: relative;
     }
 
     &__result {
@@ -78,12 +108,27 @@
         cursor: pointer;
     }
 
-    &__policy-button-container {
+    &__policies {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: space-around;
-        margin-top: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+
+        padding: 0 10px;
+
+        @include mq(tb) {
+            flex-direction: row;
+        }
     }
 
-    &__policy_button {}
+    &__policy-button {
+        height: 40px;
+        width: 200px;
+        margin: 10px;
+
+        @include mq(tb) {
+            width: 100px;
+        }
+    }
 }

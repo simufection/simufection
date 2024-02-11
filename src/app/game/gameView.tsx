@@ -1,234 +1,179 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
-  draw,
   drawBackground,
+  drawGameScreen,
+  drawOverLay,
   drawResult,
   drawWhite,
 } from "./_functions/_drawing/draw";
 import useInterval from "@/hooks/useInterval";
 import { Button } from "@/components/button";
 import { InputBox } from "@/components/inputBox";
-import useWindowSize from "@/hooks/useWindowSize";
 import { usePressKey } from "@/hooks/usePressKey";
 import {
-  GameState,
   PlayingState,
   initializeGameState,
   updateGameState,
 } from "./_states/state";
-import { Params } from "./_params/params";
+import { Params, ParamsModel } from "./_params/params";
 import { OverLay } from "@/components/overlay";
 import { policies } from "./_functions/_policys/policies";
+import { listToDict } from "@/services/listToDict";
 
-enum sendScoreStates {
-  before = 0,
-  pending = 1,
-  finish = 2,
-}
+import useWindowSize from "@/hooks/useWindowSize";
+import { stateIsPlaying, stateNotPlaying } from "./_params/consts";
+import { GameButtons } from "./_components/gameButtons";
+import { GameStateContext } from "./contextProvoder";
+import { calcScore, sendScore } from "./_functions/_game/score";
+import Image from "next/image";
+
+import titleImage from "@/assets/img/title.png";
+import { Axios } from "@/services/axios";
 
 const GameView = () => {
-  const [width, height] = useWindowSize();
+  const [w, h] = useWindowSize();
+  const [[sw, sh], setScreenSize] = useState([0, 0]);
   const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null);
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
-  const params = Params();
 
-  const [gameState, setGameState] = useState<GameState>(
-    initializeGameState(params)
-  );
+  const { score, gameState, updateGameStateFromGameView, setScore } =
+    useContext(GameStateContext);
+
+  const [params, setParams] = useState<ParamsModel | null>(null);
 
   const pressedKey = usePressKey();
 
-  const stateNotPlaying = [PlayingState.waiting, PlayingState.finishing];
-  const stateIsPlaying = [PlayingState.playing, PlayingState.pausing];
+  const onReady = !!(params && ctx && gameState);
 
-  const [score, setScore] = useState<number | null>(null);
   const [urName, setUrName] = useState("");
-  const [sendScoreState, setSendScoreState] = useState(sendScoreStates.before);
 
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
     const canvasctx = canvas.getContext("2d");
     setContext(canvasctx);
+
+    Axios.get(
+      `https://sheets.googleapis.com/v4/spreadsheets/${process.env.NEXT_PUBLIC_GOOGLE_SHEETS_DOC_ID}/values/${process.env.NEXT_PUBLIC_SHEET_NAME}?key=${process.env.NEXT_PUBLIC_GOOGLE_SHEETS_API_KEY}`
+    )
+      .then((res) => res.data)
+      .then((datas) => setParams({ ...Params, ...listToDict(datas.values) }))
+      .catch(() => setParams(Params));
   }, []);
 
   useEffect(() => {
-    if (stateNotPlaying.includes(gameState.playingState)) {
-      params.setParams({
-        MAX_WIDTH: Math.min(width, 640),
-        MAX_HEIGHT: Math.min(
-          640,
-          height - params.RADIUS - params.CHART_HEIGHT - 50
-        ),
-      });
-    }
-  }, [width, height]);
+    if (params) updateGameStateFromGameView(initializeGameState(params));
+  }, [params]);
 
   useEffect(() => {
-    if (ctx && gameState.playingState == PlayingState.waiting) {
+    if (params && w && h) {
+      const canvas = document.getElementById("screen") as HTMLCanvasElement;
+      canvas.width = params.MAX_WIDTH;
+      canvas.height = params.MAX_HEIGHT + 50;
+      const canvasAspect = (params.MAX_HEIGHT + 50) / params.MAX_WIDTH;
+      let screenWidth = 0;
+      let screenHeight = 0;
+      if (w * canvasAspect <= h) {
+        screenWidth = Math.min(params.MAX_WIDTH, w);
+        screenHeight = screenWidth * canvasAspect;
+      } else {
+        screenHeight = Math.min(params.MAX_HEIGHT + 50, h);
+        screenWidth = screenHeight / canvasAspect;
+      }
+
+      canvas.style.width = `${screenWidth}px`;
+      canvas.style.height = `${screenHeight}px`;
+      setScreenSize([screenWidth, screenHeight]);
+    }
+  }, [params, w, h]);
+
+  useEffect(() => {
+    if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
       setOffCvs(drawBackground(gameState.map.map, params));
+      updateGameStateFromGameView({ playingState: PlayingState.waiting });
     }
   }, [ctx, params]);
 
   useEffect(() => {
-    if (ctx && gameState.playingState == PlayingState.finishing) {
+    if (onReady && gameState.playingState == PlayingState.finishing) {
       // drawResult(ctx, gameState.sceneState.results, params);
     }
-  }, [gameState.playingState]);
+  }, [gameState?.playingState]);
 
   useInterval(() => {
-    if (ctx && offCvs) {
+    if (onReady && offCvs) {
       if (!stateNotPlaying.includes(gameState.playingState)) {
-        draw(ctx, gameState, params, offCvs).render();
-        setGameState(updateGameState(gameState, params, pressedKey));
-      }
-      if (gameState.playingState == PlayingState.finishing && !score) {
-        setScore(calcScore());
-      }
-    }
-  }, params.SLEEP_SEC * 1000);
-
-  const startSimulate = () => {
-    if (!ctx) {
-      return;
-    }
-
-    setScore(null);
-    updateGameStateFromGameView(
-      { playingState: PlayingState.playing },
-      initializeGameState(params)
-    );
-  };
-
-  const quitSimulate = () => {
-    if (!ctx) {
-      return;
-    }
-
-    updateGameStateFromGameView(
-      { playingState: PlayingState.waiting },
-      initializeGameState(params)
-    );
-
-    drawWhite(ctx, params);
-  };
-
-  const updateGameStateFromGameView = (
-    newState: Object,
-    state: GameState = gameState
-  ) => {
-    setGameState({ ...state, ...newState });
-  };
-
-  const sendScore = async () => {
-    setSendScoreState(sendScoreStates.pending);
-    const body = JSON.stringify({
-      urName: urName,
-      score: score,
-    });
-    await fetch("/api/sendScore", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: body,
-    }).then(async (response) => {
-      setSendScoreState(sendScoreStates.finish);
-      updateGameStateFromGameView({ playingState: PlayingState.waiting });
-      const res = await response.json();
-      if (res.success) {
-        alert("登録完了しました");
+        drawGameScreen(ctx, gameState, params, offCvs);
+        if (gameState.playingState == PlayingState.pausing) {
+          drawOverLay(ctx, params);
+        } else {
+          updateGameStateFromGameView(
+            updateGameState(gameState, params, pressedKey)
+          );
+        }
+      } else if (gameState.playingState == PlayingState.finishing && !score) {
+        setScore(calcScore(gameState, params));
       } else {
-        alert(res.error);
+        drawWhite(ctx, params);
       }
-    });
-  };
-
-  const calcScore = () => {
-    const contacted = gameState.sceneState.contactedCount;
-    const all = params.MAX_BALLS;
-    const turns = gameState.sceneState.turns;
-
-    const survivor = all - contacted;
-
-    const isClear = survivor == 0 ? false : true;
-
-    const score = Math.floor(
-      isClear ? (survivor * 1000) / turns + 100 : turns / 10
-    );
-    return score;
-  };
+    }
+  }, 30);
 
   return (
     <div
-      className={`p-game ${gameState.playingState == PlayingState.editing ? "-no-overflow" : ""}`}
-      style={{
-        width: params.MAX_WIDTH,
-        height: params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT + 50,
-      }}
+      className={`p-game ${onReady && gameState.playingState == PlayingState.editing ? "-no-overflow" : ""}`}
     >
-      <Button
-        className={`p-game__start-button ${
-          !ctx || gameState.playingState == PlayingState.pausing
-            ? ""
-            : stateNotPlaying.includes(gameState.playingState)
-              ? "-start"
-              : "u-bg-lb u-pg -inactive"
-        }`}
-        disabled={
-          ![...stateNotPlaying, ...[PlayingState.pausing]].includes(
-            gameState.playingState
-          )
-        }
-        label={`${gameState.playingState == PlayingState.pausing ? "quit" : "start"}`}
-        onClick={
-          stateNotPlaying.includes(gameState.playingState)
-            ? startSimulate
-            : quitSimulate
-        }
-      />
-      <Button
-        className={`p-game__pause-button ${stateIsPlaying.includes(gameState.playingState) ? "" : " u-bg-lb u-pg -inactive"}`}
-        label={`${!ctx || gameState.playingState == PlayingState.pausing ? "resume" : "pause"}`}
-        disabled={!stateIsPlaying.includes(gameState.playingState)}
-        onClick={() => {
-          gameState.playingState == PlayingState.pausing
-            ? updateGameStateFromGameView({
-                playingState: PlayingState.playing,
-              })
-            : updateGameStateFromGameView({
-                playingState: PlayingState.pausing,
-              });
+      <div
+        className="p-game__canvas-container"
+        style={{
+          width: sw,
+          height: sh,
         }}
-      />
-      <div className="p-game__canvas-container">
-        <canvas
-          id="screen"
-          width={params.MAX_WIDTH}
-          height={params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT}
-        >
-          サポートされていません
-        </canvas>
-        <div className="p-game__policy-button-container">
-          {policies
-            .filter((policy) => policy.isActive)
-            .map((policy) => (
-              <Button
-                key={policy.key}
-                label={`${policy.label || policy.key} (${policy.point})`}
-                onClick={() => {
-                  if (policy.point <= gameState.player.points) {
-                    updateGameStateFromGameView(policy.func(gameState, params));
-                  }
-                }}
-                className={`p-game__policy-button ${policy.point > gameState.player.points ? "-inactive" : ""}`}
-              />
-            ))}
-        </div>
+      >
+        <canvas id="screen">サポートされていません</canvas>
+        {[PlayingState.loading, PlayingState.waiting].includes(
+          gameState?.playingState
+        ) ? (
+          <Image
+            className="p-game__title-img"
+            src={titleImage}
+            alt="title"
+            style={{ width: sw, height: sh }}
+            priority
+          />
+        ) : null}
+        <GameButtons params={params} ctx={ctx} />
       </div>
-      {gameState.playingState === PlayingState.finishing ? (
+      <div
+        className="p-game__policies"
+        style={{
+          width: w > 960 ? w - sw : sw,
+          height: w > 960 ? sh : h - sh,
+        }}
+      >
+        {onReady && stateIsPlaying.includes(gameState.playingState)
+          ? policies
+              .filter((policy) => policy.isActive)
+              .map((policy) => (
+                <Button
+                  key={policy.key}
+                  disabled={gameState.playingState == PlayingState.pausing}
+                  label={`${policy.label || policy.key} \n (${params[policy.point]})`}
+                  onClick={() => {
+                    if (params[policy.point] <= gameState.player.points) {
+                      updateGameStateFromGameView(
+                        policy.func(gameState, params)
+                      );
+                    }
+                  }}
+                  className={`p-game__policy-button ${params[policy.point] > gameState.player.points ? "-inactive" : ""}`}
+                />
+              ))
+          : null}
+      </div>
+      {onReady && gameState.playingState == PlayingState.finishing ? (
         <>
           {gameState.sceneState.contactedCount === 1 ? (
             <div className="p-game__result">
@@ -268,16 +213,14 @@ const GameView = () => {
                 {score}
               </span>
               <InputBox
-                disabled={sendScoreState != sendScoreStates.before}
                 placeholder="プレーヤー名を入力"
                 value={urName}
                 onChange={(e) => setUrName(e.target.value)}
               />
               <Button
-                disabled={sendScoreState != sendScoreStates.before}
                 label="スコア送信"
                 onClick={() => {
-                  sendScore();
+                  sendScore(score, urName);
                 }}
               />
             </div>

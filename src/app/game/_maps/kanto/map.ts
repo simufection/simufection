@@ -1,4 +1,4 @@
-import { Pref, prefs } from "../../_data/prefs";
+import { prefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "./kantoMapData";
 
@@ -7,10 +7,6 @@ const totalPop = kantoPrefs.reduce(
   (sum, { population }) => sum + population,
   0
 );
-
-const kantoProb = kantoPrefs.map((p) => ({
-  [p.id]: p.population / totalPop,
-}));
 
 function rand() {
   let cumulativeProb = 0;

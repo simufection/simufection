@@ -4,7 +4,7 @@ import { drawBar } from "../../_states/bars";
 import { DrawRatio } from "../../_params/drawRatio";
 import { ParamsModel } from "../../_params/params";
 
-export const draw = (
+export const drawGameScreen = (
   ctx: CanvasRenderingContext2D,
   gameState: GameState,
   params: ParamsModel,
@@ -13,49 +13,45 @@ export const draw = (
   const { balls, bars } = gameState;
   const { turns } = gameState.sceneState;
 
-  const render = () => {
-    ctx.fillStyle = "white";
-    ctx.fillRect(
-      0,
-      0,
-      params.MAX_WIDTH,
-      params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT
-    );
-    ctx.drawImage(offCvs, 0, 0);
+  ctx.fillStyle = "white";
+  ctx.fillRect(
+    0,
+    0,
+    params.MAX_WIDTH,
+    params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT
+  );
+  ctx.drawImage(offCvs, 0, 0);
 
-    if (bars.length > params.DEFAULT_BARS) {
-      for (let i = params.DEFAULT_BARS; i < bars.length; i++) {
-        drawBar(bars[i], ctx);
-      }
+  if (bars.length > params.DEFAULT_BARS) {
+    for (let i = params.DEFAULT_BARS; i < bars.length; i++) {
+      drawBar(bars[i], ctx);
     }
+  }
 
-    const ballNum = balls.length;
-    for (let i = 0; i < ballNum; i++) {
-      ctx.beginPath();
-      ctx.arc(balls[i].x, balls[i].y, balls[i].radius, 0, Math.PI * 2);
-      ctx.fillStyle = balls[i].forecolor;
-      ctx.fill();
-      ctx.closePath();
-    }
+  const ballNum = balls.length;
+  for (let i = 0; i < ballNum; i++) {
+    ctx.beginPath();
+    ctx.arc(balls[i].x, balls[i].y, balls[i].radius, 0, Math.PI * 2);
+    ctx.fillStyle = balls[i].forecolor;
+    ctx.fill();
+    ctx.closePath();
+  }
 
-    drawPoints(ctx, gameState, params);
+  drawPoints(ctx, gameState, params);
 
-    ctx.font = "15px Arial";
-    ctx.fillStyle = COLORS.BLACK;
+  ctx.font = "15px Arial";
+  ctx.fillStyle = COLORS.BLACK;
 
-    ctx.fillText((50 * Math.floor(turns / 50)).toString(), 10, 30);
+  ctx.fillText((50 * Math.floor(turns / 50)).toString(), 10, 30);
 
-    // drawChart(ctx, gameState, params);
+  // drawChart(ctx, gameState, params);
 
-    // drawScaleLine(ctx, params);
-  };
-
-  return {
-    render: render,
-  };
+  // drawScaleLine(ctx, params);
 };
 
 const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {
+  ctx.save();
+
   ctx.strokeStyle = "rgb(128, 128, 128)";
   ctx.lineWidth = 1;
 
@@ -76,6 +72,7 @@ const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {
     ctx.lineTo(params.MAX_WIDTH, y);
     ctx.stroke();
   }
+  ctx.restore();
 };
 
 export const drawResult = (
@@ -129,6 +126,17 @@ export const drawWhite = (
   );
 };
 
+export const drawOverLay = (
+  ctx: CanvasRenderingContext2D,
+  params: ParamsModel
+) => {
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  ctx.fillStyle = COLORS.GRAY;
+  ctx.fillRect(0, 0, params.MAX_WIDTH, params.MAX_HEIGHT + params.RADIUS);
+  ctx.restore();
+};
+
 export const drawBackground = (map: number[][], params: ParamsModel) => {
   if (params.MAX_WIDTH <= 0 || params.MAX_HEIGHT <= 0) return null;
   const canvas = document.createElement("canvas");
@@ -136,16 +144,16 @@ export const drawBackground = (map: number[][], params: ParamsModel) => {
   canvas.height = params.MAX_HEIGHT;
   const ctx = canvas.getContext("2d");
   if (ctx) {
+    ctx.save();
     map.forEach((rows, indexX) => {
       rows.forEach((item, indexY) => {
-        ctx.beginPath();
         ctx.rect(indexX * 1, indexY * 1, 1, 1);
         ctx.fillStyle =
           item == -1 ? COLORS.BLACK : item == 0 ? COLORS.GRAY : COLORS.WHITE;
         ctx.fill();
-        ctx.closePath();
       });
     });
+    ctx.restore();
   }
   return canvas;
 };

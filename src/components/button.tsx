@@ -1,4 +1,5 @@
 "use strict";
+import Image, { StaticImageData } from "next/image";
 import { MouseEventHandler } from "react";
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   label?: string;
   disabled?: boolean;
+  image?: StaticImageData;
 }
 
 export const Button = (props: Props) => {
@@ -15,7 +17,11 @@ export const Button = (props: Props) => {
       onClick={props.onClick}
       disabled={props.disabled}
     >
-      {props.label}
+      {props.image ? (
+        <Image className="c-button__img" src={props.image} alt="pause" />
+      ) : (
+        props.label
+      )}
     </button>
   );
 };
