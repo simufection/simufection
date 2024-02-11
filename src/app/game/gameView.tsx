@@ -72,7 +72,6 @@ const GameView = () => {
   useEffect(() => {
     if (params) {
       updateGameStateFromGameView(initializeGameState(params));
-      console.log("params loaded!");
     }
   }, [params]);
 
@@ -100,13 +99,11 @@ const GameView = () => {
 
   useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.loading) {
-      console.log(gameState.map.map);
       drawWhite(ctx, params);
       setOffCvs(drawBackground(gameState.map.map, params));
       updateGameStateFromGameView({ playingState: PlayingState.waiting });
-      console.log("on Ready!");
     }
-  }, [ctx, params]);
+  }, [ctx, params, gameState, onReady]);
 
   useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.finishing && score) {
