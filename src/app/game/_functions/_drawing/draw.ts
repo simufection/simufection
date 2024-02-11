@@ -129,19 +129,17 @@ export const drawBackground = (map: number[][], params: ParamsModel) => {
   const canvas = document.createElement("canvas");
   canvas.width = params.MAX_WIDTH;
   canvas.height = params.MAX_HEIGHT;
-  const ctx = canvas.getContext("2d");
-  if (ctx) {
-    map.forEach((rows, indexX) => {
-      rows.forEach((item, indexY) => {
-        ctx.beginPath();
-        ctx.rect(indexX * 1, indexY * 1, 1, 1);
-        ctx.fillStyle =
-          item == -1 ? COLORS.BLACK : item == 0 ? COLORS.GRAY : COLORS.WHITE;
-        ctx.fill();
-        ctx.closePath();
-      });
+  const ctx = canvas.getContext("2d")!;
+  map.forEach((rows, indexX) => {
+    rows.forEach((item, indexY) => {
+      ctx.beginPath();
+      ctx.rect(indexX * 1, indexY * 1, 1, 1);
+      ctx.fillStyle =
+        item == -1 ? COLORS.BLACK : item == 0 ? COLORS.GRAY : COLORS.WHITE;
+      ctx.fill();
+      ctx.closePath();
     });
-  }
+  });
   return canvas;
 };
 

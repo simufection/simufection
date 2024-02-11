@@ -51,7 +51,7 @@ export const maps: { [name: string]: Map } = { kanto: kantoMap };
 export const initializeGameState = (params: ParamsModel): GameState => {
   return {
     map: maps.kanto,
-    playingState: PlayingState.waiting,
+    playingState: PlayingState.loading,
     player: {
       points: 0,
     },

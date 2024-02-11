@@ -70,7 +70,10 @@ const GameView = () => {
   }, []);
 
   useEffect(() => {
-    if (params) updateGameStateFromGameView(initializeGameState(params));
+    if (params) {
+      updateGameStateFromGameView(initializeGameState(params));
+      console.log("params loaded!");
+    }
   }, [params]);
 
   useEffect(() => {
@@ -96,10 +99,11 @@ const GameView = () => {
   }, [params, w, h]);
 
   useEffect(() => {
-    if (onReady && gameState.playingState == PlayingState.waiting) {
+    if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
       setOffCvs(drawBackground(gameState.map.map, params));
-      // updateGameStateFromGameView({ playingState: PlayingState.waiting });
+      updateGameStateFromGameView({ playingState: PlayingState.waiting });
+      console.log("on Ready!");
     }
   }, [ctx, params]);
 
@@ -140,6 +144,9 @@ const GameView = () => {
         }}
       >
         <canvas id="screen">サポートされていません</canvas>
+        {gameState?.playingState == PlayingState.loading ? (
+          <div className="p-game__loading">loading...</div>
+        ) : null}
         {PlayingState.waiting == gameState?.playingState ? (
           <Image
             className="p-game__title-img"
