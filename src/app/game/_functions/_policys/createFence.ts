@@ -1,6 +1,5 @@
 import { COLORS } from "../../_params/colors";
 import { ParamsModel } from "../../_params/params";
-import { POLICY_PARAMS } from "../../_params/policyParams";
 import { Bar, closeToBars, updatePosition } from "../../_states/bars";
 import { Fence, createFence } from "../../_states/fences";
 import { Player, updatePoint } from "../../_states/player";
@@ -40,11 +39,7 @@ export const createFenceFunc = (
         bar.color = COLORS.BLACK;
         bars.push(bar);
       });
-      const newPlayer = updatePoint(
-        player,
-        -POLICY_PARAMS.POINTS_FOR_BAR,
-        params
-      );
+      const newPlayer = updatePoint(player, -params.POINTS_FOR_BAR, params);
       return { bars: bars, res: true, player: newPlayer, fences: fences };
     }
   }

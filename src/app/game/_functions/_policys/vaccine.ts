@@ -1,8 +1,8 @@
-import { EFFECT_PARAMS } from "../../_params/policyParams";
+import { ParamsModel } from "../../_params/params";
 import { GameState } from "../../_states/state";
 
-export const vaccine = (state: GameState) => {
+export const vaccine = (state: GameState, params: ParamsModel) => {
   const virus = state.virus;
-  virus.prob *= EFFECT_PARAMS.VACCINE_EFFECT;
+  virus.prob *= params.VACCINE_EFFECT;
   return virus;
 };

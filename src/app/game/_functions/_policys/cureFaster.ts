@@ -1,10 +1,10 @@
-import { EFFECT_PARAMS } from "../../_params/policyParams";
+import { ParamsModel } from "../../_params/params";
 import { GameState } from "../../_states/state";
 
-export const cureFaster = (state: GameState) => {
+export const cureFaster = (state: GameState, params: ParamsModel) => {
   const virus = state.virus;
   virus.turnsRequiredForHeal = Math.floor(
-    virus.turnsRequiredForHeal * EFFECT_PARAMS.CURE_FASTER_EFFECT
+    virus.turnsRequiredForHeal * params.CURE_FASTER_EFFECT
   );
   return virus;
 };
