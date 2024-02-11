@@ -130,7 +130,6 @@ export const drawBackground = (map: number[][], params: ParamsModel) => {
   canvas.width = params.MAX_WIDTH;
   canvas.height = params.MAX_HEIGHT;
   const ctx = canvas.getContext("2d")!;
-  console.log(map.length);
   map.forEach((rows, indexX) => {
     rows.forEach((item, indexY) => {
       ctx.beginPath();
