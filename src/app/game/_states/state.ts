@@ -14,7 +14,7 @@ import { SceneState, updateSceneState } from "./sceneState";
 import { Virus, updateVirus } from "./virus";
 import { ParamsModel } from "../_params/params";
 import { policies } from "../_functions/_policys/policies";
-import { Map } from "./maps";
+import { Map, maps } from "./maps";
 import { kantoMap } from "../_maps/kanto/map";
 
 export enum PlayingState {
@@ -45,8 +45,6 @@ export type GameState = {
   keys: Keys;
   editing: Objects;
 };
-
-export const maps: { [name: string]: Map } = { kanto: kantoMap };
 
 export const initializeGameState = (params: ParamsModel): GameState => {
   return {
@@ -94,15 +92,15 @@ export const initializeGameState = (params: ParamsModel): GameState => {
   };
 };
 
-export const usePolicy = (state: GameState, params: ParamsModel): Object => {
-  const { keys } = state;
-  policies
-    .filter((policy) => policy.isActive)
-    .forEach((policy) => {
-      if (keys.down.has(policy.key)) return policy.func(state, params);
-    });
-  return state;
-};
+// export const usePolicy = (state: GameState, params: ParamsModel): Object => {
+//   const { keys } = state;
+//   policies
+//     .filter((policy) => policy.isActive)
+//     .forEach((policy) => {
+//       if (keys.down.has(policy.key)) return policy.func(state, params);
+//     });
+//   return state;
+// };
 
 export const updateGameState = (
   currentState: GameState,
@@ -110,8 +108,9 @@ export const updateGameState = (
   inputKeys: Set<string>
 ): GameState => {
   if (currentState.playingState == PlayingState.playing) {
-    const effectsOfPolicy = usePolicy(currentState, params);
-    const state = { ...currentState, ...effectsOfPolicy };
+    // const effectsOfPolicy = usePolicy(currentState, params);
+    // const state = { ...currentState, ...effectsOfPolicy };
+    const state = { ...currentState };
     const { sceneState, playingState } = updateSceneState(
       state.sceneState,
       params,
