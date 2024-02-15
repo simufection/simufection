@@ -19,7 +19,7 @@ export const PolicyIcon = (props: Props) => {
   }, [interact.lastPosition]);
 
   return (
-    <button
+    <div
       className={`c-policy-icon ${props.className || ""}`}
       ref={interact.ref}
       style={
@@ -35,6 +35,6 @@ export const PolicyIcon = (props: Props) => {
       {props.image ? (
         <Image className="c-policy-icon__img" src={props.image} alt="img" />
       ) : null}
-    </button>
+    </div>
   );
 };

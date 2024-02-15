@@ -1,196 +1,168 @@
 @use "../../foundation" as *;
 
 .p-game {
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+
+  &__title-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__start-button {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 50%;
+    top: 88%;
+    translate: -50% 0;
+
+    color: $black;
+
+    font-size: $fs-text;
+
+    @include mq(sp) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  &__quit-button {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    right: 70px;
+    top: 10px;
+
+    @include mq(sp) {
+      right: 50px;
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  &__pause-button {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+
+    @include mq(sp) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  &__restart-button {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+
+    @include mq(sp) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  &__input {
+    width: 200px;
+    height: 40px;
+  }
+
+  &__span {
+    margin-top: 10px;
+    font-size: $fs-text;
+  }
+
+  &__canvas-container {
+    position: relative;
+  }
+
+  &__result {
+    background-color: $white;
+    position: absolute;
+    z-index: 3;
+
     display: flex;
-    overflow: scroll;
+    flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
 
+    width: 500px;
+    height: 300px;
+
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+  }
+
+  &__loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+  }
+
+  &__result-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: $fs-title;
+    cursor: pointer;
+  }
+
+  &__policies {
+    display: flex;
     flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 10px 10px;
+  }
 
-    @include mq(tb) {
-        flex-direction: column;
+  &__result-input {
+    position: absolute;
+    width: 200px;
+    height: 30px;
+    left: 50%;
+    top: 70%;
+    translate: -50% -50%;
+
+    &::placeholder {
+      color: $dark-gray;
     }
 
-    &.-no-overflow {
-        overflow: hidden;
+    &:disabled {
+      color: $gray;
+      border: 1px solid $gray;
+
+      &::placeholder {
+        color: $gray;
+      }
     }
+  }
 
-    &__title-img {
-        position: absolute;
-        top: 0;
-        left: 0;
+  &__result-submit {
+    position: absolute;
+    width: 200px;
+    height: 30px;
+    left: 50%;
+    top: 80%;
+    translate: -50% -50%;
+
+    background-color: transparent;
+    color: $black;
+    border: 1px solid $black;
+
+    &:disabled {
+      color: $gray;
+      border: 1px solid $gray;
     }
-
-    &__start-button {
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        left: 50%;
-        top: 88%;
-        translate: -50% 0;
-
-        color: $black;
-
-        font-size: $fs-text;
-
-        @include mq(sp) {
-            width: 30px;
-            height: 30px;
-        }
-    }
-
-    &__quit-button {
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        right: 70px;
-        top: 10px;
-
-        @include mq(sp) {
-            right: 50px;
-            width: 30px;
-            height: 30px;
-        }
-    }
-
-    &__pause-button {
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        right: 10px;
-        top: 10px;
-
-        @include mq(sp) {
-            width: 30px;
-            height: 30px;
-        }
-    }
-
-    &__restart-button {
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        right: 10px;
-        top: 10px;
-
-        @include mq(sp) {
-            width: 30px;
-            height: 30px;
-        }
-    }
-
-
-    &__input {
-        width: 200px;
-        height: 40px;
-    }
-
-    &__span {
-        margin-top: 10px;
-        font-size: $fs-text;
-    }
-
-    &__canvas-container {
-        position: relative;
-    }
-
-    &__result {
-        background-color: $white;
-        position: absolute;
-        z-index: 3;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        width: 500px;
-        height: 300px;
-
-        top: 50%;
-        left: 50%;
-        translate: -50% -50%;
-
-    }
-
-    &__loading {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        translate: -50% -50%;
-    }
-
-    &__result-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: $fs-title;
-        cursor: pointer;
-    }
-
-    &__policies {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-        flex-wrap: wrap;
-
-        padding: 0 10px;
-
-        @include mq(tb) {
-            flex-direction: row;
-        }
-    }
-
-    &__policy-button {
-        height: 40px;
-        width: 200px;
-        margin: 10px;
-
-        @include mq(tb) {
-            width: 100px;
-        }
-    }
-
-    &__result-input {
-        position: absolute;
-        width: 200px;
-        height: 30px;
-        left: 50%;
-        top: 70%;
-        translate: -50% -50%;
-
-        &::placeholder {
-            color: $dark-gray
-        }
-
-        &:disabled {
-            color: $gray;
-            border: 1px solid $gray;
-
-            &::placeholder {
-                color: $gray
-            }
-
-        }
-    }
-
-    &__result-submit {
-        position: absolute;
-        width: 200px;
-        height: 30px;
-        left: 50%;
-        top: 80%;
-        translate: -50% -50%;
-
-        background-color: transparent;
-        color: $black;
-        border: 1px solid $black;
-
-        &:disabled {
-            color: $gray;
-            border: 1px solid $gray;
-        }
-    }
+  }
 }

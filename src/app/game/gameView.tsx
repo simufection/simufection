@@ -210,33 +210,13 @@ const GameView = () => {
       <div
         className="p-game__policies"
         style={{
-          width: w > 960 ? w - sw : sw,
-          height: w > 960 ? sh : h - sh,
+          width: sw,
         }}
       >
         {onReady && stateIsPlaying.includes(gameState.playingState)
           ? policies
               .filter((policy) => policy.isActive)
               .map((policy) => (
-                // <Button
-                //   key={policy.key}
-                //   disabled={gameState.playingState == PlayingState.pausing}
-                //   label={`${policy.label || policy.key} \n (${
-                //     params[policy.point]
-                //   })`}
-                //   onClick={() => {
-                //     if (params[policy.point] <= gameState.player.points) {
-                //       updateGameStateFromGameView(
-                //         policy.func(gameState, params)
-                //       );
-                //     }
-                //   }}
-                //   className={`p-game__policy-button ${
-                //     params[policy.point] > gameState.player.points
-                //       ? "-inactive"
-                //       : ""
-                //   }`}
-                // />
                 <PolicyIcon
                   key={policy.key}
                   image={policy.image}
