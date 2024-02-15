@@ -20,6 +20,7 @@
     "chart.js": "^4.4.1",
     "docker-compose": "^0.24.3",
     "dotenv": "^16.4.1",
+    "interactjs": "^1.10.26",
     "next": "14.1.0",
     "promise-mysql": "^5.2.0",
     "react": "^18",

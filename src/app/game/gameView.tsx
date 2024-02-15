@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   drawBackground,
   drawGameScreen,
@@ -18,7 +18,6 @@ import {
   updateGameState,
 } from "./_states/state";
 import { Params, ParamsModel } from "./_params/params";
-import { OverLay } from "@/components/overlay";
 import { policies } from "./_functions/_policys/policies";
 import { listToDict } from "@/services/listToDict";
 
@@ -32,6 +31,8 @@ import Image from "next/image";
 import titleImage from "@/assets/img/title.png";
 import { Axios } from "@/services/axios";
 import { SendScoreState } from "@/hooks/game/useGameControl";
+import { PolicyIcon } from "./_components/policyIcon";
+import { useGetElementProperty } from "@/hooks/useGetElementProperty";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -55,6 +56,12 @@ const GameView = () => {
   const onReady = !!(params && ctx && gameState);
 
   const [urName, setUrName] = useState("");
+
+  const targetRef = useRef(null);
+  const { getElementProperty: cvsProp } =
+    useGetElementProperty<HTMLDivElement>(targetRef);
+
+  const cvsPos = { x: cvsProp("x"), y: cvsProp("y") };
 
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
@@ -132,7 +139,11 @@ const GameView = () => {
 
   return (
     <div
-      className={`p-game ${onReady && gameState.playingState == PlayingState.editing ? "-no-overflow" : ""}`}
+      className={`p-game ${
+        onReady && gameState.playingState == PlayingState.editing
+          ? "-no-overflow"
+          : ""
+      }`}
     >
       <div
         className="p-game__canvas-container"
@@ -141,7 +152,9 @@ const GameView = () => {
           height: sh,
         }}
       >
-        <canvas id="screen">サポートされていません</canvas>
+        <canvas id="screen" ref={targetRef}>
+          サポートされていません
+        </canvas>
         {gameState?.playingState == PlayingState.loading ? (
           <div className="p-game__loading">loading...</div>
         ) : null}
@@ -167,7 +180,11 @@ const GameView = () => {
               />
               <Button
                 className="p-game__result-submit"
-                label={`${sendScoreState != SendScoreState.done ? "スコア送信" : "送信済"}`}
+                label={`${
+                  sendScoreState != SendScoreState.done
+                    ? "スコア送信"
+                    : "送信済"
+                }`}
                 disabled={sendScoreState != SendScoreState.before}
                 onClick={async () => {
                   if (
@@ -193,26 +210,33 @@ const GameView = () => {
       <div
         className="p-game__policies"
         style={{
-          width: w > 960 ? w - sw : sw,
-          height: w > 960 ? sh : h - sh,
+          width: sw,
         }}
       >
         {onReady && stateIsPlaying.includes(gameState.playingState)
           ? policies
               .filter((policy) => policy.isActive)
               .map((policy) => (
-                <Button
+                <PolicyIcon
                   key={policy.key}
-                  disabled={gameState.playingState == PlayingState.pausing}
-                  label={`${policy.label || policy.key} \n (${params[policy.point]})`}
-                  onClick={() => {
+                  image={policy.image}
+                  disabled={
+                    gameState.playingState == PlayingState.pausing ||
+                    params[policy.point] > gameState.player.points
+                  }
+                  cost={params[policy.point]}
+                  onClick={(mousePos: Position) => {
                     if (params[policy.point] <= gameState.player.points) {
                       updateGameStateFromGameView(
-                        policy.func(gameState, params)
+                        policy.func(gameState, params, cvsPos, mousePos)
                       );
                     }
                   }}
-                  className={`p-game__policy-button ${params[policy.point] > gameState.player.points ? "-inactive" : ""}`}
+                  className={`p-game__policy-button ${
+                    params[policy.point] > gameState.player.points
+                      ? "-inactive"
+                      : ""
+                  }`}
                 />
               ))
           : null}
