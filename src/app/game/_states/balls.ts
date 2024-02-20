@@ -104,14 +104,19 @@ const updatePosition = (
       [dx, dy, stop] = [0, 0, true];
     }
 
-    while (mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 || remainLevy == 0) {
+    while (
+      mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
+      (mp[Math.floor(x + dx)][Math.floor(y + dy)] !=
+        mp[Math.floor(x)][Math.floor(y)] &&
+        Math.random() < params.BORDER_RATE) ||
+      remainLevy == 0
+    ) {
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
       dx = Math.cos(randDeg);
       dy = Math.sin(randDeg);
       remainLevy = Math.floor(randDis);
     }
-
     x += dx;
     y += dy;
     remainLevy--;

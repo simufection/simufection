@@ -26,4 +26,5 @@ export const Params: ParamsModel = {
   LEVY_MAX: 50,
   MAX_POINTS: 10,
   VIRUS_INITIAL_PROB: 0.1,
+  BORDER_RATE: 0.5,
 };
