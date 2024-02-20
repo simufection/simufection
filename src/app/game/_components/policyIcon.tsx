@@ -1,40 +1,29 @@
 "use strict";
-import { useInteract } from "@/hooks/useInteract";
 import Image, { StaticImageData } from "next/image";
-import { MouseEventHandler, useEffect } from "react";
+import { Draggable } from "@/components/draggable";
 
 interface Props {
   className?: string;
-  onClick: Function;
+  func: Function;
   disabled?: boolean;
   image?: StaticImageData;
   cost: number;
+  id: string;
 }
 
 export const PolicyIcon = (props: Props) => {
-  const interact = useInteract();
-
-  useEffect(() => {
-    props.onClick(interact.lastPosition);
-  }, [interact.lastPosition]);
-
   return (
-    <div
-      className={`c-policy-icon ${props.className || ""}`}
-      ref={interact.ref}
-      style={
-        props.disabled
-          ? {}
-          : {
-              ...{ cursor: "pointer" },
-              ...interact.style,
-            }
+    <Draggable
+      id={props.id}
+      data={{ func: props.func }}
+      children={
+        <div className={`c-policy-icon ${props.className || ""}`}>
+          <div className="c-policy-icon__cost">{props.cost}</div>
+          {props.image ? (
+            <Image className="c-policy-icon__img" src={props.image} alt="img" />
+          ) : null}
+        </div>
       }
-    >
-      <div className="c-policy-icon__cost">{props.cost}</div>
-      {props.image ? (
-        <Image className="c-policy-icon__img" src={props.image} alt="img" />
-      ) : null}
-    </div>
+    />
   );
 };

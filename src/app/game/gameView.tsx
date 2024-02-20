@@ -33,6 +33,8 @@ import { Axios } from "@/services/axios";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import { PolicyIcon } from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
+import { DndContext } from "@dnd-kit/core";
+import useMousePosition from "@/hooks/useMousePosition";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -62,6 +64,8 @@ const GameView = () => {
     useGetElementProperty<HTMLDivElement>(targetRef);
 
   const cvsPos = { x: cvsProp("x"), y: cvsProp("y") };
+
+  const mousePos = useMousePosition();
 
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
@@ -145,102 +149,114 @@ const GameView = () => {
           : ""
       }`}
     >
-      <div
-        className="p-game__canvas-container"
-        style={{
-          width: sw,
-          height: sh,
+      <DndContext
+        onDragEnd={(event) => {
+          const { active, activatorEvent } = event;
+          if (!active.data.current || !active.data.current.func) {
+            return;
+          }
+          console.log(activatorEvent);
+          // active.data.current.func(droppedPos);
         }}
       >
-        <canvas id="screen" ref={targetRef}>
-          サポートされていません
-        </canvas>
-        {gameState?.playingState == PlayingState.loading ? (
-          <div className="p-game__loading">loading...</div>
-        ) : null}
-        {PlayingState.waiting == gameState?.playingState ? (
-          <Image
-            className="p-game__title-img"
-            src={titleImage}
-            alt="title"
-            style={{ width: sw, height: sh }}
-            priority
-          />
-        ) : null}
-        <GameButtons params={params} ctx={ctx} />
-        {onReady && gameState.playingState == PlayingState.finishing ? (
-          gameState.sceneState.contactedCount === 1 ? null : (
-            <>
-              <InputBox
-                className="p-game__result-input"
-                placeholder="プレーヤー名を入力"
-                disabled={sendScoreState != SendScoreState.before}
-                value={urName}
-                onChange={(e) => setUrName(e.target.value)}
-              />
-              <Button
-                className="p-game__result-submit"
-                label={`${
-                  sendScoreState != SendScoreState.done
-                    ? "スコア送信"
-                    : "送信済"
-                }`}
-                disabled={sendScoreState != SendScoreState.before}
-                onClick={async () => {
-                  if (
-                    urName == "" &&
-                    !alert("ユーザーネームを入力してください")!
-                  )
-                    return;
-                  setSendScoreState(SendScoreState.sending);
-                  const res = await sendScore(score, urName);
-                  if (res) {
-                    alert("送信しました");
-                    setSendScoreState(SendScoreState.done);
-                  } else {
-                    alert("失敗しました");
-                    setSendScoreState(SendScoreState.before);
-                  }
-                }}
-              />
-            </>
-          )
-        ) : null}
-      </div>
-      <div
-        className="p-game__policies"
-        style={{
-          width: sw,
-        }}
-      >
-        {onReady && stateIsPlaying.includes(gameState.playingState)
-          ? policies
-              .filter((policy) => policy.isActive)
-              .map((policy) => (
-                <PolicyIcon
-                  key={policy.key}
-                  image={policy.image}
-                  disabled={
-                    gameState.playingState == PlayingState.pausing ||
-                    params[policy.point] > gameState.player.points
-                  }
-                  cost={params[policy.point]}
-                  onClick={(mousePos: Position) => {
-                    if (params[policy.point] <= gameState.player.points) {
-                      updateGameStateFromGameView(
-                        policy.func(gameState, params, cvsPos, mousePos)
-                      );
+        <div
+          className="p-game__canvas-container"
+          style={{
+            width: sw,
+            height: sh,
+          }}
+        >
+          <canvas id="screen" ref={targetRef}>
+            サポートされていません
+          </canvas>
+          {gameState?.playingState == PlayingState.loading ? (
+            <div className="p-game__loading">loading...</div>
+          ) : null}
+          {PlayingState.waiting == gameState?.playingState ? (
+            <Image
+              className="p-game__title-img"
+              src={titleImage}
+              alt="title"
+              style={{ width: sw, height: sh }}
+              priority
+            />
+          ) : null}
+          <GameButtons params={params} ctx={ctx} />
+          {onReady && gameState.playingState == PlayingState.finishing ? (
+            gameState.sceneState.contactedCount === 1 ? null : (
+              <>
+                <InputBox
+                  className="p-game__result-input"
+                  placeholder="プレーヤー名を入力"
+                  disabled={sendScoreState != SendScoreState.before}
+                  value={urName}
+                  onChange={(e) => setUrName(e.target.value)}
+                />
+                <Button
+                  className="p-game__result-submit"
+                  label={`${
+                    sendScoreState != SendScoreState.done
+                      ? "スコア送信"
+                      : "送信済"
+                  }`}
+                  disabled={sendScoreState != SendScoreState.before}
+                  onClick={async () => {
+                    if (
+                      urName == "" &&
+                      !alert("ユーザーネームを入力してください")!
+                    )
+                      return;
+                    setSendScoreState(SendScoreState.sending);
+                    const res = await sendScore(score, urName);
+                    if (res) {
+                      alert("送信しました");
+                      setSendScoreState(SendScoreState.done);
+                    } else {
+                      alert("失敗しました");
+                      setSendScoreState(SendScoreState.before);
                     }
                   }}
-                  className={`p-game__policy-button ${
-                    params[policy.point] > gameState.player.points
-                      ? "-inactive"
-                      : ""
-                  }`}
                 />
-              ))
-          : null}
-      </div>
+              </>
+            )
+          ) : null}
+        </div>
+        <div
+          className="p-game__policies"
+          style={{
+            width: sw,
+          }}
+        >
+          {onReady && stateIsPlaying.includes(gameState.playingState)
+            ? policies
+                .filter((policy) => policy.isActive)
+                .map((policy) => (
+                  <PolicyIcon
+                    key={policy.key}
+                    id={`policy-${policy.key}`}
+                    image={policy.image}
+                    disabled={
+                      gameState.playingState == PlayingState.pausing ||
+                      params[policy.point] > gameState.player.points
+                    }
+                    cost={params[policy.point]}
+                    func={(mousePos: Position) => {
+                      if (params[policy.point] <= gameState.player.points) {
+                        updateGameStateFromGameView(
+                          policy.func(gameState, params, cvsPos, mousePos)
+                        );
+                      }
+                    }}
+                    className={`p-game__policy-button ${
+                      params[policy.point] > gameState.player.points
+                        ? "-inactive"
+                        : ""
+                    }`}
+                  />
+                ))
+            : null}
+        </div>
+      </DndContext>
     </div>
   );
 };
