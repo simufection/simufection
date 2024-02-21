@@ -65,8 +65,6 @@ const GameView = () => {
 
   const cvsPos = { x: cvsProp("x"), y: cvsProp("y") };
 
-  const mousePos = useMousePosition();
-
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
     const canvasctx = canvas.getContext("2d");
@@ -155,8 +153,8 @@ const GameView = () => {
           if (!active.data.current || !active.data.current.func) {
             return;
           }
-          console.log(activatorEvent);
-          // active.data.current.func(droppedPos);
+
+          // active.data.current.func();
         }}
       >
         <div
