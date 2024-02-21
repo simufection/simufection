@@ -105,14 +105,17 @@ const updatePosition = (
       [dx, dy, stop] = [0, 0, true];
     }
 
-    
-
     const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
     while (
       remainLevy == 0 ||
       mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
-      (mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
+      (params.OPTION_REFLECTION == 0 &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] != -1 &&
+        flag_reflect) ||
+      (params.OPTION_REFLECTION == 1 &&
+        mp[Math.floor(x)][Math.floor(y)] != -1 &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
         flag_reflect)
     ) {
       randDeg = Math.random() * Math.PI * 2;
