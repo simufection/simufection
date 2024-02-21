@@ -8,6 +8,7 @@ import { Map } from "./maps";
 export type Ball = {
   forecolor: string;
   radius: number;
+  prefId?: number;
   x: number;
   y: number;
   dx: number;
@@ -43,6 +44,7 @@ const createBall = (
   return {
     forecolor: params.COLOR_UNINFECTED,
     radius: params.RADIUS,
+    prefId: prefId,
     x: x,
     y: y,
     dx: 0,
@@ -91,8 +93,7 @@ const updatePosition = (
 
   balls.forEach((ball) => {
     const newBall = { ...ball };
-    let { x, y, dx, dy, remainLevy, stop } = newBall;
-
+    let { x, y, prefId, dx, dy, remainLevy, stop } = newBall;
     if (stop) {
       newBalls.push(ball);
       return;
@@ -103,20 +104,17 @@ const updatePosition = (
     if (mp[Math.floor(x)][Math.floor(y)] == 0) {
       [dx, dy, stop] = [0, 0, true];
     }
-    let flag_reflected: Boolean = false;
+
+    
+
+    const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
     while (
+      remainLevy == 0 ||
       mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
-      (mp[Math.floor(x + dx)][Math.floor(y + dy)] !=
-        mp[Math.floor(x)][Math.floor(y)] &&
-        (flag_reflected || Math.random() < params.BORDER_RATE)) ||
-      remainLevy == 0
+      (mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] != -1 &&
+        flag_reflect)
     ) {
-      if (
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] !=
-        mp[Math.floor(x)][Math.floor(y)]
-      ) {
-        flag_reflected = true;
-      }
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
       dx = Math.cos(randDeg);
@@ -127,9 +125,21 @@ const updatePosition = (
     y += dy;
     remainLevy--;
 
+    if (mp[Math.floor(x)][Math.floor(y)] != -1) {
+      prefId = mp[Math.floor(x)][Math.floor(y)];
+    }
+
     newBalls.push({
       ...ball,
-      ...{ x: x, y: y, dx: dx, dy: dy, remainLevy: remainLevy, stop: stop },
+      ...{
+        x: x,
+        y: y,
+        prefId: prefId,
+        dx: dx,
+        dy: dy,
+        remainLevy: remainLevy,
+        stop: stop,
+      },
     });
   });
   return newBalls;
