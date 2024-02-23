@@ -15,9 +15,11 @@ export type Ball = {
   dy: number;
   stop: boolean;
   contacted: boolean;
+  first: boolean;
   healed: boolean;
   turnHeal: number;
   remainLevy: number;
+  count: number;
 };
 
 const createBall = (
@@ -51,9 +53,11 @@ const createBall = (
     dy: 0,
     stop: flag_stop,
     contacted: false,
+    first: false,
     healed: false,
     turnHeal: 0,
     remainLevy: 0,
+    count: 0,
   };
 };
 
@@ -72,7 +76,12 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
     balls.push(createBall(false, params, mp, randPref));
   }
 
-  setContacted(balls[randNum], 0, params, params.TURNS_REQUIRED_FOR_HEAL);
+  setFirstContacted(
+    balls[randNum],
+    0,
+    params,
+    params.TURNS_REQUIRED_FOR_HEAL * 5
+  );
 
   for (let i = 0; i < params.MAX_BALLS - targetMax; i++) {
     const randPref = map.func();
@@ -167,25 +176,36 @@ const updateBallState = (
 
     for (let j = i + 1; j < ballNum; j++) {
       const conditions_j = balls[j].contacted && !balls[j].healed;
-
+      /*
       if (conditions_i && conditions_j) {
         continue;
       }
       if (balls[i].healed || balls[j].healed) {
         continue;
       }
+      */
 
       if (conditions_i) {
         if (
           isOverlapTo(balls[i], [balls[j].x, balls[j].y]) &&
-          Math.random() < virus.prob
+          (balls[i].first
+            ? true
+            : balls[j].count == 0
+            ? Math.random() < virus.prob
+            : Math.random() <
+              params.REINFECT_PROB * virus.prob * (1 / balls[j].count))
         ) {
           setContacted(balls[j], turn, params, virus.turnsRequiredForHeal);
         }
       } else if (conditions_j) {
         if (
           isOverlapTo(balls[j], [balls[i].x, balls[i].y]) &&
-          Math.random() < virus.prob
+          (balls[j].first
+            ? true
+            : balls[i].count == 0
+            ? Math.random() < virus.prob
+            : Math.random() <
+              params.REINFECT_PROB * virus.prob * (1 / balls[i].count))
         ) {
           setContacted(balls[i], turn, params, virus.turnsRequiredForHeal);
         }
@@ -202,6 +222,20 @@ const isOverlapTo = (ball: Ball, targetPos: FixedLengthArray<number, 2>) => {
   );
 };
 
+const setFirstContacted = (
+  ball: Ball,
+  turnInfection: number,
+  params: ParamsModel,
+  turnsRequiredForHeal: number
+) => {
+  ball.contacted = true;
+  ball.healed = false;
+  ball.first = true;
+  ball.count++;
+  ball.forecolor = params.COLOR_INFECTED;
+  ball.turnHeal = turnInfection + turnsRequiredForHeal;
+};
+
 const setContacted = (
   ball: Ball,
   turnInfection: number,
@@ -209,6 +243,9 @@ const setContacted = (
   turnsRequiredForHeal: number
 ) => {
   ball.contacted = true;
+  ball.healed = false;
+  ball.count++;
+  ball.first = false;
   ball.forecolor = params.COLOR_INFECTED;
   ball.turnHeal = turnInfection + turnsRequiredForHeal;
 };
