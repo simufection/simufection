@@ -40,6 +40,7 @@ export type GameState = {
   balls: Ball[];
   bars: Bar[];
   fences: Fence[];
+  lockdown_prefs: Boolean[];
   virus: Virus;
   rNote: RNote;
   keys: Keys;
@@ -58,6 +59,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     default:
       map = maps.kanto;
   }
+
   return {
     map: map,
     playingState: PlayingState.loading,
@@ -80,6 +82,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
     ],
     fences: [],
+    lockdown_prefs: Array(1000).fill(false),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },

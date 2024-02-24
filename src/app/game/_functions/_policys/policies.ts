@@ -99,4 +99,20 @@ export const policies: Policy[] = [
     isActive: true,
     image: medicineImage,
   },
+  {
+    key: "l",
+    label: "lockdown",
+    func: (state, params, cvsPos, mousePos) => {
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params);
+      const { player, lockdown_prefs, map } = state;
+
+      if (!droppedPos || map.map[droppedPos.x][droppedPos.y] <= 0) return {};
+      player.points -= params.POINTS_FOR_LOCKDOWN;
+      lockdown_prefs[map.map[droppedPos.x][droppedPos.y]] = true;
+      return { player: player, lockdown_prefs };
+    },
+    point: "POINTS_FOR_LOCKDOWN",
+    isActive: true,
+    image: lockDownImage,
+  },
 ];

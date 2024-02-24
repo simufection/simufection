@@ -31,4 +31,5 @@ export const Params: ParamsModel = {
   OPTION_REFLECTION: 1,
   DEAD_PROB: 0.3,
   TURNS_REQUIRED_FOR_DEAD: 50,
+  POINTS_FOR_LOCKDOWN: 5,
 };
