@@ -22,6 +22,8 @@ export type Ball = {
   remainLevy: number;
   count: number;
   turnDead: number;
+  reinfect: boolean;
+  turnReinfect: number;
 };
 
 const createBall = (
@@ -62,6 +64,8 @@ const createBall = (
     turnDead: 0,
     remainLevy: 0,
     count: 0,
+    reinfect: false,
+    turnReinfect: 0,
   };
 };
 
@@ -85,7 +89,8 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
     0,
     params,
     params.TURNS_REQUIRED_FOR_HEAL * 5,
-    params.TURNS_REQUIRED_FOR_DEAD * 5
+    params.TURNS_REQUIRED_FOR_DEAD * 5,
+    params.TURNS_REQUIRED_FOR_REINFECT
   );
 
   for (let i = 0; i < params.MAX_BALLS - targetMax; i++) {
@@ -184,6 +189,10 @@ const updateBallState = (
       balls[i].forecolor = params.COLOR_RECOVERED;
     }
 
+    if (balls[i].turnReinfect == turn) {
+      balls[i].reinfect = true;
+    }
+
     if (balls[i].turnDead == turn) {
       const rand = Math.random();
       if (rand < params.DEAD_PROB) {
@@ -215,15 +224,17 @@ const updateBallState = (
             ? true
             : balls[j].count == 0
             ? Math.random() < virus.prob
-            : Math.random() <
-              params.REINFECT_PROB * virus.prob * (1 / balls[j].count))
+            : balls[j].reinfect &&
+              Math.random() <
+                params.REINFECT_PROB * virus.prob * (1 / balls[j].count))
         ) {
           setContacted(
             balls[j],
             turn,
             params,
             virus.turnsRequiredForHeal,
-            virus.turnsRequiredForDead
+            virus.turnsRequiredForDead,
+            params.TURNS_REQUIRED_FOR_REINFECT
           );
         }
       } else if (conditions_j) {
@@ -233,15 +244,17 @@ const updateBallState = (
             ? true
             : balls[i].count == 0
             ? Math.random() < virus.prob
-            : Math.random() <
-              params.REINFECT_PROB * virus.prob * (1 / balls[i].count))
+            : balls[i].reinfect &&
+              Math.random() <
+                params.REINFECT_PROB * virus.prob * (1 / balls[i].count))
         ) {
           setContacted(
             balls[i],
             turn,
             params,
             virus.turnsRequiredForHeal,
-            virus.turnsRequiredForDead
+            virus.turnsRequiredForDead,
+            params.TURNS_REQUIRED_FOR_REINFECT
           );
         }
       }
@@ -262,7 +275,8 @@ const setFirstContacted = (
   turnInfection: number,
   params: ParamsModel,
   turnsRequiredForHeal: number,
-  turnsRequiredForDead: number
+  turnsRequiredForDead: number,
+  turnsRequiredForReinfect: number
 ) => {
   ball.contacted = true;
   ball.healed = false;
@@ -271,6 +285,8 @@ const setFirstContacted = (
   ball.forecolor = params.COLOR_INFECTED;
   ball.turnHeal = turnInfection + turnsRequiredForHeal;
   ball.turnDead = turnInfection + turnsRequiredForDead;
+  ball.turnReinfect =
+    turnInfection + turnsRequiredForHeal + turnsRequiredForReinfect;
 };
 
 const setContacted = (
@@ -278,7 +294,8 @@ const setContacted = (
   turnInfection: number,
   params: ParamsModel,
   turnsRequiredForHeal: number,
-  turnsRequiredForDead: number
+  turnsRequiredForDead: number,
+  turnsRequiredForReinfect: number
 ) => {
   ball.contacted = true;
   ball.healed = false;
@@ -287,6 +304,8 @@ const setContacted = (
   ball.forecolor = params.COLOR_INFECTED;
   ball.turnHeal = turnInfection + turnsRequiredForHeal;
   ball.turnDead = turnInfection + turnsRequiredForDead;
+  ball.turnReinfect =
+    turnInfection + turnsRequiredForHeal + turnsRequiredForReinfect;
 };
 
 export const updateBalls = (
