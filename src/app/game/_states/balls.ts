@@ -106,6 +106,7 @@ const updatePosition = (
     }
 
     const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
+    let cnt = 0;
     while (
       remainLevy == 0 ||
       mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
@@ -118,6 +119,10 @@ const updatePosition = (
         mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
         flag_reflect)
     ) {
+      if (cnt++ > 100) {
+        [dx, dy, stop] = [0, 0, true];
+        break;
+      }
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
       dx = Math.cos(randDeg);
