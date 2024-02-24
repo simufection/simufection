@@ -4,6 +4,7 @@ export type Virus = {
   prob: number;
   turnEvent: { [turn: number]: number };
   turnsRequiredForHeal: number;
+  turnsRequiredForDead: number;
 };
 
 const virusEvents = (

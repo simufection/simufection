@@ -47,8 +47,19 @@ export type GameState = {
 };
 
 export const initializeGameState = (params: ParamsModel): GameState => {
+  let map: Map;
+  switch (params.MAP) {
+    case "kanto":
+      map = maps.kanto;
+      break;
+    case "kyushu":
+      map = maps.kyushu;
+      break;
+    default:
+      map = maps.kanto;
+  }
   return {
-    map: maps.kanto,
+    map: map,
     playingState: PlayingState.loading,
     player: {
       points: 0,
@@ -61,7 +72,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       infectedCount: 0,
       healedCount: 0,
     },
-    balls: createBalls(params, maps.kanto),
+    balls: createBalls(params, map),
     bars: [
       createBar(true, -INF, -INF, INF, INF * 2),
       createBar(true, params.MAX_WIDTH, -INF, INF, INF * 2),
@@ -73,6 +84,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
+      turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
     },
     rNote: {
       resultsWIDTH: 4,

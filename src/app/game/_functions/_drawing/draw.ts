@@ -38,10 +38,6 @@ export const drawGameScreen = (
   ctx.fillStyle = COLORS.BLACK;
 
   ctx.fillText((50 * Math.floor(turns / 50)).toString(), 10, 30);
-
-  // drawChart(ctx, gameState, params);
-
-  // drawScaleLine(ctx, params);
 };
 
 const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {
