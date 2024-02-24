@@ -64,7 +64,7 @@ const updateCount = (balls: Ball[], params: ParamsModel) => {
   let [contactedCount, infectedCount, healedCount] = [0, 0, 0];
   balls.forEach((ball) => {
     if (ball.contacted) contactedCount++;
-    if (ball.contacted && !ball.healed) infectedCount++;
+    if (ball.contacted && !ball.healed && !ball.dead) infectedCount++;
     if (ball.healed) healedCount++;
   });
 
