@@ -8,6 +8,8 @@ import { vaccine } from "./vaccine";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import lockDownImage from "@/assets/img/lockDown.png";
+import { Map } from "../../_states/maps";
+import { kantoMapData } from "../../_maps/kanto/kantoMapData";
 
 export type Policy = {
   key: string;
@@ -23,11 +25,28 @@ export type Policy = {
   image?: StaticImageData;
 };
 
-const include = (a: Position, b: Position, params: ParamsModel) =>
-  a.x < b.x &&
-  a.y < b.y &&
-  a.x + params.MAX_WIDTH > b.x &&
-  a.y + params.MAX_HEIGHT > b.y;
+const mapPos = (
+  cvsPos: Position,
+  mousePos: Position,
+  map: Map,
+  params: ParamsModel
+) => {
+  if (
+    cvsPos.x > mousePos.x ||
+    cvsPos.y > mousePos.y ||
+    cvsPos.x + params.MAX_WIDTH < mousePos.x ||
+    cvsPos.y + params.MAX_HEIGHT < mousePos.y
+  ) {
+    return false;
+  }
+  const [mapWidth, mapLength] = [map.map.length, map.map[0].length];
+  const [x, y] = [
+    Math.floor((mousePos.x * mapWidth) / params.MAX_WIDTH),
+    Math.floor((mousePos.y * mapLength) / params.MAX_HEIGHT),
+  ];
+
+  return { x: x, y: y };
+};
 
 export const policies: Policy[] = [
   {
@@ -55,7 +74,8 @@ export const policies: Policy[] = [
     label: "vaccinate",
     func: (state, params, cvsPos, mousePos) => {
       const { player } = state;
-      if (!include(cvsPos, mousePos, params)) return {};
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params);
+      if (!droppedPos) return {};
       player.points -= params.POINTS_FOR_VACCINE;
       const virus = vaccine(state, params);
       return { player: player, virus: virus };
@@ -68,7 +88,8 @@ export const policies: Policy[] = [
     key: "c",
     label: "cure faster",
     func: (state, params, cvsPos, mousePos) => {
-      if (!include(cvsPos, mousePos, params)) return {};
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params);
+      if (!droppedPos) return {};
       const { player } = state;
       player.points -= params.POINTS_FOR_CURE_FASTER;
       const virus = cureFaster(state, params);

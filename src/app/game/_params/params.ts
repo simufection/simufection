@@ -30,4 +30,5 @@ export const Params: ParamsModel = {
   REINFECT_PROB: 0.1,
   BORDER_RATE: 0.5,
   OPTION_REFLECTION: 1,
+  MAP: "kyushu",
 };
