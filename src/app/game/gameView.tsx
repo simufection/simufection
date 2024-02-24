@@ -33,8 +33,10 @@ import { Axios } from "@/services/axios";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import { PolicyIcon } from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, getClientRect } from "@dnd-kit/core";
 import useMousePosition from "@/hooks/useMousePosition";
+import { Droppable } from "@/components/droppable";
+import { getMousePosition } from "@/app/game/_functions/getMousePosition";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -148,16 +150,19 @@ const GameView = () => {
       }`}
     >
       <DndContext
-        onDragEnd={(event) => {
-          const { active, activatorEvent } = event;
+        onDragEnd={async (event: DragEndEvent) => {
+          const { active } = event;
+          const activatorEvent = event.activatorEvent as MouseEvent;
           if (!active.data.current || !active.data.current.func) {
             return;
           }
+          const mousePos = await getMousePosition();
 
-          // active.data.current.func();
+          active.data.current.func(mousePos);
         }}
       >
-        <div
+        <Droppable
+          id="canvas"
           className="p-game__canvas-container"
           style={{
             width: sw,
@@ -218,7 +223,7 @@ const GameView = () => {
               </>
             )
           ) : null}
-        </div>
+        </Droppable>
         <div
           className="p-game__policies"
           style={{
