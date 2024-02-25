@@ -112,8 +112,13 @@ export const policies: Policy[] = [
         return {};
       }
       player.points -= params.POINTS_FOR_LOCKDOWN;
-      const { new_prefs, prefsUpdated } = lockdown(state, prefId);
-      return { player: player, prefs: new_prefs, prefsUpdated: prefsUpdated };
+      const { newPrefs, prefsUpdated } = lockdown(
+        state,
+        params,
+        prefId,
+        state.sceneState.turns
+      );
+      return { player: player, prefs: newPrefs, prefsUpdated: prefsUpdated };
     },
     point: "POINTS_FOR_LOCKDOWN",
     isActive: true,

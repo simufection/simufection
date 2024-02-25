@@ -12,7 +12,7 @@ import { Player, updatePlayer } from "./player";
 import { RNote, updateRNote } from "./rNote";
 import { SceneState, updateSceneState } from "./sceneState";
 import { Virus, updateVirus } from "./virus";
-import { Pref, initializePrefs } from "./pref";
+import { Pref, initializePrefs, updatePrefs } from "./pref";
 import { ParamsModel } from "../_params/params";
 import { policies } from "../_functions/_policys/policies";
 import { Map, maps } from "./maps";
@@ -142,6 +142,11 @@ export const updateGameState = (
       state.sceneState.turns,
       params
     );
+    const { prefs, prefsUpdated } = updatePrefs(
+      state.prefs,
+      state.prefsUpdated,
+      sceneState.turns
+    );
     const balls = updateBalls(
       state.balls,
       state.bars,
@@ -162,6 +167,8 @@ export const updateGameState = (
         playingState: playingState,
         player: player,
         sceneState: sceneState,
+        prefs: prefs,
+        prefsUpdated: prefsUpdated,
         balls: balls,
         bars: bars,
         virus: virus,

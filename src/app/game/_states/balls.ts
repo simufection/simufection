@@ -133,8 +133,12 @@ const updatePosition = (
       (prefs[prefId].isLockedDown &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
           prefId) ||
-      (mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] >
-        0 &&
+      (0 <= x + dx * remainLevy &&
+        x + dx * remainLevy < params.MAX_WIDTH &&
+        0 <= y + dy * remainLevy &&
+        y + dy * remainLevy < params.MAX_HEIGHT &&
+        mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] >
+          0 &&
         prefId !=
           mp[Math.floor(x + dx * remainLevy)][
             Math.floor(y + dy * remainLevy)
