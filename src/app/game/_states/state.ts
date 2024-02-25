@@ -148,7 +148,8 @@ export const updateGameState = (
       params,
       sceneState.turns,
       state.virus,
-      state.map
+      state.map,
+      state.prefs
     );
     const bars = updateBars(state.bars);
     const virus = updateVirus(state.virus, sceneState.turns, params);

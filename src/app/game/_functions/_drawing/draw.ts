@@ -158,7 +158,6 @@ export const updateBackGround = (
 ) => {
   const ctx = offCvs.getContext("2d")!;
   prefsUpdated.forEach((item) => {
-    console.log(item);
     const color = state.prefs[item].isLockedDown
       ? params.COLOR_LOCKDOWN
       : COLORS.WHITE;

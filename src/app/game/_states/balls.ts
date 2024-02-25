@@ -4,11 +4,12 @@ import { Virus } from "./virus";
 import { ParamsModel } from "../_params/params";
 import { levyDist, randLevy } from "../_stats/levy";
 import { Map } from "./maps";
+import { Pref } from "./pref";
 
 export type Ball = {
   forecolor: string;
   radius: number;
-  prefId?: number;
+  prefId: number;
   x: number;
   y: number;
   dx: number;
@@ -46,7 +47,7 @@ const createBall = (
   return {
     forecolor: params.COLOR_UNINFECTED,
     radius: params.RADIUS,
-    prefId: prefId,
+    prefId: map[x][y],
     x: x,
     y: y,
     dx: 0,
@@ -95,7 +96,8 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
 const updatePosition = (
   currentBalls: Ball[],
   map: Map,
-  params: ParamsModel
+  params: ParamsModel,
+  prefs: Pref[]
 ) => {
   const balls = [...currentBalls];
   const newBalls = [] as Ball[];
@@ -127,12 +129,25 @@ const updatePosition = (
       (params.OPTION_REFLECTION == 1 &&
         mp[Math.floor(x)][Math.floor(y)] != -1 &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
-        flag_reflect)
+        flag_reflect) ||
+      (prefs[prefId].isLockedDown &&
+        mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
+          prefId) ||
+      (mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] >
+        0 &&
+        prefId !=
+          mp[Math.floor(x + dx * remainLevy)][
+            Math.floor(y + dy * remainLevy)
+          ] &&
+        prefs[
+          mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)]
+        ].isLockedDown)
     ) {
       if (cnt++ > 100) {
         [dx, dy, stop] = [0, 0, true];
         break;
       }
+
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
       dx = Math.cos(randDeg);
@@ -167,7 +182,8 @@ const updateBallState = (
   currentBalls: Ball[],
   params: ParamsModel,
   turn: number,
-  virus: Virus
+  virus: Virus,
+  prefs: Pref[]
 ) => {
   const balls = [...currentBalls];
 
@@ -193,6 +209,13 @@ const updateBallState = (
     const conditions_i = balls[i].contacted && !balls[i].healed;
 
     for (let j = i + 1; j < ballNum; j++) {
+      if (
+        balls[i].prefId != balls[j].prefId &&
+        (prefs[balls[i].prefId].isLockedDown ||
+          prefs[balls[j].prefId].isLockedDown)
+      ) {
+        continue;
+      }
       if (balls[j].dead) continue;
       const conditions_j = balls[j].contacted && !balls[j].healed;
 
@@ -261,9 +284,10 @@ export const updateBalls = (
   params: ParamsModel,
   turns: number,
   virus: Virus,
-  map: Map
+  map: Map,
+  prefs: Pref[]
 ): Ball[] => {
-  const tmpBalls = updatePosition(currentBalls, map, params);
-  const balls = updateBallState(tmpBalls, params, turns, virus);
+  const tmpBalls = updatePosition(currentBalls, map, params, prefs);
+  const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
   return balls;
 };
