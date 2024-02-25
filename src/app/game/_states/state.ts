@@ -45,7 +45,7 @@ export type GameState = {
   bars: Bar[];
   fences: Fence[];
   prefs: Pref[];
-  BackGroundUpdate: Boolean
+  prefsUpdated: number[];
   virus: Virus;
   rNote: RNote;
   keys: Keys;
@@ -92,7 +92,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     ],
     fences: [],
     prefs: prefs,
-    BackGroundUpdate: false,
+    prefsUpdated: [],
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },

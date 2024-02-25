@@ -3,6 +3,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   drawBackground,
+  updateBackGround,
   drawGameScreen,
   drawOverLay,
   drawResult,
@@ -125,9 +126,17 @@ const GameView = () => {
   useInterval(() => {
     if (onReady && offCvs) {
       if (!stateNotPlaying.includes(gameState.playingState)) {
-        if (gameState.BackGroundUpdate) {
-          setOffCvs(drawBackground(gameState.map.map, gameState, params));
-          gameState.BackGroundUpdate = false;
+        if (gameState.prefsUpdated.length) {
+          setOffCvs(
+            updateBackGround(
+              gameState.map.prefCoordinates,
+              gameState,
+              params,
+              offCvs,
+              gameState.prefsUpdated
+            )
+          );
+          gameState.prefsUpdated = [];
         }
         drawGameScreen(ctx, gameState, params, offCvs);
         if (gameState.playingState == PlayingState.pausing) {

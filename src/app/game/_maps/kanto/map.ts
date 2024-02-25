@@ -1,6 +1,7 @@
 import { prefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "./kantoMapData";
+import { get_prefCoordinates } from "../../_functions/_map/get_prefCorrdinates";
 
 const kantoPrefs = prefs.filter((p) => p.area == "関東");
 const totalPop = kantoPrefs.reduce(
@@ -24,5 +25,6 @@ function rand() {
 
 export const kantoMap: Map = {
   map: kantoMapData,
+  prefCoordinates: get_prefCoordinates(kantoMapData),
   func: rand,
 };

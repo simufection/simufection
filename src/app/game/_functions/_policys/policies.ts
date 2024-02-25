@@ -112,8 +112,8 @@ export const policies: Policy[] = [
         return {};
       }
       player.points -= params.POINTS_FOR_LOCKDOWN;
-      const new_prefs = lockdown(state, prefId);
-      return { player: player, prefs: new_prefs ,BackGroundUpdate: true};
+      const { new_prefs, prefsUpdated } = lockdown(state, prefId);
+      return { player: player, prefs: new_prefs, prefsUpdated: prefsUpdated };
     },
     point: "POINTS_FOR_LOCKDOWN",
     isActive: true,
