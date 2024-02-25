@@ -32,6 +32,10 @@ export enum Objects {
   fence = 2,
 }
 
+export type Pref = {
+  isLockedDown: Boolean;
+};
+
 export type GameState = {
   map: Map;
   playingState: PlayingState;
@@ -40,7 +44,8 @@ export type GameState = {
   balls: Ball[];
   bars: Bar[];
   fences: Fence[];
-  lockdown_prefs: Boolean[];
+  prefs: Pref[];
+  BackGroundUpdate: Boolean
   virus: Virus;
   rNote: RNote;
   keys: Keys;
@@ -59,7 +64,11 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     default:
       map = maps.kanto;
   }
-
+  const pref: Pref = { isLockedDown: false };
+  let prefs = [];
+  for (let i = 0; i < 1000; ++i) {
+    prefs.push({ ...pref });
+  }
   return {
     map: map,
     playingState: PlayingState.loading,
@@ -82,7 +91,8 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
     ],
     fences: [],
-    lockdown_prefs: Array(1000).fill(false),
+    prefs: prefs,
+    BackGroundUpdate: false,
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },

@@ -120,7 +120,11 @@ export const drawOverLay = (
   ctx.restore();
 };
 
-export const drawBackground = (map: number[][], params: ParamsModel) => {
+export const drawBackground = (
+  map: number[][],
+  state: GameState,
+  params: ParamsModel
+) => {
   if (params.MAX_WIDTH <= 0 || params.MAX_HEIGHT <= 0) return null;
   const canvas = document.createElement("canvas");
   canvas.width = params.MAX_WIDTH;
@@ -130,8 +134,16 @@ export const drawBackground = (map: number[][], params: ParamsModel) => {
     rows.forEach((item, indexY) => {
       ctx.beginPath();
       ctx.rect(indexX * 1, indexY * 1, 1, 1);
-      ctx.fillStyle =
-        item == -1 ? COLORS.BLACK : item == 0 ? COLORS.GRAY : COLORS.WHITE;
+      const fillStyle =
+        item == -1
+          ? COLORS.BLACK
+          : item == 0
+          ? COLORS.GRAY
+          : state.prefs[item].isLockedDown
+          ? params.COLOR_LOCKDOWN
+          : COLORS.WHITE;
+      //if (update && ctx.fillStyle == fillStyle) return;
+      ctx.fillStyle = fillStyle;
       ctx.fill();
       ctx.closePath();
     });

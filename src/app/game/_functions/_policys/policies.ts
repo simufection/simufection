@@ -5,6 +5,7 @@ import { createBarInit } from "./createBar";
 import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
+import { lockdown } from "./lockdown";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import lockDownImage from "@/assets/img/lockDown.png";
@@ -104,12 +105,15 @@ export const policies: Policy[] = [
     label: "lockdown",
     func: (state, params, cvsPos, mousePos) => {
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params);
-      const { player, lockdown_prefs, map } = state;
-
-      if (!droppedPos || map.map[droppedPos.x][droppedPos.y] <= 0) return {};
+      const { player, prefs, map } = state;
+      if (!droppedPos) return {};
+      const prefId = map.map[droppedPos.x][droppedPos.y];
+      if (prefId <= 0 || prefs[prefId].isLockedDown) {
+        return {};
+      }
       player.points -= params.POINTS_FOR_LOCKDOWN;
-      lockdown_prefs[map.map[droppedPos.x][droppedPos.y]] = true;
-      return { player: player, lockdown_prefs };
+      const new_prefs = lockdown(state, prefId);
+      return { player: player, prefs: new_prefs ,BackGroundUpdate: true};
     },
     point: "POINTS_FOR_LOCKDOWN",
     isActive: true,

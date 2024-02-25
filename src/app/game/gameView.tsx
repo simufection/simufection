@@ -111,7 +111,7 @@ const GameView = () => {
   useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
-      setOffCvs(drawBackground(gameState.map.map, params));
+      setOffCvs(drawBackground(gameState.map.map, gameState, params));
       updateGameStateFromGameView({ playingState: PlayingState.waiting });
     }
   }, [ctx, params, gameState, onReady]);
@@ -125,6 +125,10 @@ const GameView = () => {
   useInterval(() => {
     if (onReady && offCvs) {
       if (!stateNotPlaying.includes(gameState.playingState)) {
+        if (gameState.BackGroundUpdate) {
+          setOffCvs(drawBackground(gameState.map.map, gameState, params));
+          gameState.BackGroundUpdate = false;
+        }
         drawGameScreen(ctx, gameState, params, offCvs);
         if (gameState.playingState == PlayingState.pausing) {
           drawOverLay(ctx, params);

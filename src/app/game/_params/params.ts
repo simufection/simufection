@@ -32,4 +32,5 @@ export const Params: ParamsModel = {
   DEAD_PROB: 0.3,
   TURNS_REQUIRED_FOR_DEAD: 50,
   POINTS_FOR_LOCKDOWN: 5,
+  COLOR_LOCKDOWN: COLORS.SHELL_PINK,
 };
