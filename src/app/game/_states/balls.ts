@@ -234,7 +234,7 @@ const updateBallState = (
             params,
             virus.turnsRequiredForHeal,
             virus.turnsRequiredForDead,
-            params.TURNS_REQUIRED_FOR_REINFECT
+            virus.turnsRequiredForReinfect
           );
         }
       } else if (conditions_j) {
@@ -254,7 +254,7 @@ const updateBallState = (
             params,
             virus.turnsRequiredForHeal,
             virus.turnsRequiredForDead,
-            params.TURNS_REQUIRED_FOR_REINFECT
+            virus.turnsRequiredForReinfect
           );
         }
       }

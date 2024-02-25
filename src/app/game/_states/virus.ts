@@ -5,6 +5,7 @@ export type Virus = {
   turnEvent: { [turn: number]: number };
   turnsRequiredForHeal: number;
   turnsRequiredForDead: number;
+  turnsRequiredForReinfect: number;
 };
 
 const virusEvents = (
