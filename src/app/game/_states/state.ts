@@ -12,6 +12,7 @@ import { Player, updatePlayer } from "./player";
 import { RNote, updateRNote } from "./rNote";
 import { SceneState, updateSceneState } from "./sceneState";
 import { Virus, updateVirus } from "./virus";
+import { Pref, initializePrefs } from "./pref";
 import { ParamsModel } from "../_params/params";
 import { policies } from "../_functions/_policys/policies";
 import { Map, maps } from "./maps";
@@ -31,10 +32,6 @@ export enum Objects {
   bar = 1,
   fence = 2,
 }
-
-export type Pref = {
-  isLockedDown: Boolean;
-};
 
 export type GameState = {
   map: Map;
@@ -64,11 +61,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     default:
       map = maps.kanto;
   }
-  const pref: Pref = { isLockedDown: false };
-  let prefs = [];
-  for (let i = 0; i < 1000; ++i) {
-    prefs.push({ ...pref });
-  }
+
   return {
     map: map,
     playingState: PlayingState.loading,
@@ -91,7 +84,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
     ],
     fences: [],
-    prefs: prefs,
+    prefs: initializePrefs(),
     prefsUpdated: [],
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
