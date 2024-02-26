@@ -84,7 +84,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
     ],
     fences: [],
-    prefs: initializePrefs(),
+    prefs: initializePrefs(params),
     prefsUpdated: [],
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
@@ -143,6 +143,7 @@ export const updateGameState = (
       params
     );
     const { prefs, prefsUpdated } = updatePrefs(
+      params,
       state.prefs,
       state.prefsUpdated,
       sceneState.turns

@@ -1,12 +1,18 @@
 import { initialize } from "next/dist/server/lib/render-server";
+import { ParamsModel } from "../_params/params";
 
 export type Pref = {
   isLockedDown: Boolean;
   turnLockdownEnds: number;
+  lockdownCompliance: number;
 };
 
-export const initializePrefs = () => {
-  const pref: Pref = { isLockedDown: false, turnLockdownEnds: -1 };
+export const initializePrefs = (params: ParamsModel) => {
+  const pref: Pref = {
+    isLockedDown: false,
+    turnLockdownEnds: -1,
+    lockdownCompliance: params.LOCKDOWN_COMPLIANCE,
+  };
   let prefs = [];
   for (let i = 0; i < 1000; i++) {
     prefs.push({ ...pref });
@@ -15,6 +21,7 @@ export const initializePrefs = () => {
 };
 
 export const updatePrefs = (
+  params: ParamsModel,
   currentPrefs: Pref[],
   currentPrefsUpdated: number[],
   turn: number
@@ -24,6 +31,7 @@ export const updatePrefs = (
   for (let i = 0; i < prefs.length; i++) {
     if (turn == prefs[i].turnLockdownEnds) {
       prefs[i].isLockedDown = false;
+      prefs[i].lockdownCompliance *= params.LOCKDOWN_COMPLIANCE_RATE;
       prefsUpdated.push(i);
     }
   }

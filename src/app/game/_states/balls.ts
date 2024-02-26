@@ -116,8 +116,13 @@ const updatePosition = (
     if (mp[Math.floor(x)][Math.floor(y)] == 0) {
       [dx, dy, stop] = [0, 0, true];
     }
-
+    const onScreen = (x: number, y: number) => {
+      return 0 <= x && x < params.MAX_WIDTH && 0 <= y && y < params.MAX_HEIGHT;
+    };
     const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
+    const flag_lockdown: boolean =
+      prefs[prefId].isLockedDown &&
+      Math.random() < prefs[prefId].lockdownCompliance;
     let cnt = 0;
     while (
       remainLevy == 0 ||
@@ -130,19 +135,21 @@ const updatePosition = (
         mp[Math.floor(x)][Math.floor(y)] != -1 &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
         flag_reflect) ||
-      (prefs[prefId].isLockedDown &&
+      (onScreen(
+        Math.floor(x + dx * remainLevy),
+        Math.floor(y + dy * remainLevy)
+      ) &&
+        flag_lockdown &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
           prefId) ||
-      (0 <= x + dx * remainLevy &&
-        x + dx * remainLevy < params.MAX_WIDTH &&
-        0 <= y + dy * remainLevy &&
-        y + dy * remainLevy < params.MAX_HEIGHT &&
+      (onScreen(
+        Math.floor(x + dx * remainLevy),
+        Math.floor(y + dy * remainLevy)
+      ) &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] >
           0 &&
-        prefId !=
-          mp[Math.floor(x + dx * remainLevy)][
-            Math.floor(y + dy * remainLevy)
-          ] &&
+        mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
+          prefId &&
         prefs[
           mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)]
         ].isLockedDown)
