@@ -91,6 +91,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       turnEvent: { 250: 0, 350: 1, 450: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
+      turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
     },
     rNote: {
       resultsWIDTH: 4,
