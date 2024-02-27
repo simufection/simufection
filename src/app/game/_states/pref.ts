@@ -5,6 +5,7 @@ export type Pref = {
   isLockedDown: Boolean;
   turnLockdownEnds: number;
   lockdownCompliance: number;
+  updated: Boolean;
 };
 
 export const initializePrefs = (params: ParamsModel) => {
@@ -12,6 +13,7 @@ export const initializePrefs = (params: ParamsModel) => {
     isLockedDown: false,
     turnLockdownEnds: -1,
     lockdownCompliance: params.LOCKDOWN_COMPLIANCE,
+    updated: false,
   };
   let prefs = [];
   for (let i = 0; i < 1000; i++) {
@@ -23,17 +25,15 @@ export const initializePrefs = (params: ParamsModel) => {
 export const updatePrefs = (
   params: ParamsModel,
   currentPrefs: Pref[],
-  currentPrefsUpdated: number[],
-  turn: number
+  turns: number
 ) => {
   let prefs = [...currentPrefs];
-  let prefsUpdated = [...currentPrefsUpdated];
   for (let i = 0; i < prefs.length; i++) {
-    if (turn == prefs[i].turnLockdownEnds) {
+    if (turns == prefs[i].turnLockdownEnds) {
       prefs[i].isLockedDown = false;
       prefs[i].lockdownCompliance *= params.LOCKDOWN_COMPLIANCE_RATE;
-      prefsUpdated.push(i);
+      prefs[i].updated = true;
     }
   }
-  return { prefs: prefs, prefsUpdated: prefsUpdated };
+  return prefs;
 };

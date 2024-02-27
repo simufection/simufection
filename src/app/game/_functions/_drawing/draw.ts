@@ -4,6 +4,7 @@ import { drawBar } from "../../_states/bars";
 import { DrawRatio } from "../../_params/drawRatio";
 import { ParamsModel } from "../../_params/params";
 import { coordinate } from "../_map/get_prefCorrdinates";
+import { Pref } from "../../_states/pref";
 
 export const drawGameScreen = (
   ctx: CanvasRenderingContext2D,
@@ -151,23 +152,23 @@ export const drawBackground = (
 };
 export const updateBackGround = (
   prefCoordinates: coordinate[][],
-  state: GameState,
+  prefs: Pref[],
   params: ParamsModel,
-  offCvs: HTMLCanvasElement,
-  prefsUpdated: number[] = []
+  offCvs: HTMLCanvasElement
 ) => {
   const ctx = offCvs.getContext("2d")!;
-  prefsUpdated.forEach((item) => {
-    const color = state.prefs[item].isLockedDown
-      ? params.COLOR_LOCKDOWN
-      : COLORS.WHITE;
-    prefCoordinates[item].forEach(({ x, y }) => {
-      ctx.beginPath();
-      ctx.rect(x, y, 1, 1);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.closePath();
-    });
+  prefs.forEach((pref, prefId) => {
+    if (pref.updated) {
+      const color = pref.isLockedDown ? params.COLOR_LOCKDOWN : COLORS.WHITE;
+      prefCoordinates[prefId].forEach(({ x, y }) => {
+        ctx.beginPath();
+        ctx.rect(x, y, 1, 1);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+      });
+    }
+    prefs[prefId].updated = false;
   });
   return offCvs;
 };

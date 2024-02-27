@@ -38,6 +38,7 @@ import { DndContext, DragEndEvent, getClientRect } from "@dnd-kit/core";
 import useMousePosition from "@/hooks/useMousePosition";
 import { Droppable } from "@/components/droppable";
 import { getMousePosition } from "@/app/game/_functions/getMousePosition";
+import { Pref } from "./_states/pref";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -126,17 +127,21 @@ const GameView = () => {
   useInterval(() => {
     if (onReady && offCvs) {
       if (!stateNotPlaying.includes(gameState.playingState)) {
-        if (gameState.prefsUpdated.length) {
+        if (
+          gameState.prefs
+            .map((p: Pref) => p.updated)
+            .reduce((flag: boolean, item: boolean) => {
+              return flag || item;
+            }, false)
+        ) {
           setOffCvs(
             updateBackGround(
               gameState.map.prefCoordinates,
-              gameState,
+              gameState.prefs,
               params,
-              offCvs,
-              gameState.prefsUpdated
+              offCvs
             )
           );
-          gameState.prefsUpdated = [];
         }
         drawGameScreen(ctx, gameState, params, offCvs);
         if (gameState.playingState == PlayingState.pausing) {

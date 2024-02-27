@@ -42,7 +42,6 @@ export type GameState = {
   bars: Bar[];
   fences: Fence[];
   prefs: Pref[];
-  prefsUpdated: number[];
   virus: Virus;
   rNote: RNote;
   keys: Keys;
@@ -85,7 +84,6 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     ],
     fences: [],
     prefs: initializePrefs(params),
-    prefsUpdated: [],
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },
@@ -143,12 +141,7 @@ export const updateGameState = (
       state.sceneState.turns,
       params
     );
-    const { prefs, prefsUpdated } = updatePrefs(
-      params,
-      state.prefs,
-      state.prefsUpdated,
-      sceneState.turns
-    );
+    const prefs = updatePrefs(params, state.prefs, sceneState.turns);
     const balls = updateBalls(
       state.balls,
       state.bars,
@@ -170,7 +163,6 @@ export const updateGameState = (
         player: player,
         sceneState: sceneState,
         prefs: prefs,
-        prefsUpdated: prefsUpdated,
         balls: balls,
         bars: bars,
         virus: virus,
