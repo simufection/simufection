@@ -135,12 +135,7 @@ const GameView = () => {
             }, false)
         ) {
           setOffCvs(
-            updateBackGround(
-              gameState.map.prefCoordinates,
-              gameState.prefs,
-              params,
-              offCvs
-            )
+            updateBackGround(gameState.map.map, gameState.prefs, params, offCvs)
           );
         }
         drawGameScreen(ctx, gameState, params, offCvs);

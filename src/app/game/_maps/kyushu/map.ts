@@ -25,6 +25,5 @@ function rand() {
 
 export const kyushuMap: Map = {
   map: kyushuMapData,
-  prefCoordinates: get_prefCoordinates(kyushuMapData),
   func: rand,
 };

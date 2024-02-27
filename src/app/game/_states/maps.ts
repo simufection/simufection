@@ -7,7 +7,6 @@ import { kyushuMap } from "../_maps/kyushu/map";
 
 export type Map = {
   map: number[][];
-  prefCoordinates: coordinate[][];
   func: () => number | undefined;
 };
 
