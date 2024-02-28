@@ -1,5 +1,6 @@
 import {
   drawBackground,
+  drawWhite,
   initializeBackground,
 } from "@/app/game/_functions/_drawing/draw";
 import { ParamsModel } from "@/app/game/_params/params";
@@ -36,22 +37,23 @@ export type GameControl = {
 function useGameControl(): GameControl {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
-  const [mapName, setMap] = useState("kanto");
+  const [mapName, setMap] = useState(Object.keys(maps));
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
-    (params: ParamsModel, onReady: boolean) => {
+    (params: ParamsModel, onReady: boolean, newMap: string) => {
       if (!onReady) {
         return;
       }
 
-      setOffCvs(initializeBackground(maps[mapName].map, params));
+      setMap(newMap);
+      setOffCvs(initializeBackground(maps[newMap].map, params));
       setSendScoreState(SendScoreState.before);
       setScore(null);
       setGameState({
-        ...initializeGameState(params, mapName),
+        ...initializeGameState(params, newMap),
         playingState: PlayingState.playing,
       });
     },
@@ -64,6 +66,7 @@ function useGameControl(): GameControl {
         return;
       }
 
+      drawWhite(ctx, params);
       setGameState({
         ...initializeGameState(params, mapName),
         playingState: PlayingState.waiting,

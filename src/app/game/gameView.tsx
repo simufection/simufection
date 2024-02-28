@@ -32,13 +32,15 @@ import Image from "next/image";
 import { Axios } from "@/services/axios";
 import titleImage from "@/assets/img/title.png";
 import { SendScoreState } from "@/hooks/game/useGameControl";
-import { PolicyIcon } from "./_components/policyIcon";
+import PolicyIcon from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
 import { DndContext, DragEndEvent, getClientRect } from "@dnd-kit/core";
 import useMousePosition from "@/hooks/useMousePosition";
 import { Droppable } from "@/components/droppable";
 import { getMousePosition } from "@/app/game/_functions/getMousePosition";
 import { Pref } from "./_states/pref";
+import SendScoreInput from "./_components/sendScoreInput";
+import SelectMap from "./_components/selectMap";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -53,9 +55,6 @@ const GameView = () => {
     gameState,
     updateGameStateFromGameView,
     setScore,
-    sendScoreState,
-    setSendScoreState,
-    setMap,
   } = useContext(GameStateContext)!;
 
   const [params, setParams] = useState<ParamsModel | null>(null);
@@ -64,13 +63,7 @@ const GameView = () => {
 
   const onReady = !!(params && ctx && gameState);
 
-  const [urName, setUrName] = useState("");
-
-  const targetRef = useRef(null);
-  const { getElementProperty: cvsProp } =
-    useGetElementProperty<HTMLDivElement>(targetRef);
-
-  const cvsPos = { x: cvsProp("x"), y: cvsProp("y") };
+  const [updateDraw, updateDrawState] = useState(false);
 
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
@@ -118,11 +111,12 @@ const GameView = () => {
     if (onReady && gameState.playingState == PlayingState.finishing && score) {
       drawResult(ctx, gameState.sceneState.results, gameState, params, score);
     }
+    updateDrawState(true);
   }, [gameState?.playingState, score]);
 
   useInterval(() => {
     if (onReady && offCvs) {
-      if (!stateNotPlaying.includes(gameState.playingState)) {
+      if (stateIsPlaying.includes(gameState.playingState)) {
         if (
           gameState.map.prefIds.reduce((flag: boolean, prefId: number) => {
             return flag || gameState.prefs[prefId].updated;
@@ -140,10 +134,24 @@ const GameView = () => {
             updateGameState(gameState, params, pressedKey)
           );
         }
-      } else if (gameState.playingState == PlayingState.finishing && !score) {
-        setScore(calcScore(gameState, params));
-      } else {
-        drawResult(ctx, gameState.sceneState.results, gameState, params, score);
+      } else if (updateDraw) {
+        if (
+          gameState.playingState == PlayingState.selecting ||
+          gameState.playingState == PlayingState.waiting
+        ) {
+          drawWhite(ctx, params);
+        } else if (gameState.playingState == PlayingState.finishing && !score) {
+          setScore(calcScore(gameState, params));
+        } else {
+          drawResult(
+            ctx,
+            gameState.sceneState.results,
+            gameState,
+            params,
+            score
+          );
+        }
+        updateDrawState(false);
       }
     }
   }, 30);
@@ -155,28 +163,32 @@ const GameView = () => {
           ? "-no-overflow"
           : ""
       }`}
+      style={{
+        width: sw,
+        height: stateIsPlaying.includes(gameState?.playingState!) ? "100%" : sw,
+      }}
     >
       <DndContext
         onDragEnd={async (event: DragEndEvent) => {
           const { active } = event;
-          const activatorEvent = event.activatorEvent as MouseEvent;
           if (!active.data.current || !active.data.current.func) {
             return;
           }
           const mousePos = await getMousePosition();
+          const cvsRect = getClientRect(document.getElementById("screen")!);
+          const cvsPos = { x: cvsRect.left, y: cvsRect.top };
 
-          active.data.current.func(mousePos);
+          active.data.current.func(mousePos, cvsPos);
         }}
       >
-        <Droppable
-          id="canvas"
-          className="p-game__canvas-container"
-          style={{
-            width: sw,
-            height: sh,
-          }}
-        >
-          <canvas id="screen" ref={targetRef} style={{ width: sw, height: sh }}>
+        <Droppable id="canvas" className="p-game__canvas-container">
+          <canvas
+            id="screen"
+            style={{
+              width: sw,
+              height: sh,
+            }}
+          >
             サポートされていません
           </canvas>
         </Droppable>
@@ -200,10 +212,10 @@ const GameView = () => {
                       params[policy.point] > gameState.player.points
                     }
                     cost={params[policy.point]}
-                    func={(mousePos: Position) => {
+                    func={(mousePos: Position, cvsPos: Position) => {
                       if (params[policy.point] <= gameState.player.points) {
                         updateGameStateFromGameView(
-                          policy.func(gameState, params, cvsPos, mousePos)
+                          policy.func(gameState, params, cvsPos, mousePos, sw)
                         );
                       }
                     }}
@@ -232,36 +244,11 @@ const GameView = () => {
       <GameButtons params={params} ctx={ctx} />
       {onReady && gameState.playingState == PlayingState.finishing ? (
         gameState.sceneState.contactedCount === 1 ? null : (
-          <>
-            <InputBox
-              className="p-game__result-input"
-              placeholder="プレーヤー名を入力"
-              disabled={sendScoreState != SendScoreState.before}
-              value={urName}
-              onChange={(e) => setUrName(e.target.value)}
-            />
-            <Button
-              className="p-game__result-submit"
-              label={`${
-                sendScoreState != SendScoreState.done ? "スコア送信" : "送信済"
-              }`}
-              disabled={sendScoreState != SendScoreState.before}
-              onClick={async () => {
-                if (urName == "" && !alert("ユーザーネームを入力してください")!)
-                  return;
-                setSendScoreState(SendScoreState.sending);
-                const res = await sendScore(score || 0, urName);
-                if (res) {
-                  alert("送信しました");
-                  setSendScoreState(SendScoreState.done);
-                } else {
-                  alert("失敗しました");
-                  setSendScoreState(SendScoreState.before);
-                }
-              }}
-            />
-          </>
+          <SendScoreInput />
         )
+      ) : null}
+      {onReady && gameState.playingState == PlayingState.selecting ? (
+        <SelectMap params={params} ctx={ctx} />
       ) : null}
     </div>
   );

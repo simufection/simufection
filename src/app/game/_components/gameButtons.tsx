@@ -18,12 +18,8 @@ type Props = {
 
 export const GameButtons = (props: Props) => {
   const { params, ctx } = props;
-  const {
-    gameState,
-    startSimulate,
-    quitSimulate,
-    updateGameStateFromGameView,
-  } = useContext(GameStateContext)!;
+  const { gameState, quitSimulate, updateGameStateFromGameView } =
+    useContext(GameStateContext)!;
 
   const onReady = !!(params && ctx && gameState);
 
@@ -36,7 +32,11 @@ export const GameButtons = (props: Props) => {
         <Button
           className="p-game__start-button u-tr"
           image={startImage}
-          onClick={() => startSimulate(params, onReady)}
+          onClick={() =>
+            updateGameStateFromGameView({
+              playingState: PlayingState.selecting,
+            })
+          }
         />
       ) : null}
       {gameState.playingState == PlayingState.pausing ? (
