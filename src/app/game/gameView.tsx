@@ -29,8 +29,8 @@ import { GameStateContext } from "./contextProvoder";
 import { calcScore, sendScore } from "./_functions/_game/score";
 import Image from "next/image";
 
-import titleImage from "@/assets/img/title.png";
 import { Axios } from "@/services/axios";
+import titleImage from "@/assets/img/title.png";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import { PolicyIcon } from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
@@ -47,12 +47,14 @@ const GameView = () => {
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
 
   const {
+    mapName,
     score,
     gameState,
     updateGameStateFromGameView,
     setScore,
     sendScoreState,
     setSendScoreState,
+    setMap,
   } = useContext(GameStateContext);
 
   const [params, setParams] = useState<ParamsModel | null>(null);
@@ -84,7 +86,7 @@ const GameView = () => {
 
   useEffect(() => {
     if (params) {
-      updateGameStateFromGameView(initializeGameState(params));
+      updateGameStateFromGameView(initializeGameState(params, mapName));
     }
   }, [params]);
 
@@ -183,58 +185,8 @@ const GameView = () => {
           <canvas id="screen" ref={targetRef}>
             サポートされていません
           </canvas>
-          {gameState?.playingState == PlayingState.loading ? (
-            <div className="p-game__loading">loading...</div>
-          ) : null}
-          {PlayingState.waiting == gameState?.playingState ? (
-            <Image
-              className="p-game__title-img"
-              src={titleImage}
-              alt="title"
-              style={{ width: sw, height: sh }}
-              priority
-            />
-          ) : null}
-          <GameButtons params={params} ctx={ctx} />
-          {onReady && gameState.playingState == PlayingState.finishing ? (
-            gameState.sceneState.contactedCount === 1 ? null : (
-              <>
-                <InputBox
-                  className="p-game__result-input"
-                  placeholder="プレーヤー名を入力"
-                  disabled={sendScoreState != SendScoreState.before}
-                  value={urName}
-                  onChange={(e) => setUrName(e.target.value)}
-                />
-                <Button
-                  className="p-game__result-submit"
-                  label={`${
-                    sendScoreState != SendScoreState.done
-                      ? "スコア送信"
-                      : "送信済"
-                  }`}
-                  disabled={sendScoreState != SendScoreState.before}
-                  onClick={async () => {
-                    if (
-                      urName == "" &&
-                      !alert("ユーザーネームを入力してください")!
-                    )
-                      return;
-                    setSendScoreState(SendScoreState.sending);
-                    const res = await sendScore(score, urName);
-                    if (res) {
-                      alert("送信しました");
-                      setSendScoreState(SendScoreState.done);
-                    } else {
-                      alert("失敗しました");
-                      setSendScoreState(SendScoreState.before);
-                    }
-                  }}
-                />
-              </>
-            )
-          ) : null}
         </Droppable>
+
         <div
           className="p-game__policies"
           style={{
@@ -271,6 +223,52 @@ const GameView = () => {
             : null}
         </div>
       </DndContext>
+      {gameState?.playingState == PlayingState.loading ? (
+        <div className="p-game__loading">loading...</div>
+      ) : null}
+      {PlayingState.waiting == gameState?.playingState ? (
+        <Image
+          className="p-game__title-img"
+          src={titleImage}
+          alt="title"
+          style={{ width: sw, height: sh }}
+          priority
+        />
+      ) : null}
+      <GameButtons params={params} ctx={ctx} />
+      {onReady && gameState.playingState == PlayingState.finishing ? (
+        gameState.sceneState.contactedCount === 1 ? null : (
+          <>
+            <InputBox
+              className="p-game__result-input"
+              placeholder="プレーヤー名を入力"
+              disabled={sendScoreState != SendScoreState.before}
+              value={urName}
+              onChange={(e) => setUrName(e.target.value)}
+            />
+            <Button
+              className="p-game__result-submit"
+              label={`${
+                sendScoreState != SendScoreState.done ? "スコア送信" : "送信済"
+              }`}
+              disabled={sendScoreState != SendScoreState.before}
+              onClick={async () => {
+                if (urName == "" && !alert("ユーザーネームを入力してください")!)
+                  return;
+                setSendScoreState(SendScoreState.sending);
+                const res = await sendScore(score, urName);
+                if (res) {
+                  alert("送信しました");
+                  setSendScoreState(SendScoreState.done);
+                } else {
+                  alert("失敗しました");
+                  setSendScoreState(SendScoreState.before);
+                }
+              }}
+            />
+          </>
+        )
+      ) : null}
     </div>
   );
 };

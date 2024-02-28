@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import GameView from "./gameView";
 
 const Home = () => {

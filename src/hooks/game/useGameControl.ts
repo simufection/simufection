@@ -15,11 +15,12 @@ export enum SendScoreState {
 function useGameControl() {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
+  const [mapName, setMap] = useState("kanto");
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
-    (params: ParamsModel, onReady: boolean) => {
+    (params: ParamsModel, onReady: boolean, map: string) => {
       if (!onReady) {
         return;
       }
@@ -27,7 +28,7 @@ function useGameControl() {
       setSendScoreState(SendScoreState.before);
       setScore(null);
       setGameState({
-        ...initializeGameState(params),
+        ...initializeGameState(params, mapName),
         playingState: PlayingState.playing,
       });
     },
@@ -41,7 +42,7 @@ function useGameControl() {
       }
 
       setGameState({
-        ...initializeGameState(params),
+        ...initializeGameState(params, mapName),
         playingState: PlayingState.waiting,
       });
     },
@@ -56,6 +57,7 @@ function useGameControl() {
   );
 
   return {
+    mapName,
     score,
     gameState,
     sendScoreState,
@@ -65,6 +67,7 @@ function useGameControl() {
     setGameState,
     setScore,
     setSendScoreState,
+    setMap,
   };
 }
 

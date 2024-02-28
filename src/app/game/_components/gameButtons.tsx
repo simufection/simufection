@@ -36,7 +36,11 @@ export const GameButtons = (props: Props) => {
         <Button
           className="p-game__start-button u-tr"
           image={startImage}
-          onClick={() => startSimulate(params, onReady)}
+          onClick={() =>
+            updateGameStateFromGameView({
+              playingState: PlayingState.selecting,
+            })
+          }
         />
       ) : null}
       {gameState.playingState == PlayingState.pausing ? (

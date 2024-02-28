@@ -25,6 +25,7 @@ export enum PlayingState {
   pausing = 3,
   finishing = 4,
   editing = 5,
+  selecting = 6,
 }
 
 export enum Objects {
@@ -41,16 +42,19 @@ export type GameState = {
   balls: Ball[];
   bars: Bar[];
   fences: Fence[];
-  prefs: {[name:number]: Pref};
+  prefs: { [name: number]: Pref };
   virus: Virus;
   rNote: RNote;
   keys: Keys;
   editing: Objects;
 };
 
-export const initializeGameState = (params: ParamsModel): GameState => {
+export const initializeGameState = (
+  params: ParamsModel,
+  mapName: string
+): GameState => {
   let map: Map;
-  switch (params.MAP) {
+  switch (mapName) {
     case "kanto":
       map = maps.kanto;
       break;
@@ -83,7 +87,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
     ],
     fences: [],
-    prefs: initializePrefs(params,map.prefIds),
+    prefs: initializePrefs(params, map.prefIds),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },

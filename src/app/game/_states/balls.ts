@@ -106,7 +106,7 @@ const updatePosition = (
   currentBalls: Ball[],
   map: Map,
   params: ParamsModel,
-  prefs:  {[name: number]: Pref}
+  prefs: { [name: number]: Pref }
 ) => {
   const balls = [...currentBalls];
   const newBalls = [] as Ball[];
@@ -129,8 +129,7 @@ const updatePosition = (
       return 0 <= x && x < params.MAX_WIDTH && 0 <= y && y < params.MAX_HEIGHT;
     };
     const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
-    const flag_lockdown: boolean =
-      Math.random() < prefs[prefId].lockdownCompliance;
+    const rand = Math.random();
 
     const lockdownJudge = (
       x: number,
@@ -144,7 +143,7 @@ const updatePosition = (
           Math.floor(x + dx * remainLevy),
           Math.floor(y + dy * remainLevy)
         ) &&
-        flag_lockdown &&
+        rand < prefs[prefId].lockdownCompliance &&
         prefs[prefId].isLockedDown &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
           prefId;
@@ -152,6 +151,9 @@ const updatePosition = (
       const toPrefLockedDown: Boolean =
         mp[Math.floor(x + dx)][Math.floor(y + dy)] > 0 &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
+        rand <
+          prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]]
+            .lockdownCompliance &&
         prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]].isLockedDown;
 
       return fromPrefLockedDown || toPrefLockedDown;
@@ -206,7 +208,7 @@ const updateBallState = (
   params: ParamsModel,
   turn: number,
   virus: Virus,
-  prefs:  {[name: number]: Pref}
+  prefs: { [name: number]: Pref }
 ) => {
   const balls = [...currentBalls];
 
@@ -245,14 +247,6 @@ const updateBallState = (
       }
       if (balls[j].dead) continue;
       const conditions_j = balls[j].contacted && !balls[j].healed;
-      /*
-      if (conditions_i && conditions_j) {
-        continue;
-      }
-      if (balls[i].healed || balls[j].healed) {
-        continue;
-      }
-      */
 
       if (conditions_i) {
         if (
@@ -352,7 +346,7 @@ export const updateBalls = (
   turns: number,
   virus: Virus,
   map: Map,
-  prefs:  {[name: number]: Pref}
+  prefs: { [name: number]: Pref }
 ): Ball[] => {
   const tmpBalls = updatePosition(currentBalls, map, params, prefs);
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
