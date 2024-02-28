@@ -1,10 +1,15 @@
+import {
+  drawBackground,
+  initializeBackground,
+} from "@/app/game/_functions/_drawing/draw";
 import { ParamsModel } from "@/app/game/_params/params";
+import { maps } from "@/app/game/_states/maps";
 import {
   GameState,
   PlayingState,
   initializeGameState,
 } from "@/app/game/_states/state";
-import { useState, useCallback } from "react";
+import { useState, useCallback, Dispatch } from "react";
 
 export enum SendScoreState {
   before = 0,
@@ -12,19 +17,37 @@ export enum SendScoreState {
   done = 2,
 }
 
-function useGameControl() {
+export type GameControl = {
+  offCvs: HTMLCanvasElement | null;
+  mapName: string;
+  score: number | null;
+  gameState: GameState | undefined;
+  sendScoreState: SendScoreState;
+  startSimulate: Function;
+  quitSimulate: Function;
+  updateGameStateFromGameView: Function;
+  setGameState: Dispatch<GameState>;
+  setScore: Dispatch<number | null>;
+  setSendScoreState: Dispatch<SendScoreState>;
+  setMap: Dispatch<string>;
+  setOffCvs: Dispatch<HTMLCanvasElement | null>;
+};
+
+function useGameControl(): GameControl {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
   const [mapName, setMap] = useState("kanto");
+  const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
-    (params: ParamsModel, onReady: boolean, map: string) => {
+    (params: ParamsModel, onReady: boolean) => {
       if (!onReady) {
         return;
       }
 
+      setOffCvs(initializeBackground(maps[mapName].map, params));
       setSendScoreState(SendScoreState.before);
       setScore(null);
       setGameState({
@@ -57,6 +80,7 @@ function useGameControl() {
   );
 
   return {
+    offCvs,
     mapName,
     score,
     gameState,
@@ -68,6 +92,7 @@ function useGameControl() {
     setScore,
     setSendScoreState,
     setMap,
+    setOffCvs,
   };
 }
 

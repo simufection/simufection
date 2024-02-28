@@ -72,7 +72,7 @@ export const drawResult = (
   results: number[][],
   state: GameState,
   params: ParamsModel,
-  score: number
+  score: number | null
 ) => {
   const { turns, contactedCount } = state.sceneState;
   drawWhite(ctx, params);
@@ -119,6 +119,25 @@ export const drawOverLay = (
   ctx.fillStyle = COLORS.GRAY;
   ctx.fillRect(0, 0, params.MAX_WIDTH, params.MAX_HEIGHT + params.RADIUS);
   ctx.restore();
+};
+
+export const initializeBackground = (map: number[][], params: ParamsModel) => {
+  if (params.MAX_WIDTH <= 0 || params.MAX_HEIGHT <= 0) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = params.MAX_WIDTH;
+  canvas.height = params.MAX_HEIGHT;
+  const ctx = canvas.getContext("2d")!;
+  map.forEach((rows, indexX) => {
+    rows.forEach((item, indexY) => {
+      ctx.beginPath();
+      ctx.rect(indexX * 1, indexY * 1, 1, 1);
+      ctx.fillStyle =
+        item == -1 ? COLORS.BLACK : item == 0 ? COLORS.GRAY : COLORS.WHITE;
+      ctx.fill();
+      ctx.closePath();
+    });
+  });
+  return canvas;
 };
 
 export const drawBackground = (

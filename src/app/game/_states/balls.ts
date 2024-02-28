@@ -137,8 +137,8 @@ const updatePosition = (
       dx: number,
       dy: number,
       remainLevy: number
-    ): Boolean => {
-      const fromPrefLockedDown: Boolean =
+    ): boolean => {
+      const fromPrefLockedDown: boolean =
         onScreen(
           Math.floor(x + dx * remainLevy),
           Math.floor(y + dy * remainLevy)
@@ -148,7 +148,7 @@ const updatePosition = (
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
           prefId;
 
-      const toPrefLockedDown: Boolean =
+      const toPrefLockedDown: boolean =
         mp[Math.floor(x + dx)][Math.floor(y + dy)] > 0 &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
         rand <

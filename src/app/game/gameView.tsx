@@ -44,9 +44,10 @@ const GameView = () => {
   const [w, h] = useWindowSize();
   const [[sw, sh], setScreenSize] = useState([0, 0]);
   const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null);
-  const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
 
   const {
+    offCvs,
+    setOffCvs,
     mapName,
     score,
     gameState,
@@ -55,7 +56,7 @@ const GameView = () => {
     sendScoreState,
     setSendScoreState,
     setMap,
-  } = useContext(GameStateContext);
+  } = useContext(GameStateContext)!;
 
   const [params, setParams] = useState<ParamsModel | null>(null);
 
@@ -87,11 +88,7 @@ const GameView = () => {
   useEffect(() => {
     if (params) {
       updateGameStateFromGameView(initializeGameState(params, mapName));
-    }
-  }, [params]);
 
-  useEffect(() => {
-    if (params && w && h) {
       const canvas = document.getElementById("screen") as HTMLCanvasElement;
       canvas.width = params.MAX_WIDTH;
       canvas.height = params.MAX_HEIGHT + 50;
@@ -106,16 +103,13 @@ const GameView = () => {
         screenWidth = screenHeight / canvasAspect;
       }
 
-      canvas.style.width = `${screenWidth}px`;
-      canvas.style.height = `${screenHeight}px`;
       setScreenSize([screenWidth, screenHeight]);
     }
-  }, [params, w, h]);
+  }, [params]);
 
   useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
-      setOffCvs(drawBackground(gameState.map.map, gameState, params));
       updateGameStateFromGameView({ playingState: PlayingState.waiting });
     }
   }, [ctx, params, gameState, onReady]);
@@ -182,7 +176,7 @@ const GameView = () => {
             height: sh,
           }}
         >
-          <canvas id="screen" ref={targetRef}>
+          <canvas id="screen" ref={targetRef} style={{ width: sw, height: sh }}>
             サポートされていません
           </canvas>
         </Droppable>
@@ -256,7 +250,7 @@ const GameView = () => {
                 if (urName == "" && !alert("ユーザーネームを入力してください")!)
                   return;
                 setSendScoreState(SendScoreState.sending);
-                const res = await sendScore(score, urName);
+                const res = await sendScore(score || 0, urName);
                 if (res) {
                   alert("送信しました");
                   setSendScoreState(SendScoreState.done);
