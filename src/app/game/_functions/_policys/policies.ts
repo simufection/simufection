@@ -5,7 +5,9 @@ import { createBarInit } from "./createBar";
 import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
+import { pcr } from "./pcr";
 import vaccineImage from "@/assets/img/vaccine.png";
+import pcrImage from "@/assets/img/pcr.png";
 import medicineImage from "@/assets/img/medicine.png";
 import lockDownImage from "@/assets/img/lockDown.png";
 import { Map } from "../../_states/maps";
@@ -83,6 +85,21 @@ export const policies: Policy[] = [
     point: "POINTS_FOR_VACCINE",
     isActive: true,
     image: vaccineImage,
+  },
+  {
+    key: "p",
+    label: "pcr",
+    func: (state, params, cvsPos, mousePos) => {
+      const { player } = state;
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params);
+      if (!droppedPos) return {};
+      player.points -= params.POINTS_FOR_PCR;
+      const balls = pcr(state, params);
+      return { player: player,balls:balls};
+    },
+    point: "POINTS_FOR_PCR",
+    isActive: true,
+    image: pcrImage,
   },
   {
     key: "c",
