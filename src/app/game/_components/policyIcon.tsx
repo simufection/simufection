@@ -11,7 +11,7 @@ interface Props {
   id: string;
 }
 
-export const PolicyIcon = (props: Props) => {
+const PolicyIcon = (props: Props) => {
   return (
     <Draggable
       id={props.id}
@@ -27,3 +27,5 @@ export const PolicyIcon = (props: Props) => {
     />
   );
 };
+
+export default PolicyIcon;

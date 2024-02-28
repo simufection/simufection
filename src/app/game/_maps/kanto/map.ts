@@ -1,8 +1,10 @@
 import { prefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "./kantoMapData";
+import kantoMapPreview from "../../../../assets/img/kanto_preview.png";
 
 const kantoPrefs = prefs.filter((p) => p.area == "関東");
+const kantoPrefIds = kantoPrefs.map((p) => p.id);
 const totalPop = kantoPrefs.reduce(
   (sum, { population }) => sum + population,
   0
@@ -24,5 +26,7 @@ function rand() {
 
 export const kantoMap: Map = {
   map: kantoMapData,
+  prefIds: kantoPrefIds,
   func: rand,
+  preview: kantoMapPreview,
 };

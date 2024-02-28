@@ -3,6 +3,7 @@ import { GameState } from "../../_states/state";
 import { drawBar } from "../../_states/bars";
 import { DrawRatio } from "../../_params/drawRatio";
 import { ParamsModel } from "../../_params/params";
+import { Pref } from "../../_states/pref";
 
 export const drawGameScreen = (
   ctx: CanvasRenderingContext2D,
@@ -71,7 +72,7 @@ export const drawResult = (
   results: number[][],
   state: GameState,
   params: ParamsModel,
-  score: number
+  score: number | null
 ) => {
   const { turns, contactedCount } = state.sceneState;
   drawWhite(ctx, params);
@@ -120,7 +121,7 @@ export const drawOverLay = (
   ctx.restore();
 };
 
-export const drawBackground = (map: number[][], params: ParamsModel) => {
+export const initializeBackground = (map: number[][], params: ParamsModel) => {
   if (params.MAX_WIDTH <= 0 || params.MAX_HEIGHT <= 0) return null;
   const canvas = document.createElement("canvas");
   canvas.width = params.MAX_WIDTH;
@@ -137,6 +138,63 @@ export const drawBackground = (map: number[][], params: ParamsModel) => {
     });
   });
   return canvas;
+};
+
+export const drawBackground = (
+  map: number[][],
+  state: GameState,
+  params: ParamsModel
+) => {
+  if (params.MAX_WIDTH <= 0 || params.MAX_HEIGHT <= 0) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = params.MAX_WIDTH;
+  canvas.height = params.MAX_HEIGHT;
+  const ctx = canvas.getContext("2d")!;
+  map.forEach((rows, indexX) => {
+    rows.forEach((item, indexY) => {
+      ctx.beginPath();
+      ctx.rect(indexX * 1, indexY * 1, 1, 1);
+      ctx.fillStyle =
+        item == -1
+          ? COLORS.BLACK
+          : item == 0
+          ? COLORS.GRAY
+          : state.prefs[item].isLockedDown
+          ? params.COLOR_LOCKDOWN
+          : COLORS.WHITE;
+      ctx.fill();
+      ctx.closePath();
+    });
+  });
+  return canvas;
+};
+export const updateBackGround = (
+  map: number[][],
+  prefs: { [name: number]: Pref },
+  params: ParamsModel,
+  offCvs: HTMLCanvasElement
+) => {
+  const ctx = offCvs.getContext("2d")!;
+
+  map.forEach((row, x) => {
+    row.forEach((item, y) => {
+      if (item > 0 && prefs[item].updated) {
+        ctx.beginPath();
+        ctx.rect(x, y, 1, 1);
+        ctx.fillStyle = prefs[item].isLockedDown
+          ? params.COLOR_LOCKDOWN
+          : COLORS.WHITE;
+        ctx.fill();
+        ctx.closePath();
+      }
+    });
+  });
+  for (let prefId in prefs) {
+    if (prefs[prefId].updated) {
+      prefs[prefId].updated = false;
+    }
+  }
+  return offCvs;
 };
 
 const drawPoints = (
