@@ -12,6 +12,7 @@ import { Player, updatePlayer } from "./player";
 import { RNote, updateRNote } from "./rNote";
 import { SceneState, updateSceneState } from "./sceneState";
 import { Virus, updateVirus } from "./virus";
+import { Pref, initializePrefs, updatePrefs } from "./pref";
 import { ParamsModel } from "../_params/params";
 import { policies } from "../_functions/_policys/policies";
 import { Map, maps } from "./maps";
@@ -24,6 +25,7 @@ export enum PlayingState {
   pausing = 3,
   finishing = 4,
   editing = 5,
+  selecting = 6,
 }
 
 export enum Objects {
@@ -40,15 +42,19 @@ export type GameState = {
   balls: Ball[];
   bars: Bar[];
   fences: Fence[];
+  prefs: { [name: number]: Pref };
   virus: Virus;
   rNote: RNote;
   keys: Keys;
   editing: Objects;
 };
 
-export const initializeGameState = (params: ParamsModel): GameState => {
+export const initializeGameState = (
+  params: ParamsModel,
+  mapName: string
+): GameState => {
   let map: Map;
-  switch (params.MAP) {
+  switch (mapName) {
     case "kanto":
       map = maps.kanto;
       break;
@@ -58,6 +64,7 @@ export const initializeGameState = (params: ParamsModel): GameState => {
     default:
       map = maps.kanto;
   }
+
   return {
     map: map,
     playingState: PlayingState.loading,
@@ -80,11 +87,13 @@ export const initializeGameState = (params: ParamsModel): GameState => {
       createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
     ],
     fences: [],
+    prefs: initializePrefs(params, map.prefIds),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
       turnEvent: { 250: 0, 350: 1, 450: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
+      turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
     },
     rNote: {
       resultsWIDTH: 4,
@@ -136,13 +145,15 @@ export const updateGameState = (
       state.sceneState.turns,
       params
     );
+    const prefs = updatePrefs(params, state.prefs, sceneState.turns);
     const balls = updateBalls(
       state.balls,
       state.bars,
       params,
       sceneState.turns,
       state.virus,
-      state.map
+      state.map,
+      state.prefs
     );
     const bars = updateBars(state.bars);
     const virus = updateVirus(state.virus, sceneState.turns, params);
@@ -155,6 +166,7 @@ export const updateGameState = (
         playingState: playingState,
         player: player,
         sceneState: sceneState,
+        prefs: prefs,
         balls: balls,
         bars: bars,
         virus: virus,
