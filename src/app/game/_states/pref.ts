@@ -2,10 +2,10 @@ import { initialize } from "next/dist/server/lib/render-server";
 import { ParamsModel } from "../_params/params";
 
 export type Pref = {
-  isLockedDown: Boolean;
+  isLockedDown: boolean;
   turnLockdownEnds: number;
   lockdownCompliance: number;
-  updated: Boolean;
+  updated: boolean;
 };
 
 export const initializePrefs = (params: ParamsModel, prefIds: number[]) => {

@@ -1,7 +1,7 @@
 import { prefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { kyushuMapData } from "./kyushuMapData";
-import { get_prefCoordinates } from "../../_functions/_map/get_prefCorrdinates";
+import kyushuMapPreview from "../../../../assets/img/kyushu_preview.png";
 
 const kyushuPrefs = prefs.filter((p) => p.area == "九州" && p.name != "沖縄県");
 const kyushuPrefIds = kyushuPrefs.map((p) => p.id);
@@ -28,4 +28,5 @@ export const kyushuMap: Map = {
   map: kyushuMapData,
   prefIds: kyushuPrefIds,
   func: rand,
+  preview: kyushuMapPreview,
 };

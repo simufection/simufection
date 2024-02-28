@@ -1,10 +1,16 @@
+import {
+  drawBackground,
+  drawWhite,
+  initializeBackground,
+} from "@/app/game/_functions/_drawing/draw";
 import { ParamsModel } from "@/app/game/_params/params";
+import { maps } from "@/app/game/_states/maps";
 import {
   GameState,
   PlayingState,
   initializeGameState,
 } from "@/app/game/_states/state";
-import { useState, useCallback } from "react";
+import { useState, useCallback, Dispatch } from "react";
 
 export enum SendScoreState {
   before = 0,
@@ -12,22 +18,42 @@ export enum SendScoreState {
   done = 2,
 }
 
-function useGameControl() {
+export type GameControl = {
+  offCvs: HTMLCanvasElement | null;
+  mapName: string;
+  score: number | null;
+  gameState: GameState | undefined;
+  sendScoreState: SendScoreState;
+  startSimulate: Function;
+  quitSimulate: Function;
+  updateGameStateFromGameView: Function;
+  setGameState: Dispatch<GameState>;
+  setScore: Dispatch<number | null>;
+  setSendScoreState: Dispatch<SendScoreState>;
+  setMap: Dispatch<string>;
+  setOffCvs: Dispatch<HTMLCanvasElement | null>;
+};
+
+function useGameControl(): GameControl {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
+  const [mapName, setMap] = useState(Object.keys(maps));
+  const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
-    (params: ParamsModel, onReady: boolean) => {
+    (params: ParamsModel, onReady: boolean, newMap: string) => {
       if (!onReady) {
         return;
       }
 
+      setMap(newMap);
+      setOffCvs(initializeBackground(maps[newMap].map, params));
       setSendScoreState(SendScoreState.before);
       setScore(null);
       setGameState({
-        ...initializeGameState(params),
+        ...initializeGameState(params, newMap),
         playingState: PlayingState.playing,
       });
     },
@@ -40,8 +66,9 @@ function useGameControl() {
         return;
       }
 
+      drawWhite(ctx, params);
       setGameState({
-        ...initializeGameState(params),
+        ...initializeGameState(params, mapName),
         playingState: PlayingState.waiting,
       });
     },
@@ -56,6 +83,8 @@ function useGameControl() {
   );
 
   return {
+    offCvs,
+    mapName,
     score,
     gameState,
     sendScoreState,
@@ -65,6 +94,8 @@ function useGameControl() {
     setGameState,
     setScore,
     setSendScoreState,
+    setMap,
+    setOffCvs,
   };
 }
 
