@@ -18,10 +18,12 @@ export type Ball = {
   first: boolean;
   healed: boolean;
   dead: boolean;
+  masked: boolean;
   turnHeal: number;
   remainLevy: number;
   count: number;
   turnDead: number;
+  turnRemoveMask: number;
   reinfect: boolean;
   turnReinfect: number;
 };
@@ -60,8 +62,10 @@ const createBall = (
     first: false,
     healed: false,
     dead: false,
+    masked: false,
     turnHeal: 0,
     turnDead: 0,
+    turnRemoveMask: 0,
     remainLevy: 0,
     count: 0,
     reinfect: false,
@@ -78,11 +82,13 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
   );
 
   const randNum = getRandomInt(0, targetMax);
+  // console.log("creating balls");
 
   for (let i = 0; i < targetMax; i++) {
     const randPref = map.func();
     balls.push(createBall(false, params, mp, randPref));
   }
+  // console.log("created balls");
 
   setFirstContacted(
     balls[randNum],
@@ -192,6 +198,10 @@ const updateBallState = (
     if (balls[i].turnReinfect == turn) {
       balls[i].reinfect = true;
     }
+    if (balls[i].masked&&balls[i].turnRemoveMask == turn){
+      balls[i].masked = false;
+      console.log(`unmasking${i}`);
+    }
 
     if (balls[i].turnDead == turn) {
       const rand = Math.random();
@@ -206,7 +216,7 @@ const updateBallState = (
     const conditions_i = balls[i].contacted && !balls[i].healed;
 
     for (let j = i + 1; j < ballNum; j++) {
-      if (balls[j].dead) continue;
+      if (balls[j].dead||balls[j].masked) continue;
       const conditions_j = balls[j].contacted && !balls[j].healed;
       /*
       if (conditions_i && conditions_j) {
