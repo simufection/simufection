@@ -187,6 +187,7 @@ const updateBallState = (
     if (balls[i].turnHeal == turn) {
       balls[i].healed = true;
       balls[i].forecolor = params.COLOR_RECOVERED;
+      balls[i].stop = false;
     }
 
     if (balls[i].turnReinfect == turn) {
