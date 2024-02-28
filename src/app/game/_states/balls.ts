@@ -213,7 +213,7 @@ const updateBallState = (
       continue;
     }
 
-    const conditions_i = balls[i].contacted && !balls[i].healed;
+    const conditions_i = balls[i].contacted && !balls[i].healed&&!balls[i].masked;
 
     for (let j = i + 1; j < ballNum; j++) {
       if (balls[j].dead||balls[j].masked) continue;

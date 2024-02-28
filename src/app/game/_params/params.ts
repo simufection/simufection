@@ -34,5 +34,5 @@ export const Params: ParamsModel = {
   OPTION_REFLECTION: 1,
   DEAD_PROB: 0.3,
   TURNS_REQUIRED_FOR_DEAD: 50,
-  MASK_DURATION: 3000000,
+  MASK_DURATION: 3000,
 };
