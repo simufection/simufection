@@ -130,38 +130,45 @@ const updatePosition = (
     };
     const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
     const flag_lockdown: boolean =
-      prefs[prefId].isLockedDown &&
       Math.random() < prefs[prefId].lockdownCompliance;
-    let cnt = 0;
-    while (
-      remainLevy == 0 ||
-      mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
-      (params.OPTION_REFLECTION == 0 &&
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] != -1 &&
-        flag_reflect) ||
-      (params.OPTION_REFLECTION == 1 &&
-        mp[Math.floor(x)][Math.floor(y)] != -1 &&
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
-        flag_reflect) ||
-      (onScreen(
-        Math.floor(x + dx * remainLevy),
-        Math.floor(y + dy * remainLevy)
-      ) &&
+
+    const lockdownJudge = (
+      x: number,
+      y: number,
+      dx: number,
+      dy: number,
+      remainLevy: number
+    ): Boolean => {
+      const fromPrefLockedDown: Boolean =
         flag_lockdown &&
+        prefs[prefId].isLockedDown &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
-          prefId) ||
-      (onScreen(
-        Math.floor(x + dx * remainLevy),
-        Math.floor(y + dy * remainLevy)
-      ) &&
+          prefId;
+
+      const toPrefLockedDown: Boolean =
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] >
           0 &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
           prefId &&
         prefs[
           mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)]
-        ].isLockedDown)
+        ].isLockedDown;
+
+      return fromPrefLockedDown || toPrefLockedDown;
+    };
+
+    let cnt = 0;
+    while (
+      remainLevy == 0 ||
+      mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
+      (mp[Math.floor(x)][Math.floor(y)] != -1 &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
+        flag_reflect) ||
+      (onScreen(
+        Math.floor(x + dx * remainLevy),
+        Math.floor(y + dy * remainLevy)
+      ) &&
+        lockdownJudge(x, y, dx, dy, remainLevy))
     ) {
       if (cnt++ > 100) {
         [dx, dy, stop] = [0, 0, true];
