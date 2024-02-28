@@ -37,7 +37,7 @@ export type GameControl = {
 function useGameControl(): GameControl {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
-  const [mapName, setMap] = useState(Object.keys(maps));
+  const [mapName, setMap] = useState(Object.keys(maps)[0]);
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
