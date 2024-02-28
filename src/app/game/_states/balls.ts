@@ -140,19 +140,19 @@ const updatePosition = (
       remainLevy: number
     ): Boolean => {
       const fromPrefLockedDown: Boolean =
+        onScreen(
+          Math.floor(x + dx * remainLevy),
+          Math.floor(y + dy * remainLevy)
+        ) &&
         flag_lockdown &&
         prefs[prefId].isLockedDown &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
           prefId;
 
       const toPrefLockedDown: Boolean =
-        mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] >
-          0 &&
-        mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
-          prefId &&
-        prefs[
-          mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)]
-        ].isLockedDown;
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] > 0 &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
+        prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]].isLockedDown;
 
       return fromPrefLockedDown || toPrefLockedDown;
     };
@@ -164,11 +164,7 @@ const updatePosition = (
       (mp[Math.floor(x)][Math.floor(y)] != -1 &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
         flag_reflect) ||
-      (onScreen(
-        Math.floor(x + dx * remainLevy),
-        Math.floor(y + dy * remainLevy)
-      ) &&
-        lockdownJudge(x, y, dx, dy, remainLevy))
+      lockdownJudge(x, y, dx, dy, remainLevy)
     ) {
       if (cnt++ > 100) {
         [dx, dy, stop] = [0, 0, true];
