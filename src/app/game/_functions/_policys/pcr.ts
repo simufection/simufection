@@ -9,11 +9,11 @@ export const pcr = (state: GameState, params: ParamsModel) => {
     if (Math.random() < params.CHECK_INFECTED/100) {
       // 検査実施
       console.log("checking_")
-      // if ((balls[i].contacted || !balls[i].reinfect) && !balls[i].healed && !balls[i].dead && !balls[i].stop)
-      if (true)
+      if ((balls[i].contacted || !balls[i].reinfect) && !balls[i].healed && !balls[i].dead && !balls[i].stop)
+      // if (true)
        {
-        // if (Math.random() < params.POSITIVE_RATE/100)
-        if (true)
+        if (Math.random() < params.POSITIVE_RATE/100)
+        // if (true)
          {
           // 陽性
           console.log("positive")
@@ -27,6 +27,6 @@ export const pcr = (state: GameState, params: ParamsModel) => {
       }
     }
   }
-  return balls;
 }
+return balls;
 };
