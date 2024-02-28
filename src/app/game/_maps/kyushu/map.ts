@@ -4,6 +4,7 @@ import { kyushuMapData } from "./kyushuMapData";
 import { get_prefCoordinates } from "../../_functions/_map/get_prefCorrdinates";
 
 const kyushuPrefs = prefs.filter((p) => p.area == "九州" && p.name != "沖縄県");
+const kyushuPrefIds = kyushuPrefs.map((p) => p.id);
 const totalPop = kyushuPrefs.reduce(
   (sum, { population }) => sum + population,
   0
@@ -25,5 +26,6 @@ function rand() {
 
 export const kyushuMap: Map = {
   map: kyushuMapData,
+  prefIds: kyushuPrefIds,
   func: rand,
 };

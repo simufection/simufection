@@ -128,11 +128,9 @@ const GameView = () => {
     if (onReady && offCvs) {
       if (!stateNotPlaying.includes(gameState.playingState)) {
         if (
-          gameState.prefs
-            .map((p: Pref) => p.updated)
-            .reduce((flag: boolean, item: boolean) => {
-              return flag || item;
-            }, false)
+          gameState.map.prefIds.reduce((flag: boolean, prefId: number) => {
+            return flag || gameState.prefs[prefId].updated;
+          }, false)
         ) {
           setOffCvs(
             updateBackGround(gameState.map.map, gameState.prefs, params, offCvs)

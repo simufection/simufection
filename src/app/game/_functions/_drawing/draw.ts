@@ -151,7 +151,7 @@ export const drawBackground = (
 };
 export const updateBackGround = (
   map: number[][],
-  prefs: Pref[],
+  prefs: { [name: number]: Pref },
   params: ParamsModel,
   offCvs: HTMLCanvasElement
 ) => {
@@ -170,11 +170,11 @@ export const updateBackGround = (
       }
     });
   });
-  prefs.forEach((pref, prefId) => {
-    if (pref.updated) {
+  for (let prefId in prefs) {
+    if (prefs[prefId].updated) {
       prefs[prefId].updated = false;
     }
-  });
+  }
   return offCvs;
 };
 

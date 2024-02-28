@@ -106,7 +106,7 @@ const updatePosition = (
   currentBalls: Ball[],
   map: Map,
   params: ParamsModel,
-  prefs: Pref[]
+  prefs:  {[name: number]: Pref}
 ) => {
   const balls = [...currentBalls];
   const newBalls = [] as Ball[];
@@ -206,7 +206,7 @@ const updateBallState = (
   params: ParamsModel,
   turn: number,
   virus: Virus,
-  prefs: Pref[]
+  prefs:  {[name: number]: Pref}
 ) => {
   const balls = [...currentBalls];
 
@@ -352,7 +352,7 @@ export const updateBalls = (
   turns: number,
   virus: Virus,
   map: Map,
-  prefs: Pref[]
+  prefs:  {[name: number]: Pref}
 ): Ball[] => {
   const tmpBalls = updatePosition(currentBalls, map, params, prefs);
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
