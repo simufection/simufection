@@ -7,7 +7,6 @@ export const mask = (state: GameState, params: ParamsModel) => {
 
   for (let i = 0; i < balls.length; i++) {
     if (balls[i].contacted) {
-      console.log(`masking${i}`);
       balls[i].masked = true;
       balls[i].turnRemoveMask = state.sceneState.turns + params.MASK_DURATION;
     }
