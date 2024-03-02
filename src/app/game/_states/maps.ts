@@ -1,4 +1,5 @@
 import { StaticImageData } from "next/image";
+import { tohokuMap } from "../_maps/tohoku/map";
 import { kantoMap } from "../_maps/kanto/map";
 import { chubuMap } from "../_maps/chubu/map";
 import { kinkiMap } from "../_maps/kinki/map";
@@ -12,6 +13,7 @@ export type Map = {
 };
 
 export const maps: { [name: string]: Map } = {
+  tohoku: tohokuMap,
   kanto: kantoMap,
   chubu: chubuMap,
   kinki: kinkiMap,
