@@ -4,6 +4,7 @@ import { kantoMap } from "../_maps/kanto/map";
 import { chubuMap } from "../_maps/chubu/map";
 import { kinkiMap } from "../_maps/kinki/map";
 import { chugokuMap } from "../_maps/chugoku/map";
+import { shikokuMap } from "../_maps/shikoku/map";
 import { kyushuMap } from "../_maps/kyushu/map";
 
 export type Map = {
@@ -19,5 +20,6 @@ export const maps: { [name: string]: Map } = {
   chubu: chubuMap,
   kinki: kinkiMap,
   chugoku: chugokuMap,
+  shikoku: shikokuMap,
   kyushu: kyushuMap,
 };

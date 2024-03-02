@@ -70,6 +70,9 @@ export const initializeGameState = (
     case "chugoku":
       map = maps.chugoku;
       break;
+    case "shikoku":
+      map = maps.shikoku;
+      break;
     case "kyushu":
       map = maps.kyushu;
       break;
