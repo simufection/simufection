@@ -58,6 +58,9 @@ export const initializeGameState = (
     case "kanto":
       map = maps.kanto;
       break;
+    case "kinki":
+      map = maps.kinki;
+      break;
     case "kyushu":
       map = maps.kyushu;
       break;
