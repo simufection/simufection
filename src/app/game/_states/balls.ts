@@ -25,6 +25,7 @@ export type Ball = {
   turnDead: number;
   reinfect: boolean;
   turnReinfect: number;
+  turnReMove: number;
 };
 
 const createBall = (
@@ -67,6 +68,7 @@ const createBall = (
     count: 0,
     reinfect: false,
     turnReinfect: 0,
+    turnReMove: 0,
   };
 };
 
@@ -214,6 +216,9 @@ const updateBallState = (
 
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
+    if (balls[i].stop&&!balls[i].contacted){
+      console.log()
+    }
     if (balls[i].dead) continue;
 
     if (balls[i].turnHeal == turn) {
@@ -234,6 +239,10 @@ const updateBallState = (
         balls[i].forecolor = params.COLOR_DEAD;
       }
       continue;
+    }
+    if (balls[i].turnReMove == turn) {
+      if (!balls[i].contacted) {
+      balls[i].stop = false;
     }
 
     const conditions_i = balls[i].contacted && !balls[i].healed;
@@ -293,7 +302,7 @@ const updateBallState = (
     }
   }
   return balls;
-};
+}};
 
 const isOverlapTo = (ball: Ball, targetPos: FixedLengthArray<number, 2>) => {
   return (
@@ -336,8 +345,7 @@ const setContacted = (
   ball.forecolor = params.COLOR_INFECTED;
   ball.turnHeal = turnInfection + turnsRequiredForHeal;
   ball.turnDead = turnInfection + turnsRequiredForDead;
-  ball.turnReinfect =
-    turnInfection + turnsRequiredForHeal + turnsRequiredForReinfect;
+  ball.turnReinfect =turnInfection + turnsRequiredForHeal + turnsRequiredForReinfect;
 };
 
 export const updateBalls = (

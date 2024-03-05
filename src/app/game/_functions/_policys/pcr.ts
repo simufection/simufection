@@ -21,6 +21,7 @@ export const pcr = (state: GameState, params: ParamsModel) => {
       else if (Math.random() < params.FALSE_POSITIVE_RATE/100) {
           // 偽陽性
           balls[i].stop=true;
+          balls[i].turnReMove = state.turns + params.TURNS_REQUIRED_FOR_RE_MOVE;
         }
 
   }
