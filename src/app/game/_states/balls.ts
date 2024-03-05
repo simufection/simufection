@@ -4,12 +4,11 @@ import { Virus } from "./virus";
 import { ParamsModel } from "../_params/params";
 import { levyDist, randLevy } from "../_stats/levy";
 import { Map } from "./maps";
-import { Pref } from "./pref";
 
 export type Ball = {
   forecolor: string;
   radius: number;
-  prefId: number;
+  prefId?: number;
   x: number;
   y: number;
   dx: number;
@@ -52,7 +51,7 @@ const createBall = (
   return {
     forecolor: params.COLOR_UNINFECTED,
     radius: params.RADIUS,
-    prefId: map[x][y],
+    prefId: prefId,
     x: x,
     y: y,
     dx: 0,
@@ -107,8 +106,7 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
 const updatePosition = (
   currentBalls: Ball[],
   map: Map,
-  params: ParamsModel,
-  prefs: { [name: number]: Pref }
+  params: ParamsModel
 ) => {
   const balls = [...currentBalls];
   const newBalls = [] as Ball[];
@@ -127,54 +125,25 @@ const updatePosition = (
     if (mp[Math.floor(x)][Math.floor(y)] == 0) {
       [dx, dy, stop] = [0, 0, true];
     }
-    const onScreen = (x: number, y: number) => {
-      return 0 <= x && x < params.MAX_WIDTH && 0 <= y && y < params.MAX_HEIGHT;
-    };
+
     const flag_reflect: boolean = Math.random() < params.BORDER_RATE;
-    const rand = Math.random();
-
-    const lockdownJudge = (
-      x: number,
-      y: number,
-      dx: number,
-      dy: number,
-      remainLevy: number
-    ): boolean => {
-      const fromPrefLockedDown: boolean =
-        onScreen(
-          Math.floor(x + dx * remainLevy),
-          Math.floor(y + dy * remainLevy)
-        ) &&
-        rand < prefs[prefId].lockdownCompliance &&
-        prefs[prefId].isLockedDown &&
-        mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
-          prefId;
-
-      const toPrefLockedDown: boolean =
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] > 0 &&
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
-        rand <
-          prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]]
-            .lockdownCompliance &&
-        prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]].isLockedDown;
-
-      return fromPrefLockedDown || toPrefLockedDown;
-    };
-
     let cnt = 0;
     while (
       remainLevy == 0 ||
       mp[Math.floor(x + dx)][Math.floor(y + dy)] == 0 ||
-      (mp[Math.floor(x)][Math.floor(y)] != -1 &&
-        mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
+      (params.OPTION_REFLECTION == 0 &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] != -1 &&
         flag_reflect) ||
-      lockdownJudge(x, y, dx, dy, remainLevy)
+      (params.OPTION_REFLECTION == 1 &&
+        mp[Math.floor(x)][Math.floor(y)] != -1 &&
+        mp[Math.floor(x + dx)][Math.floor(y + dy)] == -1 &&
+        flag_reflect)
     ) {
       if (cnt++ > 100) {
         [dx, dy, stop] = [0, 0, true];
         break;
       }
-
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
       dx = Math.cos(randDeg);
@@ -209,17 +178,15 @@ const updateBallState = (
   currentBalls: Ball[],
   params: ParamsModel,
   turn: number,
-  virus: Virus,
-  prefs: { [name: number]: Pref }
+  virus: Virus
 ) => {
   const balls = [...currentBalls];
 
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
-    if (balls[i].stop&&!balls[i].contacted){
-      console.log()
-    }
+
     if (balls[i].dead) continue;
+
 
     if (balls[i].turnHeal == turn) {
       balls[i].healed = true;
@@ -240,23 +207,26 @@ const updateBallState = (
       }
       continue;
     }
+    if (balls[i].stop) {
+    console.log(balls[i].turnReMove, turn);}
     if (balls[i].turnReMove == turn) {
       if (!balls[i].contacted) {
-      balls[i].stop = false;
-    }
+        balls[i].stop = false;
+      }}
 
-    const conditions_i = balls[i].contacted && !balls[i].healed;
+      const conditions_i = balls[i].contacted && !balls[i].healed;
 
     for (let j = i + 1; j < ballNum; j++) {
-      if (
-        balls[i].prefId != balls[j].prefId &&
-        (prefs[balls[i].prefId].isLockedDown ||
-          prefs[balls[j].prefId].isLockedDown)
-      ) {
-        continue;
-      }
       if (balls[j].dead) continue;
       const conditions_j = balls[j].contacted && !balls[j].healed;
+      /*
+      if (conditions_i && conditions_j) {
+        continue;
+      }
+      if (balls[i].healed || balls[j].healed) {
+        continue;
+      }
+      */
 
       if (conditions_i) {
         if (
@@ -302,7 +272,7 @@ const updateBallState = (
     }
   }
   return balls;
-}};
+};
 
 const isOverlapTo = (ball: Ball, targetPos: FixedLengthArray<number, 2>) => {
   return (
@@ -354,10 +324,9 @@ export const updateBalls = (
   params: ParamsModel,
   turns: number,
   virus: Virus,
-  map: Map,
-  prefs: { [name: number]: Pref }
+  map: Map
 ): Ball[] => {
-  const tmpBalls = updatePosition(currentBalls, map, params, prefs);
-  const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
+  const tmpBalls = updatePosition(currentBalls, map, params);
+  const balls = updateBallState(tmpBalls, params, turns, virus);
   return balls;
 };
