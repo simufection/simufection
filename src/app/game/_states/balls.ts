@@ -19,12 +19,14 @@ export type Ball = {
   first: boolean;
   healed: boolean;
   dead: boolean;
-  turnHeal: number;
   remainLevy: number;
   count: number;
-  turnDead: number;
   reinfect: boolean;
-  turnReinfect: number;
+  turnInfection: number;
+  turnHealed: number;
+  turnsRequiredForHeal: number;
+  turnsRequiredForDead: number;
+  turnsRequiredForReinfect: number;
 };
 
 const createBall = (
@@ -61,12 +63,14 @@ const createBall = (
     first: false,
     healed: false,
     dead: false,
-    turnHeal: 0,
-    turnDead: 0,
     remainLevy: 0,
     count: 0,
     reinfect: false,
-    turnReinfect: 0,
+    turnInfection: 0,
+    turnHealed: 0,
+    turnsRequiredForHeal: 0,
+    turnsRequiredForDead: 0,
+    turnsRequiredForReinfect: 0,
   };
 };
 
@@ -216,25 +220,45 @@ const updateBallState = (
   for (let i = 0; i < ballNum; i++) {
     if (balls[i].dead) continue;
 
-    if (balls[i].turnHeal == turn) {
-      balls[i].healed = true;
-      balls[i].forecolor = params.COLOR_RECOVERED;
+    if (
+      turn - balls[i].turnInfection >= balls[i].turnsRequiredForHeal &&
+      balls[i].contacted &&
+      !balls[i].healed
+    ) {
+      if ((turn - balls[i].turnInfection) % virus.T_Heal == 0) {
+        const rand = Math.random();
+        if (rand < virus.HEAL_PROB) {
+          balls[i].healed = true;
+          balls[i].contacted = false;
+          balls[i].forecolor = params.COLOR_RECOVERED;
+          balls[i].turnHealed = turn;
+        }
+      }
     }
 
-    if (balls[i].turnReinfect == turn) {
+    if (
+      balls[i].turnHealed + balls[i].turnsRequiredForReinfect == turn &&
+      !balls[i].reinfect
+    ) {
       balls[i].reinfect = true;
     }
 
-    if (balls[i].turnDead == turn) {
-      const rand = Math.random();
-      if (rand < params.DEAD_PROB) {
-        balls[i].dead = true;
-        balls[i].stop = true;
-        balls[i].forecolor = params.COLOR_DEAD;
+    // turnsRequiredForDeadが50に設定されているので、ここを250に変えると良い感じに動く
+    if (
+      turn - balls[i].turnInfection >= balls[i].turnsRequiredForDead &&
+      balls[i].contacted
+    ) {
+      if ((turn - balls[i].turnInfection) % virus.T_Dead == 0) {
+        const rand = Math.random();
+        if (rand < virus.DEAD_PROB) {
+          balls[i].dead = true;
+          balls[i].stop = true;
+          balls[i].contacted = false;
+          balls[i].forecolor = params.COLOR_DEAD;
+        }
+        continue;
       }
-      continue;
     }
-
     const conditions_i = balls[i].contacted && !balls[i].healed;
 
     for (let j = i + 1; j < ballNum; j++) {
@@ -311,13 +335,14 @@ const setFirstContacted = (
 ) => {
   ball.contacted = true;
   ball.healed = false;
+  ball.reinfect = false;
   ball.first = true;
   ball.count++;
   ball.forecolor = params.COLOR_INFECTED;
-  ball.turnHeal = turnInfection + turnsRequiredForHeal;
-  ball.turnDead = turnInfection + turnsRequiredForDead;
-  ball.turnReinfect =
-    turnInfection + turnsRequiredForHeal + turnsRequiredForReinfect;
+  ball.turnInfection = turnInfection;
+  ball.turnsRequiredForHeal = turnsRequiredForHeal;
+  ball.turnsRequiredForDead = turnsRequiredForDead;
+  ball.turnsRequiredForReinfect = turnsRequiredForReinfect;
 };
 
 const setContacted = (
@@ -330,13 +355,14 @@ const setContacted = (
 ) => {
   ball.contacted = true;
   ball.healed = false;
-  ball.count++;
+  ball.reinfect = false;
   ball.first = false;
+  ball.count++;
   ball.forecolor = params.COLOR_INFECTED;
-  ball.turnHeal = turnInfection + turnsRequiredForHeal;
-  ball.turnDead = turnInfection + turnsRequiredForDead;
-  ball.turnReinfect =
-    turnInfection + turnsRequiredForHeal + turnsRequiredForReinfect;
+  ball.turnInfection = turnInfection;
+  ball.turnsRequiredForHeal = turnsRequiredForHeal;
+  ball.turnsRequiredForDead = turnsRequiredForDead;
+  ball.turnsRequiredForReinfect = turnsRequiredForReinfect;
 };
 
 export const updateBalls = (
