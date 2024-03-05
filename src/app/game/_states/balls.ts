@@ -221,11 +221,15 @@ const updateBallState = (
     if (balls[i].dead) continue;
 
     if (
-      turn - balls[i].turnInfection >= balls[i].turnsRequiredForHeal &&
+      turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal >= 0 &&
       balls[i].contacted &&
       !balls[i].healed
     ) {
-      if ((turn - balls[i].turnInfection) % virus.T_Heal == 0) {
+      if (
+        (turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal) %
+          virus.T_Heal ==
+        0
+      ) {
         const rand = Math.random();
         if (rand < virus.HEAL_PROB) {
           balls[i].healed = true;
@@ -245,10 +249,14 @@ const updateBallState = (
 
     // turnsRequiredForDeadが50に設定されているので、ここを250に変えると良い感じに動く
     if (
-      turn - balls[i].turnInfection >= balls[i].turnsRequiredForDead &&
+      turn - balls[i].turnInfection - balls[i].turnsRequiredForDead >= 0 &&
       balls[i].contacted
     ) {
-      if ((turn - balls[i].turnInfection) % virus.T_Dead == 0) {
+      if (
+        (turn - balls[i].turnInfection - balls[i].turnsRequiredForDead) %
+          virus.T_Dead ==
+        0
+      ) {
         const rand = Math.random();
         if (rand < virus.DEAD_PROB) {
           balls[i].dead = true;
