@@ -207,8 +207,6 @@ const updateBallState = (
       }
       continue;
     }
-    if (balls[i].stop) {
-    console.log(balls[i].turnReMove, turn);}
     if (balls[i].turnReMove == turn) {
       if (!balls[i].contacted) {
         balls[i].stop = false;
