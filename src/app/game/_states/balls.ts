@@ -227,7 +227,7 @@ const updateBallState = (
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal) %
-          virus.T_Heal ==
+          virus.TURNS_JUDGE_HEAL ==
         0
       ) {
         const rand = Math.random();
@@ -247,14 +247,13 @@ const updateBallState = (
       balls[i].reinfect = true;
     }
 
-    // turnsRequiredForDeadが50に設定されているので、ここを250に変えると良い感じに動く
     if (
       turn - balls[i].turnInfection - balls[i].turnsRequiredForDead >= 0 &&
       balls[i].contacted
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForDead) %
-          virus.T_Dead ==
+          virus.TURNS_JUDGE_DEAD ==
         0
       ) {
         const rand = Math.random();
