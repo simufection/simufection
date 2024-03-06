@@ -109,6 +109,10 @@ export const initializeGameState = (
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
       turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
+      TURNS_JUDGE_HEAL: params.TURNS_JUDGE_HEAL,
+      TURNS_JUDGE_DEAD: params.TURNS_JUDGE_DEAD,
+      HEAL_PROB: params.HEAL_PROB,
+      DEAD_PROB: params.DEAD_PROB,
     },
     rNote: {
       resultsWIDTH: 4,
