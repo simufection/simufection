@@ -55,8 +55,23 @@ export const initializeGameState = (
 ): GameState => {
   let map: Map;
   switch (mapName) {
+    case "tohoku":
+      map = maps.tohoku;
+      break;
     case "kanto":
       map = maps.kanto;
+      break;
+    case "chubu":
+      map = maps.chubu;
+      break;
+    case "kinki":
+      map = maps.kinki;
+      break;
+    case "chugoku":
+      map = maps.chugoku;
+      break;
+    case "shikoku":
+      map = maps.shikoku;
       break;
     case "kyushu":
       map = maps.kyushu;
