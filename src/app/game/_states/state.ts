@@ -55,8 +55,23 @@ export const initializeGameState = (
 ): GameState => {
   let map: Map;
   switch (mapName) {
+    case "tohoku":
+      map = maps.tohoku;
+      break;
     case "kanto":
       map = maps.kanto;
+      break;
+    case "chubu":
+      map = maps.chubu;
+      break;
+    case "kinki":
+      map = maps.kinki;
+      break;
+    case "chugoku":
+      map = maps.chugoku;
+      break;
+    case "shikoku":
+      map = maps.shikoku;
       break;
     case "kyushu":
       map = maps.kyushu;
@@ -94,6 +109,10 @@ export const initializeGameState = (
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
       turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
+      TURNS_JUDGE_HEAL: params.TURNS_JUDGE_HEAL,
+      TURNS_JUDGE_DEAD: params.TURNS_JUDGE_DEAD,
+      HEAL_PROB: params.HEAL_PROB,
+      DEAD_PROB: params.DEAD_PROB,
     },
     rNote: {
       resultsWIDTH: 4,
