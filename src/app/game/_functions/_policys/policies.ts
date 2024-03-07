@@ -6,9 +6,11 @@ import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
 import { medicine } from "./medicine";
+import { mask } from "./mask";
 import { lockdown } from "./lockdown";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
+import maskImage from "@/assets/img/mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "../../_maps/kanto/kantoMapData";
@@ -92,7 +94,6 @@ export const policies: Policy[] = [
     image: vaccineImage,
   },
   {
-    key: "m",
     label: "medicine",
     func: (state, params, cvsPos, mousePos, sw) => {
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
@@ -105,6 +106,20 @@ export const policies: Policy[] = [
     point: "POINTS_FOR_MEDICINE",
     isActive: true,
     image: medicineImage,
+  },
+  {
+    label: "mask",
+    func: (state, params, cvsPos, mousePos,sw) => {
+      const { player } = state;
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
+      if (!droppedPos) return {};
+      player.points -= params.POINTS_FOR_MASK;
+      const balls = mask(state, params);
+      return { balls: balls };
+    },
+    point: "POINTS_FOR_MASK",
+    isActive: true,
+    image: maskImage,
   },
   {
     key: "c",

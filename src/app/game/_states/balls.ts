@@ -19,6 +19,7 @@ export type Ball = {
   first: boolean;
   healed: boolean;
   dead: boolean;
+  masked: boolean;
   remainLevy: number;
   count: number;
   reinfect: boolean;
@@ -27,6 +28,7 @@ export type Ball = {
   turnsRequiredForHeal: number;
   turnsRequiredForDead: number;
   turnsRequiredForReinfect: number;
+  turnRemoveMask: number;
 };
 
 const createBall = (
@@ -63,6 +65,7 @@ const createBall = (
     first: false,
     healed: false,
     dead: false,
+    masked: false,
     remainLevy: 0,
     count: 0,
     reinfect: false,
@@ -70,6 +73,7 @@ const createBall = (
     turnHealed: 0,
     turnsRequiredForHeal: 0,
     turnsRequiredForDead: 0,
+    turnRemoveMask: 0,
     turnsRequiredForReinfect: 0,
   };
 };
@@ -219,6 +223,9 @@ const updateBallState = (
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
     if (balls[i].dead) continue;
+    if (balls[i].turnRemoveMask == turn&&balls[i].masked) {
+      balls[i].masked = false;
+    }
 
     if (
       turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal >= 0 &&
@@ -266,7 +273,7 @@ const updateBallState = (
         continue;
       }
     }
-    const conditions_i = balls[i].contacted && !balls[i].healed;
+    const conditions_i = balls[i].contacted && !balls[i].healed&& !balls[i].dead&&!balls[i].masked;
 
     for (let j = i + 1; j < ballNum; j++) {
       if (
@@ -276,7 +283,7 @@ const updateBallState = (
       ) {
         continue;
       }
-      if (balls[j].dead) continue;
+      if (balls[j].dead||balls[j].masked) continue;
       const conditions_j = balls[j].contacted && !balls[j].healed;
 
       if (conditions_i) {
