@@ -5,6 +5,7 @@ import { createBarInit } from "./createBar";
 import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
+import { medicine } from "./medicine";
 import { lockdown } from "./lockdown";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
@@ -91,6 +92,21 @@ export const policies: Policy[] = [
     image: vaccineImage,
   },
   {
+    key: "m",
+    label: "medicine",
+    func: (state, params, cvsPos, mousePos, sw) => {
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
+      if (!droppedPos) return {};
+      const { player } = state;
+      player.points -= params.POINTS_FOR_MEDICINE;
+      const virus = medicine(state, params);
+      return { player: player, virus: virus };
+    },
+    point: "POINTS_FOR_MEDICINE",
+    isActive: true,
+    image: medicineImage,
+  },
+  {
     key: "c",
     label: "cure faster",
     func: (state, params, cvsPos, mousePos, sw) => {
@@ -102,7 +118,7 @@ export const policies: Policy[] = [
       return { player: player, virus: virus };
     },
     point: "POINTS_FOR_CURE_FASTER",
-    isActive: true,
+    isActive: false,
     image: medicineImage,
   },
   {
