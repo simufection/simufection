@@ -245,6 +245,8 @@ const updateBallState = (
           balls[i].contacted = false;
           balls[i].forecolor = params.COLOR_RECOVERED;
           balls[i].turnHealed = turn;
+          balls[i].stop=false
+          balls[i].turnReMove=0
         }
       }
     }
