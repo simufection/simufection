@@ -7,12 +7,15 @@ export const pcr = (state: GameState, params: ParamsModel) => {
   for (let i = 0; i < balls.length; i++) {
     if (balls[i].dead) continue;
     // 前回の検査で偽陽性だった場合は解除
-    if (balls[i].stop && !balls[i].contacted) {
+    // if (balls[i].stop && !balls[i].contacted) {
+    const condition_i = balls[i].contacted && !balls[i].healed
+    if (!condition_i&&balls[i].stop) {
       balls[i].stop = false;
     }
     if (!balls[i].stop&&Math.random() < params.CHECK_INFECTED/100) {
       // 検査実施
-      if ((balls[i].contacted || balls[i].reinfect) && !balls[i].healed)
+    //   if ((balls[i].contacted || balls[i].reinfect) && !balls[i].healed)
+      if ((condition_i || balls[i].reinfect) && !balls[i].healed)
        {
         if (Math.random() < params.POSITIVE_RATE/100)
          {
