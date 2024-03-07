@@ -94,6 +94,7 @@ export const policies: Policy[] = [
     image: vaccineImage,
   },
   {
+    key: "e",
     label: "medicine",
     func: (state, params, cvsPos, mousePos, sw) => {
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
@@ -108,8 +109,9 @@ export const policies: Policy[] = [
     image: medicineImage,
   },
   {
+    key: "m",
     label: "mask",
-    func: (state, params, cvsPos, mousePos,sw) => {
+    func: (state, params, cvsPos, mousePos, sw) => {
       const { player } = state;
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
       if (!droppedPos) return {};
