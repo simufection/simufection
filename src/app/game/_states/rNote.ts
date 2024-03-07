@@ -10,7 +10,7 @@ export type RNote = {
 
 const updateRNoteValues = (
   rNote: RNote,
-  results: FixedLengthArray<number, 5>[]
+  results: FixedLengthArray<number, 6>[]
 ) => {
   let resultsLength = results.length;
   if (resultsLength > rNote.resultsWIDTH) {
@@ -35,7 +35,7 @@ const updateRNoteValues = (
 
 export const updateRNote = (
   currentRNote: RNote,
-  results: FixedLengthArray<number, 5>[]
+  results: FixedLengthArray<number, 6>[]
 ): RNote => {
   const rNote = updateRNoteValues(currentRNote, results);
 
