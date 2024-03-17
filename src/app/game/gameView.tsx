@@ -48,7 +48,6 @@ const GameView = () => {
   const [[sw, sh], setScreenSize] = useState([0, 0]);
   const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null);
 
-  const [rankingData, setRankingData] = useState<RankingData | null>(null);
   const [showRanking, setShowRanking] = useState(false);
 
   const {
@@ -59,6 +58,8 @@ const GameView = () => {
     gameState,
     updateGameStateFromGameView,
     setScore,
+    rankingData,
+    setRankingData,
   } = useContext(GameStateContext)!;
 
   const [params, setParams] = useState<ParamsModel | null>(null);
