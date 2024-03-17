@@ -25,11 +25,17 @@ export const calcScore = (state: GameState, params: ParamsModel) => {
 
 export const sendScore = async (
   score: number,
-  urName: string
+  urName: string,
+  feedback: string,
+  map: string | null,
+  turns: number | null
 ): Promise<boolean> => {
   const body = JSON.stringify({
     urName: urName,
     score: score,
+    feedback: feedback,
+    map: map,
+    turns: turns,
   });
 
   try {

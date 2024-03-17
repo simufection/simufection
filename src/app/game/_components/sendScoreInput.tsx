@@ -8,7 +8,8 @@ import { sendScore } from "../_functions/_game/score";
 
 const SendScoreInput = () => {
   const [urName, setUrName] = useState("");
-  const { score, sendScoreState, setSendScoreState } =
+  const [feedback, setFeedback] = useState("");
+  const { gameState, mapName, score, sendScoreState, setSendScoreState } =
     useContext(GameStateContext)!;
 
   return (
@@ -20,6 +21,13 @@ const SendScoreInput = () => {
         value={urName}
         onChange={(e) => setUrName(e.target.value)}
       />
+      <textarea
+        className="p-game__feedback-input"
+        placeholder="感想を入力"
+        disabled={sendScoreState != SendScoreState.before}
+        value={feedback}
+        onChange={(e) => setFeedback(e.target.value)}
+      />
       <Button
         className="p-game__result-submit"
         label={`${
@@ -30,7 +38,13 @@ const SendScoreInput = () => {
           if (urName == "" && !alert("ユーザーネームを入力してください")!)
             return;
           setSendScoreState(SendScoreState.sending);
-          const res = await sendScore(score || 0, urName);
+          const res = await sendScore(
+            score || 0,
+            urName,
+            feedback,
+            mapName,
+            gameState?.sceneState.turns || null
+          );
           if (res) {
             alert("送信しました");
             setSendScoreState(SendScoreState.done);
