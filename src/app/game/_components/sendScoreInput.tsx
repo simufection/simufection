@@ -9,13 +9,14 @@ import { Axios } from "@/services/axios";
 
 const SendScoreInput = () => {
   const [urName, setUrName] = useState("");
-
+  const [feedback, setFeedback] = useState("");
   const {
     score,
     sendScoreState,
     setSendScoreState,
     setRankingData,
-    rankingData,
+    gameState,
+    mapName,
   } = useContext(GameStateContext)!;
 
   return (
