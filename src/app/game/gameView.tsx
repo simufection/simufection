@@ -41,11 +41,15 @@ import { getMousePosition } from "@/app/game/_functions/getMousePosition";
 import { Pref } from "./_states/pref";
 import SendScoreInput from "./_components/sendScoreInput";
 import SelectMap from "./_components/selectMap";
+import RankingModal from "./_components/rankingModal";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
   const [[sw, sh], setScreenSize] = useState([0, 0]);
   const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null);
+
+  const [rankingData, setRankingData] = useState<RankingData | null>(null);
+  const [showRanking, setShowRanking] = useState(true);
 
   const {
     offCvs,
@@ -69,6 +73,10 @@ const GameView = () => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
     const canvasctx = canvas.getContext("2d");
     setContext(canvasctx);
+
+    Axios.post("/api/getRanking").then((res) => {
+      setRankingData({ all: res.data.all, today: res.data.today });
+    });
 
     Axios.get(
       `https://sheets.googleapis.com/v4/spreadsheets/${process.env.NEXT_PUBLIC_GOOGLE_SHEETS_DOC_ID}/values/${process.env.NEXT_PUBLIC_SHEET_NAME}?key=${process.env.NEXT_PUBLIC_GOOGLE_SHEETS_API_KEY}`
@@ -249,6 +257,12 @@ const GameView = () => {
       ) : null}
       {onReady && gameState.playingState == PlayingState.selecting ? (
         <SelectMap params={params} ctx={ctx} />
+      ) : null}
+      {showRanking ? (
+        <RankingModal
+          closeModal={() => setShowRanking(false)}
+          rankingData={rankingData}
+        />
       ) : null}
     </div>
   );
