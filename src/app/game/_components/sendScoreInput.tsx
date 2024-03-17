@@ -5,11 +5,17 @@ import { GameStateContext } from "../contextProvoder";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import { Button } from "@/components/button";
 import { sendScore } from "../_functions/_game/score";
+import { Axios } from "@/services/axios";
 
 const SendScoreInput = () => {
   const [urName, setUrName] = useState("");
-  const { score, sendScoreState, setSendScoreState } =
-    useContext(GameStateContext)!;
+  const {
+    score,
+    sendScoreState,
+    setSendScoreState,
+    setRankingData,
+    rankingData,
+  } = useContext(GameStateContext)!;
 
   return (
     <>
@@ -34,6 +40,9 @@ const SendScoreInput = () => {
           if (res) {
             alert("送信しました");
             setSendScoreState(SendScoreState.done);
+            Axios.post("/api/getRanking").then((res) => {
+              setRankingData({ all: res.data.all, today: res.data.today });
+            });
           } else {
             alert("失敗しました");
             setSendScoreState(SendScoreState.before);

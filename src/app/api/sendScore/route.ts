@@ -1,10 +1,5 @@
 import { sql } from "@vercel/postgres";
 
-export async function GET() {
-  const { rows } = await sql`select * from color;`;
-  return Response.json({ data: rows });
-}
-
 export async function POST(req: Request) {
   const data = await req.json();
 

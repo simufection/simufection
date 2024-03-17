@@ -6,14 +6,16 @@ import pauseImage from "@/assets/img/pause-icon.png";
 import startImage from "@/assets/img/start-icon.png";
 import quitImage from "@/assets/img/quit-icon.png";
 import homeImage from "@/assets/img/home-icon.png";
+import rankingImage from "@/assets/img/ranking-icon.png";
 import { ParamsModel } from "../_params/params";
 import { stateIsPlaying } from "../_params/consts";
-import { useContext } from "react";
+import { Dispatch, useContext } from "react";
 import { GameStateContext } from "../contextProvoder";
 
 type Props = {
   params: ParamsModel | null;
   ctx: CanvasRenderingContext2D | null;
+  showRanking: Dispatch<boolean>;
 };
 
 export const GameButtons = (props: Props) => {
@@ -72,6 +74,14 @@ export const GameButtons = (props: Props) => {
           onClick={() =>
             updateGameStateFromGameView({ playingState: PlayingState.waiting })
           }
+        />
+      ) : null}
+      {gameState.playingState == PlayingState.waiting ||
+      gameState.playingState == PlayingState.finishing ? (
+        <Button
+          className="p-game__ranking-button u-tr"
+          image={rankingImage}
+          onClick={() => props.showRanking(true)}
         />
       ) : null}
     </>
