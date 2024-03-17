@@ -49,7 +49,7 @@ const GameView = () => {
   const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null);
 
   const [rankingData, setRankingData] = useState<RankingData | null>(null);
-  const [showRanking, setShowRanking] = useState(true);
+  const [showRanking, setShowRanking] = useState(false);
 
   const {
     offCvs,
@@ -249,7 +249,7 @@ const GameView = () => {
           priority
         />
       ) : null}
-      <GameButtons params={params} ctx={ctx} />
+      <GameButtons params={params} ctx={ctx} showRanking={setShowRanking} />
       {onReady && gameState.playingState == PlayingState.finishing ? (
         gameState.sceneState.contactedCount === 1 ? null : (
           <SendScoreInput />

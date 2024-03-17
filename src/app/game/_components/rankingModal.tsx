@@ -10,12 +10,14 @@ interface Props {
 const RankingModal = (props: Props) => {
   return (
     <div className="p-ranking">
+      <div className="p-ranking__header">
+        <CloseButton
+          onClick={() => props.closeModal()}
+          addClass="p-ranking__close-button"
+        />
+      </div>
       {props.rankingData ? (
         <div className="p-ranking__container">
-          <CloseButton
-            onClick={() => props.closeModal()}
-            addClass="p-ranking__close-button"
-          />
           <div className="p-ranking__all">
             <li className="p-ranking__row">スコアランキング</li>
             {props.rankingData.all.map((item, index) => (
