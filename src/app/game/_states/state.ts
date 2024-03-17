@@ -89,10 +89,14 @@ export const initializeGameState = (
     sceneState: {
       turns: 0,
       results: [],
-      preResult: [0, 1, 1, 0],
+      preResult: [0, 1, 1, 0, 0],
       contactedCount: 0,
       infectedCount: 0,
       healedCount: 0,
+      deadCount: 0,
+      sum_infected: 0,
+      sum_dead: 0,
+      sum_healed: 0,
     },
     balls: createBalls(params, map),
     bars: [

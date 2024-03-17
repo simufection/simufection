@@ -31,6 +31,8 @@ export const Params: ParamsModel = {
   MAX_POINTS: 10,
   VIRUS_INITIAL_PROB: 0.1,
   HEAL_PROB: 0.1,
+  MEDICINE_EFFECT: 1.1,
+  POINTS_FOR_MEDICINE: 5,
   REINFECT_PROB: 0.1,
   BORDER_RATE: 0.5,
   DEAD_PROB: 0.1,
