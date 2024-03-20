@@ -27,11 +27,13 @@ export type GameControl = {
   startSimulate: Function;
   quitSimulate: Function;
   updateGameStateFromGameView: Function;
+  rankingData: RankingData | null;
   setGameState: Dispatch<GameState>;
   setScore: Dispatch<number | null>;
   setSendScoreState: Dispatch<SendScoreState>;
   setMap: Dispatch<string>;
   setOffCvs: Dispatch<HTMLCanvasElement | null>;
+  setRankingData: Dispatch<RankingData | null>;
 };
 
 function useGameControl(): GameControl {
@@ -39,6 +41,7 @@ function useGameControl(): GameControl {
   const [score, setScore] = useState<number | null>(null);
   const [mapName, setMap] = useState(Object.keys(maps)[0]);
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
+  const [rankingData, setRankingData] = useState<RankingData | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
@@ -88,6 +91,7 @@ function useGameControl(): GameControl {
     score,
     gameState,
     sendScoreState,
+    rankingData,
     startSimulate,
     quitSimulate,
     updateGameStateFromGameView,
@@ -96,6 +100,7 @@ function useGameControl(): GameControl {
     setSendScoreState,
     setMap,
     setOffCvs,
+    setRankingData,
   };
 }
 

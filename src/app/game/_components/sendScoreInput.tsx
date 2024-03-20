@@ -5,11 +5,19 @@ import { GameStateContext } from "../contextProvoder";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import { Button } from "@/components/button";
 import { sendScore } from "../_functions/_game/score";
+import { Axios } from "@/services/axios";
 
 const SendScoreInput = () => {
   const [urName, setUrName] = useState("");
-  const { score, sendScoreState, setSendScoreState } =
-    useContext(GameStateContext)!;
+  const [feedback, setFeedback] = useState("");
+  const {
+    score,
+    sendScoreState,
+    setSendScoreState,
+    setRankingData,
+    gameState,
+    mapName,
+  } = useContext(GameStateContext)!;
 
   return (
     <>
@@ -19,6 +27,13 @@ const SendScoreInput = () => {
         disabled={sendScoreState != SendScoreState.before}
         value={urName}
         onChange={(e) => setUrName(e.target.value)}
+      />
+      <textarea
+        className="p-game__feedback-input"
+        placeholder="感想を入力"
+        disabled={sendScoreState != SendScoreState.before}
+        value={feedback}
+        onChange={(e) => setFeedback(e.target.value)}
       />
       <Button
         className="p-game__result-submit"
@@ -30,10 +45,19 @@ const SendScoreInput = () => {
           if (urName == "" && !alert("ユーザーネームを入力してください")!)
             return;
           setSendScoreState(SendScoreState.sending);
-          const res = await sendScore(score || 0, urName);
+          const res = await sendScore(
+            score || 0,
+            urName,
+            feedback,
+            mapName,
+            gameState?.sceneState.turns || null
+          );
           if (res) {
             alert("送信しました");
             setSendScoreState(SendScoreState.done);
+            Axios.post("/api/getRanking").then((res) => {
+              setRankingData({ all: res.data.all, today: res.data.today });
+            });
           } else {
             alert("失敗しました");
             setSendScoreState(SendScoreState.before);
