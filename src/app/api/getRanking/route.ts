@@ -5,9 +5,9 @@ export async function POST(req: Request) {
   try {
     const today = new Date();
     const [year, month, date] = [
-      today.getFullYear(),
-      today.getMonth() + 1,
-      today.getDate(),
+      today.getFullYear().toString().padStart(4, "0"),
+      (today.getMonth() + 1).toString().padStart(2, "0"),
+      today.getDate().toString().padStart(2, "0"),
     ];
     const today_str = `${year}/${month}/${date}`;
     const res_all =

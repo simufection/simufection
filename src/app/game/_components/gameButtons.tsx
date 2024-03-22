@@ -79,7 +79,9 @@ export const GameButtons = (props: Props) => {
       {gameState.playingState == PlayingState.waiting ||
       gameState.playingState == PlayingState.finishing ? (
         <Button
-          className="p-game__ranking-button u-tr"
+          className={`p-game__ranking-button${
+            gameState.playingState == PlayingState.finishing ? "_result" : ""
+          } u-tr`}
           image={rankingImage}
           onClick={() => props.showRanking(true)}
         />
