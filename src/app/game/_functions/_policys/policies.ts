@@ -5,13 +5,15 @@ import { createBarInit } from "./createBar";
 import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
+import { pcr } from "./pcr";
+import{mask} from "./mask";
 import { medicine } from "./medicine";
-import { mask } from "./mask";
 import { lockdown } from "./lockdown";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import maskImage from "@/assets/img/mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
+import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "../../_maps/kanto/kantoMapData";
 
@@ -161,5 +163,20 @@ export const policies: Policy[] = [
     point: "POINTS_FOR_LOCKDOWN",
     isActive: true,
     image: lockDownImage,
+  },
+  {
+    key: "p",
+    label: "pcr",
+    func: (state, params, cvsPos, mousePos,sw) => {
+      const { player } = state;
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params,sw);
+      if (!droppedPos) return {};
+      player.points -= params.POINTS_FOR_PCR;
+      const balls = pcr(state, params);
+      return { player: player,balls:balls};
+    },
+    point: "POINTS_FOR_PCR",
+    isActive: true,
+    image: pcrImage,
   },
 ];
