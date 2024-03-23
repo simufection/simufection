@@ -11,7 +11,6 @@ export const sendSlackMessage = async (data: SendScoreData) => {
 
   const url = process.env.SLACK_WEBHOOK_URL as string;
   const webhook = new IncomingWebhook(url);
-  console.log(data);
   const { urName, score, map, feedback, turns } = data;
   const payload = {
     blocks: [
@@ -68,6 +67,5 @@ export const sendSlackMessage = async (data: SendScoreData) => {
       },
     ],
   };
-  console.log(payload);
   await webhook.send(payload);
 };
