@@ -1,8 +1,15 @@
-import { useContext } from "react";
 import { ParamsModel } from "../../_params/params";
 import { GameState, PlayingState } from "../../_states/state";
-import { GameStateContext } from "../../contextProvoder";
 import { Axios } from "@/services/axios";
+import { sendSlackMessage } from "@/services/sendSlackMessages";
+
+export interface SendScoreData {
+  urName: string;
+  score: number;
+  map: string | null;
+  feedback: string | null;
+  turns: number | null;
+}
 
 export const calcScore = (state: GameState, params: ParamsModel) => {
   const contacted = state.sceneState.contactedCount;
@@ -30,16 +37,22 @@ export const sendScore = async (
   map: string | null,
   turns: number | null
 ): Promise<boolean> => {
-  const body = JSON.stringify({
+  const data: SendScoreData = {
     urName: urName,
     score: score,
     feedback: feedback,
     map: map,
     turns: turns,
-  });
+  };
+  const body = JSON.stringify(data);
 
   try {
     const res = await Axios.post("/api/sendScore", body);
+    if (res.data.success) {
+      if (feedback != "") {
+        sendSlackMessage(data);
+      }
+    }
     return res.data.success;
   } catch (error) {
     return false;
