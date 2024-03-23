@@ -74,7 +74,7 @@ export const drawResult = (
   params: ParamsModel,
   score: number | null
 ) => {
-  const { turns, contactedCount } = state.sceneState;
+  const { turns, deadCount } = state.sceneState;
   drawWhite(ctx, params);
 
   ctx.save();
@@ -88,7 +88,7 @@ export const drawResult = (
   ctx.fillText(`turn : ${turns}`, posX, posY);
   posY += 100;
 
-  ctx.fillText(`survivor : ${params.MAX_BALLS - contactedCount}`, posX, posY);
+  ctx.fillText(`survivor : ${params.MAX_BALLS - deadCount}`, posX, posY);
   posY += 100;
 
   ctx.fillText(`score : ${score}`, posX, posY);
