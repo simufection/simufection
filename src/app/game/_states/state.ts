@@ -85,6 +85,7 @@ export const initializeGameState = (
     playingState: PlayingState.loading,
     player: {
       points: 0,
+      points_turn: 0,
     },
     sceneState: {
       turns: 0,
@@ -163,6 +164,7 @@ export const updateGameState = (
     );
     const rNote = updateRNote(state.rNote, state.sceneState.results);
     const player = updatePlayer(
+      state.sceneState,
       state.player,
       1,
       state.sceneState.turns,
