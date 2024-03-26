@@ -6,8 +6,10 @@ export async function POST(req: Request) {
 
   try {
     const version = appVersion;
+    const ver =
+      data.version ?? `${version.split(".")[0]}.${version.split(".")[1]}`;
     const res =
-      await sql`INSERT INTO score (ur_name, score, map, turns, feedback, version) VALUES (${data.urName}, ${data.score}, ${data.map}, ${data.turns}, ${data.feedback}, ${version}) returning id;`;
+      await sql`INSERT INTO score (ur_name, score, map, turns, feedback, version) VALUES (${data.urName}, ${data.score}, ${data.map}, ${data.turns}, ${data.feedback}, ${ver}) returning id;`;
 
     if (res) {
       return new Response(JSON.stringify({ success: true }));
