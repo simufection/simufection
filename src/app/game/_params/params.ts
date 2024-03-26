@@ -48,4 +48,5 @@ export const Params: ParamsModel = {
   FALSE_POSITIVE_RATE: 10,
   TURNS_REQUIRED_FOR_RE_MOVE: 150,
   CHECK_INFECTED: 50,
+  MASK_PROB: 0.8,
 };

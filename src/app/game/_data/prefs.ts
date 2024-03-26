@@ -4,7 +4,7 @@ export type Pref = {
   area: string;
   population: number;
 };
-export const prefs = [
+export const allPrefs = [
   { id: 1, name: "北海道", population: 5183, area: "北海道" },
   { id: 2, name: "青森県", population: 1221, area: "東北" },
   { id: 3, name: "岩手県", population: 1196, area: "東北" },

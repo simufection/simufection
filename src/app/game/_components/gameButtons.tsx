@@ -21,7 +21,7 @@ type Props = {
 
 export const GameButtons = (props: Props) => {
   const { params, ctx } = props;
-  const { gameState, quitSimulate, updateGameStateFromGameView } =
+  const { gameState, quitSimulate, updateGameStateForce } =
     useContext(GameStateContext)!;
 
   const onReady = !!(params && ctx && gameState);
@@ -37,7 +37,7 @@ export const GameButtons = (props: Props) => {
             className="p-game__start-button u-tr"
             image={startImage}
             onClick={() =>
-              updateGameStateFromGameView({
+              updateGameStateForce({
                 playingState: PlayingState.selecting,
               })
             }
@@ -62,10 +62,10 @@ export const GameButtons = (props: Props) => {
           }
           onClick={() => {
             gameState.playingState == PlayingState.pausing
-              ? updateGameStateFromGameView({
+              ? updateGameStateForce({
                   playingState: PlayingState.playing,
                 })
-              : updateGameStateFromGameView({
+              : updateGameStateForce({
                   playingState: PlayingState.pausing,
                 });
           }}
@@ -76,7 +76,7 @@ export const GameButtons = (props: Props) => {
           className="p-game__restart-button u-tr"
           image={homeImage}
           onClick={() =>
-            updateGameStateFromGameView({ playingState: PlayingState.waiting })
+            updateGameStateForce({ playingState: PlayingState.waiting })
           }
         />
       ) : null}

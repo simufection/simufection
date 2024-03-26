@@ -203,7 +203,6 @@ const drawPoints = (
   params: ParamsModel
 ) => {
   const { points } = gameState.player;
-  const { turns } = gameState.sceneState;
 
   const m = 5;
   const w = (params.MAX_WIDTH - m) / 10 - m;
@@ -216,7 +215,7 @@ const drawPoints = (
 
   ctx.fillStyle = COLORS.GREEN;
 
-  for (let i = 0; i < points; i++) {
+  for (let i = 0; i < Math.floor(points); i++) {
     ctx.fillRect(posX, params.MAX_HEIGHT + posY, w, h);
 
     posX += w + m;
