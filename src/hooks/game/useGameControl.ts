@@ -26,7 +26,7 @@ export type GameControl = {
   sendScoreState: SendScoreState;
   startSimulate: Function;
   quitSimulate: Function;
-  updateGameStateFromGameView: Function;
+  updateGameStateForce: Function;
   rankingData: RankingData | null;
   setGameState: Dispatch<GameState>;
   setScore: Dispatch<number | null>;
@@ -78,7 +78,7 @@ const useGameControl = (): GameControl => {
     [gameState]
   );
 
-  const updateGameStateFromGameView = useCallback(
+  const updateGameStateForce = useCallback(
     (newState: Object, state: GameState | undefined = gameState) => {
       setGameState({ ...state, ...newState } as GameState);
     },
@@ -94,7 +94,7 @@ const useGameControl = (): GameControl => {
     rankingData,
     startSimulate,
     quitSimulate,
-    updateGameStateFromGameView,
+    updateGameStateForce,
     setGameState,
     setScore,
     setSendScoreState,

@@ -1,9 +1,9 @@
-import { prefs } from "../../_data/prefs";
+import { allPrefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { tohokuMapData } from "./tohokuMapData";
 import tohokuMapPreview from "../../../../assets/img/tohoku_preview.png";
 
-const tohokuPrefs = prefs.filter((p) => p.area == "東北");
+const tohokuPrefs = allPrefs.filter((p) => p.area == "東北");
 const tohokuPrefIds = tohokuPrefs.map((p) => p.id);
 const totalPop = tohokuPrefs.reduce(
   (sum, { population }) => sum + population,

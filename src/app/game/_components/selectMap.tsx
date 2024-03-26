@@ -15,7 +15,7 @@ type Props = {
 const SelectMap = (props: Props) => {
   const [mapName, selectMapName] = useState("kanto");
   const { params, ctx } = props;
-  const { gameState, startSimulate, updateGameStateFromGameView } =
+  const { gameState, startSimulate, updateGameStateForce } =
     useContext(GameStateContext)!;
 
   const onReady = !!(params && ctx && gameState);
@@ -49,7 +49,7 @@ const SelectMap = (props: Props) => {
             className="p-game__select-map-button"
             label="戻る"
             onClick={() => {
-              updateGameStateFromGameView({
+              updateGameStateForce({
                 playingState: PlayingState.waiting,
               });
             }}
