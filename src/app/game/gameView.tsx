@@ -42,6 +42,7 @@ import { Pref } from "./_states/pref";
 import SendScoreInput from "./_components/sendScoreInput";
 import SelectMap from "./_components/selectMap";
 import RankingModal from "./_components/rankingModal";
+import { appVersion } from "@/consts/appVersion";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -70,13 +71,19 @@ const GameView = () => {
 
   const [updateDraw, updateDrawState] = useState(false);
 
+  const version = appVersion;
+  const ver = `${version.split(".")[0]}.${version.split(".")[1]}`;
+
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
     const canvasctx = canvas.getContext("2d");
     setContext(canvasctx);
 
-    Axios.post("/api/getRanking").then((res) => {
-      setRankingData({ all: res.data.all, today: res.data.today });
+    Axios.post("/api/getRanking", {}).then((res) => {
+      setRankingData({
+        ...rankingData,
+        ...{ [ver]: { all: res.data.all, today: res.data.today } },
+      });
     });
 
     Axios.get(

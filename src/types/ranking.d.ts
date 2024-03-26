@@ -3,6 +3,8 @@ type Scoredata = {
   score: number;
 };
 type RankingData = {
-  all: Scoredata[];
-  today: ScoreData[];
+  [version: string]: {
+    all: Scoredata[];
+    today: ScoreData[];
+  };
 };
