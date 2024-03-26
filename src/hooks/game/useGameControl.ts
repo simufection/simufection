@@ -36,7 +36,7 @@ export type GameControl = {
   setRankingData: Dispatch<RankingData | null>;
 };
 
-function useGameControl(): GameControl {
+const useGameControl = (): GameControl => {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
   const [mapName, setMap] = useState(Object.keys(maps)[0]);
@@ -102,6 +102,6 @@ function useGameControl(): GameControl {
     setOffCvs,
     setRankingData,
   };
-}
+};
 
 export default useGameControl;

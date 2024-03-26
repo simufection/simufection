@@ -1,7 +1,9 @@
+import { appVersion } from "@/consts/appVersion";
 import { convertToCamelCase } from "@/services/convert";
 import { sql } from "@vercel/postgres";
 
 export async function POST(req: Request) {
+  const data = await req.json();
   try {
     const today = new Date();
     const [year, month, date] = [
@@ -10,10 +12,13 @@ export async function POST(req: Request) {
       today.getDate().toString().padStart(2, "0"),
     ];
     const today_str = `${year}/${month}/${date}`;
+    const version = appVersion;
+    const ver =
+      data.version ?? `${version.split(".")[0]}.${version.split(".")[1]}`;
     const res_all =
-      await sql`SELECT ur_name, score FROM score ORDER BY score DESC limit 10;`;
+      await sql`SELECT ur_name, score FROM score where version = ${ver} ORDER BY score DESC limit 10;`;
     const res_today =
-      await sql`SELECT ur_name, score FROM score WHERE to_char(date, 'yyyy/mm/dd') = ${today_str} ORDER BY score DESC limit 10;`;
+      await sql`SELECT ur_name, score FROM score WHERE to_char(date, 'yyyy/mm/dd') = ${today_str} and version = ${ver} ORDER BY score DESC limit 10;`;
 
     return new Response(
       JSON.stringify({

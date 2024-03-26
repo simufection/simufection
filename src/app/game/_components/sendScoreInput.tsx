@@ -6,6 +6,7 @@ import { SendScoreState } from "@/hooks/game/useGameControl";
 import { Button } from "@/components/button";
 import { sendScore } from "../_functions/_game/score";
 import { Axios } from "@/services/axios";
+import { appVersion } from "@/consts/appVersion";
 
 const SendScoreInput = () => {
   const [urName, setUrName] = useState("");
@@ -14,10 +15,13 @@ const SendScoreInput = () => {
     score,
     sendScoreState,
     setSendScoreState,
+    rankingData,
     setRankingData,
     gameState,
     mapName,
   } = useContext(GameStateContext)!;
+  const version = appVersion;
+  const ver = `${version.split(".")[0]}.${version.split(".")[1]}`;
 
   return (
     <>
@@ -55,8 +59,11 @@ const SendScoreInput = () => {
           if (res) {
             alert("送信しました");
             setSendScoreState(SendScoreState.done);
-            Axios.post("/api/getRanking").then((res) => {
-              setRankingData({ all: res.data.all, today: res.data.today });
+            Axios.post("/api/getRanking", {}).then((res) => {
+              setRankingData({
+                ...rankingData,
+                ...{ [ver]: { all: res.data.all, today: res.data.today } },
+              });
             });
           } else {
             alert("失敗しました");
