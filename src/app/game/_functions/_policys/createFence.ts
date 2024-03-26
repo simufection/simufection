@@ -39,7 +39,7 @@ export const createFenceFunc = (
         bar.color = COLORS.BLACK;
         bars.push(bar);
       });
-      const newPlayer = updatePoint(player, -params.POINTS_FOR_BAR, params);
+      const newPlayer = updatePoint(state.sceneState, player, params);
       return { bars: bars, res: true, player: newPlayer, fences: fences };
     }
   }
