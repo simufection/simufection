@@ -4,7 +4,7 @@ import { CloseButton } from "@/components/closeButton";
 import { Axios } from "@/services/axios";
 import { useContext, useEffect, useState } from "react";
 import { GameStateContext } from "../contextProvoder";
-import { appVersion } from "@/consts/appVersion";
+import { appVersion, appVersions } from "@/consts/appVersion";
 
 interface Props {
   rankingData: RankingData | null;
@@ -16,17 +16,14 @@ const RankingModal = (props: Props) => {
   const [ver, setVer] = useState(
     `${version.split(".")[0]}.${version.split(".")[1]}`
   );
-  const [versions, setVersions] = useState([ver]);
   const { rankingData, setRankingData } = useContext(GameStateContext)!;
   const [err, setErr] = useState("読み込み中です");
-
-  useEffect(() => {
-    Axios.post("/api/getVersions").then((res) => {
-      if (res.data.success) {
-        setVersions(res.data.versions.reverse());
-      }
-    });
-  }, []);
+  const versions = appVersions
+    .map((version) => {
+      const [major, minor] = version.split(".");
+      return `${major}.${minor}`;
+    })
+    .filter((value, index, self) => self.indexOf(value) === index);
 
   useEffect(() => {
     if (props.rankingData && !Object.keys(props.rankingData).includes(ver)) {
