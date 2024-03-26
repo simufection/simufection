@@ -224,7 +224,12 @@ const drawPoints = (
 
   ctx.fillStyle = COLORS.LIGHT_GREEN;
 
-  //ctx.fillRect(posX, params.MAX_HEIGHT + posY, ((turns % 50) * w) / 50, h);
+  ctx.fillRect(
+    posX,
+    params.MAX_HEIGHT + posY,
+    (points - Math.floor(points)) * w,
+    h
+  );
 
   ctx.closePath();
 };

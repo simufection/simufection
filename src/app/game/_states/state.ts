@@ -85,7 +85,7 @@ export const initializeGameState = (
     playingState: PlayingState.loading,
     player: {
       points: 0,
-      points_turn: 0,
+      pt: params.INITIAL_DELTA_POINT,
     },
     sceneState: {
       turns: 0,
