@@ -1,9 +1,9 @@
-import { prefs } from "../../_data/prefs";
+import { allPrefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { kinkiMapData } from "./kinkiMapData";
 import kinkiMapPreview from "../../../../assets/img/kinki_preview.png";
 
-const kinkiPrefs = prefs.filter((p) => p.area == "近畿");
+const kinkiPrefs = allPrefs.filter((p) => p.area == "近畿");
 const kinkiPrefIds = kinkiPrefs.map((p) => p.id);
 const totalPop = kinkiPrefs.reduce(
   (sum, { population }) => sum + population,

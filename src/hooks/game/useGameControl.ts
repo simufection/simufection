@@ -26,7 +26,7 @@ export type GameControl = {
   sendScoreState: SendScoreState;
   startSimulate: Function;
   quitSimulate: Function;
-  updateGameStateFromGameView: Function;
+  updateGameStateForce: Function;
   rankingData: RankingData | null;
   setGameState: Dispatch<GameState>;
   setScore: Dispatch<number | null>;
@@ -36,7 +36,7 @@ export type GameControl = {
   setRankingData: Dispatch<RankingData | null>;
 };
 
-function useGameControl(): GameControl {
+const useGameControl = (): GameControl => {
   const [gameState, setGameState] = useState<GameState>();
   const [score, setScore] = useState<number | null>(null);
   const [mapName, setMap] = useState(Object.keys(maps)[0]);
@@ -78,7 +78,7 @@ function useGameControl(): GameControl {
     [gameState]
   );
 
-  const updateGameStateFromGameView = useCallback(
+  const updateGameStateForce = useCallback(
     (newState: Object, state: GameState | undefined = gameState) => {
       setGameState({ ...state, ...newState } as GameState);
     },
@@ -94,7 +94,7 @@ function useGameControl(): GameControl {
     rankingData,
     startSimulate,
     quitSimulate,
-    updateGameStateFromGameView,
+    updateGameStateForce,
     setGameState,
     setScore,
     setSendScoreState,
@@ -102,6 +102,6 @@ function useGameControl(): GameControl {
     setOffCvs,
     setRankingData,
   };
-}
+};
 
 export default useGameControl;

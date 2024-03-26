@@ -42,6 +42,7 @@ import { Pref } from "./_states/pref";
 import SendScoreInput from "./_components/sendScoreInput";
 import SelectMap from "./_components/selectMap";
 import RankingModal from "./_components/rankingModal";
+import { appVersion } from "@/consts/appVersion";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -56,7 +57,7 @@ const GameView = () => {
     mapName,
     score,
     gameState,
-    updateGameStateFromGameView,
+    updateGameStateForce,
     setScore,
     rankingData,
     setRankingData,
@@ -70,13 +71,19 @@ const GameView = () => {
 
   const [updateDraw, updateDrawState] = useState(false);
 
+  const version = appVersion;
+  const ver = `${version.split(".")[0]}.${version.split(".")[1]}`;
+
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
     const canvasctx = canvas.getContext("2d");
     setContext(canvasctx);
 
-    Axios.post("/api/getRanking").then((res) => {
-      setRankingData({ all: res.data.all, today: res.data.today });
+    Axios.post("/api/getRanking", {}).then((res) => {
+      setRankingData({
+        ...rankingData,
+        ...{ [ver]: { all: res.data.all, today: res.data.today } },
+      });
     });
 
     Axios.get(
@@ -89,7 +96,7 @@ const GameView = () => {
 
   useEffect(() => {
     if (params) {
-      updateGameStateFromGameView(initializeGameState(params, mapName));
+      updateGameStateForce(initializeGameState(params, mapName));
 
       const canvas = document.getElementById("screen") as HTMLCanvasElement;
       canvas.width = params.MAX_WIDTH;
@@ -101,7 +108,7 @@ const GameView = () => {
         screenWidth = Math.min(params.MAX_WIDTH, w);
         screenHeight = screenWidth * canvasAspect;
       } else {
-        screenHeight = Math.min(params.MAX_HEIGHT + 50, h);
+        screenHeight = Math.min(params.MAX_HEIGHT, h);
         screenWidth = screenHeight / canvasAspect;
       }
 
@@ -112,7 +119,7 @@ const GameView = () => {
   useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
-      updateGameStateFromGameView({ playingState: PlayingState.waiting });
+      updateGameStateForce({ playingState: PlayingState.waiting });
     }
   }, [ctx, params, gameState, onReady]);
 
@@ -139,9 +146,7 @@ const GameView = () => {
         if (gameState.playingState == PlayingState.pausing) {
           drawOverLay(ctx, params);
         } else {
-          updateGameStateFromGameView(
-            updateGameState(gameState, params, pressedKey)
-          );
+          updateGameStateForce(updateGameState(gameState, params, pressedKey));
         }
       } else if (updateDraw) {
         if (
@@ -201,6 +206,11 @@ const GameView = () => {
             サポートされていません
           </canvas>
         </Droppable>
+        <div className="p-game__timeline-container">
+          <div className="p-game__timeline">
+            {onReady ? gameState.timeline : ""}
+          </div>
+        </div>
 
         <div
           className="p-game__policies"
@@ -223,7 +233,7 @@ const GameView = () => {
                     cost={params[policy.point]}
                     func={(mousePos: Position, cvsPos: Position) => {
                       if (params[policy.point] <= gameState.player.points) {
-                        updateGameStateFromGameView(
+                        updateGameStateForce(
                           policy.func(gameState, params, cvsPos, mousePos, sw)
                         );
                       }

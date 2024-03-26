@@ -1,37 +1,35 @@
 import { ParamsModel } from "../_params/params";
+import { SceneState } from "./sceneState";
 
 export type Player = {
   points: number;
+  pt: number;
 };
 
 export const updatePoint = (
+  currentState: SceneState,
   currentPlayer: Player,
-  pt: number,
   params: ParamsModel,
   turns: number = 0
 ) => {
   const player = { ...currentPlayer };
-  if (turns) {
-    if (
-      turns % params.TURNS_REQUIRED_FOR_POINT == 0 &&
-      player.points < params.MAX_POINTS
-    ) {
-      player.points += pt;
-    }
-  } else {
-    player.points += pt;
-  }
+  const damage_count = currentState.infectedCount + currentState.deadCount;
+
+  player.pt =
+    params.INITIAL_DELTA_POINT / (1 - damage_count / params.MAX_BALLS + 1e-8);
+  player.points += player.pt;
 
   return player;
 };
 
 export const updatePlayer = (
+  currentState: SceneState,
   currentPlayer: Player,
   pt: number,
   turn: number,
   params: ParamsModel
 ): Player => {
-  const player = updatePoint(currentPlayer, pt, params, turn);
+  const player = updatePoint(currentState, currentPlayer, params, turn);
 
   return player;
 };

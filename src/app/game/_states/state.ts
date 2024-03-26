@@ -47,6 +47,7 @@ export type GameState = {
   rNote: RNote;
   keys: Keys;
   editing: Objects;
+  timeline: string;
 };
 
 export const initializeGameState = (
@@ -84,7 +85,8 @@ export const initializeGameState = (
     map: map,
     playingState: PlayingState.loading,
     player: {
-      points: 0,
+      points: 3,
+      pt: params.INITIAL_DELTA_POINT,
     },
     sceneState: {
       turns: 0,
@@ -109,7 +111,7 @@ export const initializeGameState = (
     prefs: initializePrefs(params, map.prefIds),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
-      turnEvent: { 250: 0, 350: 1, 450: 0 },
+      turnEvent: { 500: 0, 1000: 1, 1500: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
       turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
@@ -133,6 +135,7 @@ export const initializeGameState = (
       downAll: new Set<string>(),
     },
     editing: Objects.none,
+    timeline: "0: ゲーム開始！",
   };
 };
 
@@ -163,6 +166,7 @@ export const updateGameState = (
     );
     const rNote = updateRNote(state.rNote, state.sceneState.results);
     const player = updatePlayer(
+      state.sceneState,
       state.player,
       1,
       state.sceneState.turns,
@@ -179,7 +183,12 @@ export const updateGameState = (
       state.prefs
     );
     const bars = updateBars(state.bars);
-    const virus = updateVirus(state.virus, sceneState.turns, params);
+    const { virus, timeline } = updateVirus(
+      state.virus,
+      sceneState.turns,
+      params,
+      state.timeline
+    );
 
     const keys = updateKeys(state.keys, inputKeys);
 
@@ -195,6 +204,7 @@ export const updateGameState = (
         virus: virus,
         rNote: rNote,
         keys: keys,
+        timeline: timeline,
       },
     };
   } else if (currentState.playingState == PlayingState.editing) {
