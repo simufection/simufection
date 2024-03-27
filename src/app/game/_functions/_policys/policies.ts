@@ -142,7 +142,9 @@ export const policies: Policy[] = [
       events.push(
         `${state.sceneState.turns}: ロックダウン！${
           allPrefs.filter((row) => row.id == prefId)[0].name
-        }がロックダウンされました！`
+        }がロックダウンされ、移動できる確率が${(
+          1 - prefs[prefId].lockdownCompliance
+        ).toFixed(2)}になりました！`
       );
       return { player: player, prefs: newPrefs, events: events };
     },
