@@ -1,7 +1,6 @@
 import { StaticImageData } from "next/image";
 import { ParamsModel } from "../../_params/params";
 import { GameState, Objects, PlayingState } from "../../_states/state";
-import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
 import { pcr } from "./pcr";
 import { mask } from "./mask";
@@ -13,7 +12,6 @@ import maskImage from "@/assets/img/mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
 import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "../../_states/maps";
-import { kantoMapData } from "../../_maps/kanto/kantoMapData";
 import { allPrefs } from "../../_data/prefs";
 
 export type Policy = {
@@ -96,7 +94,7 @@ export const policies: Policy[] = [
         state.sceneState.turns,
         "policy_e",
         {
-          turnsRequiredForHeal: virus.turnsRequiredForHeal,
+          healProb: virus.healProb,
         },
       ]);
       return { player: player, virus: virus, events: events };

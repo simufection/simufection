@@ -236,11 +236,11 @@ const updateBallState = (
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal) %
-          virus.TURNS_JUDGE_HEAL ==
+          virus.turnsJudgeHeal ==
         0
       ) {
         const rand = Math.random();
-        if (rand < virus.HEAL_PROB) {
+        if (rand < virus.healProb) {
           balls[i].infectedState = InfectedState.notInfected;
           balls[i].forecolor = params.COLOR_RECOVERED;
           balls[i].turnHealed = turn;
@@ -263,11 +263,11 @@ const updateBallState = (
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForDead) %
-          virus.TURNS_JUDGE_DEAD ==
+          virus.turnsJudgeDead ==
         0
       ) {
         const rand = Math.random();
-        if (rand < virus.DEAD_PROB) {
+        if (rand < virus.deadProb) {
           balls[i].infectedState = InfectedState.dead;
           balls[i].stop = true;
           balls[i].forecolor = params.COLOR_DEAD;

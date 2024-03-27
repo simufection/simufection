@@ -6,10 +6,10 @@ export type Virus = {
   turnsRequiredForHeal: number;
   turnsRequiredForDead: number;
   turnsRequiredForReinfect: number;
-  TURNS_JUDGE_HEAL: number;
-  TURNS_JUDGE_DEAD: number;
-  HEAL_PROB: number;
-  DEAD_PROB: number;
+  turnsJudgeHeal: number;
+  turnsJudgeDead: number;
+  healProb: number;
+  deadProb: number;
 };
 
 const virusEvent = (
