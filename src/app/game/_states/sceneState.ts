@@ -1,5 +1,5 @@
 import { ParamsModel } from "../_params/params";
-import { Ball } from "./balls";
+import { Ball, InfectedState } from "./balls";
 import { PlayingState } from "./state";
 
 export type SceneState = {
@@ -47,13 +47,13 @@ const updateResults = (state: SceneState, params: ParamsModel) => {
 
 const updateTurns = (
   turns: number,
-  counts: { contactedCount: number; infectedCount: number },
+  counts: { deadCount: number; infectedCount: number },
   params: ParamsModel,
   playingState: PlayingState
 ) => {
   if (playingState == PlayingState.playing) {
-    let { contactedCount, infectedCount } = counts;
-    if (contactedCount >= params.MAX_BALLS) {
+    let { deadCount, infectedCount } = counts;
+    if (deadCount >= params.MAX_BALLS) {
       console.log("End ... All balls are infected.");
       playingState = PlayingState.finishing;
     } else if (infectedCount === 0) {
@@ -68,18 +68,16 @@ const updateTurns = (
 };
 
 const updateCount = (balls: Ball[], params: ParamsModel) => {
-  let [contactedCount, infectedCount, healedCount, deadCount] = [0, 0, 0, 0];
+  let [contactedCount, infectedCount, deadCount] = [0, 0, 0];
   balls.forEach((ball) => {
-    if (ball.contacted) contactedCount++;
-    if (ball.contacted && !ball.healed && !ball.dead) infectedCount++;
-    if (ball.healed) healedCount++;
-    if (ball.dead) deadCount++;
+    if (ball.count >= 1) contactedCount++;
+    if (ball.infectedState == InfectedState.infected) infectedCount++;
+    if (ball.infectedState == InfectedState.dead) deadCount++;
   });
 
   return {
     contactedCount: contactedCount,
     infectedCount: infectedCount,
-    healedCount: healedCount,
     deadCount: deadCount,
   };
 };
@@ -89,18 +87,15 @@ const updateSum = (
   counts: {
     contactedCount: number;
     infectedCount: number;
-    healedCount: number;
     deadCount: number;
   }
 ) => {
-  let { infectedCount, healedCount, deadCount } = counts;
+  let { infectedCount, deadCount } = counts;
   state.sum_infected += infectedCount;
-  state.sum_healed += healedCount;
   state.sum_dead += deadCount;
   return {
     sum_infected: state.sum_infected,
     sum_dead: state.sum_dead,
-    sum_healed: state.sum_healed,
   };
 };
 

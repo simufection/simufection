@@ -153,11 +153,7 @@ export const updateGameState = (
     });
     const rNote = updateRNote(state.rNote, state.sceneState.results);
     const { player, playerEvents } = updatePlayer(
-      state.sceneState,
-      state.player,
-      1,
-      state.sceneState.turns,
-      params
+      state.sceneState, state.player, params
     );
     playerEvents.forEach((e) => {
       events.push(`${state.sceneState.turns}: ${e}`);

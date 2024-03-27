@@ -5,6 +5,12 @@ import { levyDist, randLevy } from "../_stats/levy";
 import { Map } from "./maps";
 import { Pref } from "./pref";
 
+export enum InfectedState {
+  notInfected = 0,
+  infected = 1,
+  dead = 2,
+}
+
 export type Ball = {
   forecolor: string;
   radius: number;
@@ -14,10 +20,8 @@ export type Ball = {
   dx: number;
   dy: number;
   stop: boolean;
-  contacted: boolean;
   first: boolean;
-  healed: boolean;
-  dead: boolean;
+  infectedState: InfectedState;
   masked: boolean;
   remainLevy: number;
   count: number;
@@ -61,10 +65,8 @@ const createBall = (
     dx: 0,
     dy: 0,
     stop: flag_stop,
-    contacted: false,
+    infectedState: InfectedState.notInfected,
     first: false,
-    healed: false,
-    dead: false,
     masked: false,
     remainLevy: 0,
     count: 0,
@@ -223,15 +225,14 @@ const updateBallState = (
 
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
-    if (balls[i].dead) continue;
+    if (balls[i].infectedState == InfectedState.dead) continue;
     if (balls[i].turnRemoveMask == turn && balls[i].masked) {
       balls[i].masked = false;
     }
 
     if (
       turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal >= 0 &&
-      balls[i].contacted &&
-      !balls[i].healed
+      balls[i].infectedState == InfectedState.infected
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal) %
@@ -240,8 +241,7 @@ const updateBallState = (
       ) {
         const rand = Math.random();
         if (rand < virus.HEAL_PROB) {
-          balls[i].healed = true;
-          balls[i].contacted = false;
+          balls[i].infectedState = InfectedState.notInfected;
           balls[i].forecolor = params.COLOR_RECOVERED;
           balls[i].turnHealed = turn;
           balls[i].stop = false;
@@ -259,7 +259,7 @@ const updateBallState = (
 
     if (
       turn - balls[i].turnInfection - balls[i].turnsRequiredForDead >= 0 &&
-      balls[i].contacted
+      balls[i].infectedState == InfectedState.infected
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForDead) %
@@ -268,24 +268,19 @@ const updateBallState = (
       ) {
         const rand = Math.random();
         if (rand < virus.DEAD_PROB) {
-          balls[i].dead = true;
+          balls[i].infectedState = InfectedState.dead;
           balls[i].stop = true;
-          balls[i].contacted = false;
           balls[i].forecolor = params.COLOR_DEAD;
         }
         continue;
       }
-      if (balls[i].turnReMove == turn) {
-        if (!balls[i].contacted) {
-          balls[i].stop = false;
-        }
+    }
+
+    if (balls[i].turnReMove == turn) {
+      if (balls[i].infectedState == InfectedState.notInfected) {
+        balls[i].stop = false;
       }
     }
-    const conditions_i =
-      balls[i].contacted &&
-      !balls[i].healed &&
-      !balls[i].dead &&
-      !balls[i].masked;
 
     for (let j = i + 1; j < ballNum; j++) {
       if (
@@ -295,10 +290,10 @@ const updateBallState = (
       ) {
         continue;
       }
-      if (balls[j].dead || balls[j].masked) continue;
-      const conditions_j = balls[j].contacted && !balls[j].healed;
+      if (balls[j].infectedState == InfectedState.dead || balls[j].masked)
+        continue;
 
-      if (conditions_i) {
+      if (balls[i].infectedState == InfectedState.infected) {
         if (
           isOverlapTo(balls[i], [balls[j].x, balls[j].y]) &&
           (balls[i].first
@@ -318,7 +313,7 @@ const updateBallState = (
             virus.turnsRequiredForReinfect
           );
         }
-      } else if (conditions_j) {
+      } else if (balls[j].infectedState == InfectedState.infected) {
         if (
           isOverlapTo(balls[j], [balls[i].x, balls[i].y]) &&
           (balls[j].first
@@ -359,8 +354,7 @@ const setFirstContacted = (
   turnsRequiredForDead: number,
   turnsRequiredForReinfect: number
 ) => {
-  ball.contacted = true;
-  ball.healed = false;
+  ball.infectedState = InfectedState.infected;
   ball.reinfect = false;
   ball.first = true;
   ball.count++;
@@ -379,8 +373,7 @@ const setContacted = (
   turnsRequiredForDead: number,
   turnsRequiredForReinfect: number
 ) => {
-  ball.contacted = true;
-  ball.healed = false;
+  ball.infectedState = InfectedState.infected;
   ball.reinfect = false;
   ball.first = false;
   ball.count++;

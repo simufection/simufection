@@ -31,7 +31,7 @@ const virusEvent = (
 };
 
 const enhanceProb = (virus: Virus, params: ParamsModel) => {
-  virus.prob *= params.PROB_POWER;
+  virus.prob = Math.min(virus.prob * params.PROB_POWER, 1);
   const event = `ウイルスが強化！感染力が${virus.prob.toFixed(
     2
   )}になりました。`;
