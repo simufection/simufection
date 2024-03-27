@@ -1,8 +1,6 @@
 import { StaticImageData } from "next/image";
 import { ParamsModel } from "../../_params/params";
 import { GameState, Objects, PlayingState } from "../../_states/state";
-import { createBarInit } from "./createBar";
-import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
 import { pcr } from "./pcr";
@@ -17,7 +15,6 @@ import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "../../_maps/kanto/kantoMapData";
 import { allPrefs } from "../../_data/prefs";
-import { addToTimeline } from "../../_states/timeline";
 
 export type Policy = {
   key: string;
@@ -63,26 +60,6 @@ const mapPos = (
 
 export const policies: Policy[] = [
   {
-    key: "b",
-    label: "create bar",
-    func: (state, params, cvsPos, mousePos) => {
-      createBarInit(state.bars, params);
-      return { playingState: PlayingState.editing, editing: Objects.bar };
-    },
-    point: "POINTS_FOR_BAR",
-    isActive: false,
-  },
-  {
-    key: "f",
-    label: "create fence",
-    func: (state, params, cvsPos, mousePos) => {
-      createFenceInit(state.fences, state.bars, params);
-      return { playingState: PlayingState.editing, editing: Objects.fence };
-    },
-    point: "POINTS_FOR_FENCE",
-    isActive: false,
-  },
-  {
     key: "v",
     label: "vaccinate",
     func: (state, params, cvsPos, mousePos, sw) => {
@@ -91,14 +68,15 @@ export const policies: Policy[] = [
       if (!droppedPos) return {};
       player.points -= params.POINTS_FOR_VACCINE;
       const virus = vaccine(state, params);
-      const timeline = addToTimeline(
-        state.timeline,
-        state.sceneState.turns,
-        `ワクチン接種を実施！ウイルスの感染力が${virus.prob.toFixed(
+      const events = [...state.events];
+      events.push(
+        `${
+          state.sceneState.turns
+        }: ワクチン接種を実施！ウイルスの感染力が${virus.prob.toFixed(
           2
         )}になりました！`
       );
-      return { player: player, virus: virus, timeline: timeline };
+      return { player: player, virus: virus, events: events };
     },
     point: "POINTS_FOR_VACCINE",
     isActive: true,
@@ -113,12 +91,11 @@ export const policies: Policy[] = [
       const { player } = state;
       player.points -= params.POINTS_FOR_MEDICINE;
       const virus = medicine(state, params);
-      const timeline = addToTimeline(
-        state.timeline,
-        state.sceneState.turns,
-        `抗菌薬の普及！回復までの最短ターン数が${virus.turnsRequiredForHeal}になりました！`
+      const events = [...state.events];
+      events.push(
+        `${state.sceneState.turns}: 抗菌薬の普及！回復までの最短ターン数が${virus.turnsRequiredForHeal}になりました！`
       );
-      return { player: player, virus: virus, timeline: timeline };
+      return { player: player, virus: virus, events: events };
     },
     point: "POINTS_FOR_MEDICINE",
     isActive: true,
@@ -133,31 +110,15 @@ export const policies: Policy[] = [
       if (!droppedPos) return {};
       player.points -= params.POINTS_FOR_MASK;
       const { balls, data } = mask(state, params);
-      const timeline = addToTimeline(
-        state.timeline,
-        state.sceneState.turns,
-        `マスク配布！感染者${data.all}人のうち${data.num}人がマスクをつけ、他人に感染させなくなりました！`
+      const events = [...state.events];
+      events.push(
+        `${state.sceneState.turns}: マスク配布！感染者${data.all}人のうち${data.num}人がマスクをつけ、他人に感染させなくなりました！`
       );
-      return { balls: balls, timeline: timeline };
+      return { balls: balls, events: events };
     },
     point: "POINTS_FOR_MASK",
     isActive: true,
     image: maskImage,
-  },
-  {
-    key: "c",
-    label: "cure faster",
-    func: (state, params, cvsPos, mousePos, sw) => {
-      const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
-      if (!droppedPos) return {};
-      const { player } = state;
-      player.points -= params.POINTS_FOR_CURE_FASTER;
-      const virus = cureFaster(state, params);
-      return { player: player, virus: virus };
-    },
-    point: "POINTS_FOR_CURE_FASTER",
-    isActive: false,
-    image: medicineImage,
   },
   {
     key: "l",
@@ -177,14 +138,15 @@ export const policies: Policy[] = [
         prefId,
         state.sceneState.turns
       );
-      const timeline = addToTimeline(
-        state.timeline,
-        state.sceneState.turns,
-        `ロックダウン！${
+      const events = [...state.events];
+      events.push(
+        `${state.sceneState.turns}: ロックダウン！${
           allPrefs.filter((row) => row.id == prefId)[0].name
-        }がロックダウンされました！`
+        }がロックダウンされ、移動できる確率が${(
+          1 - prefs[prefId].lockdownCompliance
+        ).toFixed(2)}になりました！`
       );
-      return { player: player, prefs: newPrefs, timeline: timeline };
+      return { player: player, prefs: newPrefs, events: events };
     },
     point: "POINTS_FOR_LOCKDOWN",
     isActive: true,
@@ -199,12 +161,11 @@ export const policies: Policy[] = [
       if (!droppedPos) return {};
       player.points -= params.POINTS_FOR_PCR;
       const { balls, data } = pcr(state, params);
-      const timeline = addToTimeline(
-        state.timeline,
-        state.sceneState.turns,
-        `PCR検査を実施！${data.all}人が検査され、${data.positive}人が陽性となり自宅謹慎することになりました。`
+      const events = [...state.events];
+      events.push(
+        `${state.sceneState.turns}: PCR検査を実施！${data.all}人が検査され、${data.positive}人が陽性となり自宅謹慎することになりました。`
       );
-      return { player: player, balls: balls, timeline: timeline };
+      return { player: player, balls: balls, events: events };
     },
     point: "POINTS_FOR_PCR",
     isActive: true,

@@ -20,7 +20,6 @@ export const calcScore = (state: GameState, params: ParamsModel) => {
 
   const sum_infected = state.sceneState.sum_infected;
   const sum_dead = state.sceneState.sum_dead;
-  const sum_healed = state.sceneState.sum_healed;
 
   const isClear = survivor == 0 ? false : true;
 

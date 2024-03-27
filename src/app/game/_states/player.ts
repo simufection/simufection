@@ -9,8 +9,7 @@ export type Player = {
 export const updatePoint = (
   currentState: SceneState,
   currentPlayer: Player,
-  params: ParamsModel,
-  turns: number = 0
+  params: ParamsModel
 ) => {
   const player = { ...currentPlayer };
   const damage_count = currentState.infectedCount + currentState.deadCount;
@@ -25,11 +24,10 @@ export const updatePoint = (
 export const updatePlayer = (
   currentState: SceneState,
   currentPlayer: Player,
-  pt: number,
-  turn: number,
   params: ParamsModel
-): Player => {
-  const player = updatePoint(currentState, currentPlayer, params, turn);
+) => {
+  const playerEvents: string[] = [];
+  const player = updatePoint(currentState, currentPlayer, params);
 
-  return player;
+  return { player: player, playerEvents: playerEvents };
 };

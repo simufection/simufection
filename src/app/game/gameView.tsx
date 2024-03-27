@@ -208,7 +208,7 @@ const GameView = () => {
         </Droppable>
         <div className="p-game__timeline-container">
           <div className="p-game__timeline">
-            {onReady ? gameState.timeline : ""}
+            {onReady ? gameState.events.toReversed().join("\n") : ""}
           </div>
         </div>
 
