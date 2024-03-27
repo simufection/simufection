@@ -6,6 +6,7 @@ interface Props {
   id: string;
   children?: ReactNode;
   data?: { [name: string]: any };
+  ratio?: number;
 }
 
 export const Draggable = (props: Props) => {

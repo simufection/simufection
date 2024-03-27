@@ -392,7 +392,7 @@ export const updateBalls = (
   map: Map,
   prefs: { [name: number]: Pref }
 ) => {
-  const ballsEvents: string[] = [];
+  const ballsEvents: [number, string, any][] = [];
   const tmpBalls = updatePosition(currentBalls, map, params, prefs);
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
   return { balls: balls, ballsEvents: ballsEvents };

@@ -43,6 +43,7 @@ import SendScoreInput from "./_components/sendScoreInput";
 import SelectMap from "./_components/selectMap";
 import RankingModal from "./_components/rankingModal";
 import { appVersion } from "@/consts/appVersion";
+import { eventMessage } from "./_params/eventMessage";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -208,7 +209,14 @@ const GameView = () => {
         </Droppable>
         <div className="p-game__timeline-container">
           <div className="p-game__timeline">
-            {onReady ? gameState.events.toReversed().join("\n") : ""}
+            {onReady
+              ? gameState.events
+                  .toReversed()
+                  .map((r) => {
+                    return eventMessage(r[0], r[2])[r[1]];
+                  })
+                  .join("\n")
+              : ""}
           </div>
         </div>
 
@@ -221,30 +229,49 @@ const GameView = () => {
           {onReady && stateIsPlaying.includes(gameState.playingState)
             ? policies
                 .filter((policy) => policy.isActive)
-                .map((policy) => (
-                  <PolicyIcon
-                    key={policy.key}
-                    id={`policy-${policy.key}`}
-                    image={policy.image}
-                    disabled={
-                      gameState.playingState == PlayingState.pausing ||
-                      params[policy.point] > gameState.player.points
-                    }
-                    cost={params[policy.point]}
-                    func={(mousePos: Position, cvsPos: Position) => {
-                      if (params[policy.point] <= gameState.player.points) {
-                        updateGameStateForce(
-                          policy.func(gameState, params, cvsPos, mousePos, sw)
-                        );
+                .map((policy) => {
+                  const events = gameState.events.filter(
+                    (e) => e[1] == `policy_${policy.key}`
+                  );
+                  const lastTurn =
+                    events.length > 0 ? events[events.length - 1][0] : null;
+                  return (
+                    <PolicyIcon
+                      key={policy.key}
+                      id={`policy-${policy.key}`}
+                      image={policy.image}
+                      disabled={
+                        gameState.playingState == PlayingState.pausing ||
+                        params[policy.point] > gameState.player.points
                       }
-                    }}
-                    className={`p-game__policy-button ${
-                      params[policy.point] > gameState.player.points
-                        ? "-inactive"
-                        : ""
-                    }`}
-                  />
-                ))
+                      cost={params[policy.point]}
+                      func={(mousePos: Position, cvsPos: Position) => {
+                        if (
+                          params[policy.point] <= gameState.player.points &&
+                          (!policy.cooltime ||
+                            !lastTurn ||
+                            gameState.sceneState.turns >
+                              policy.cooltime + lastTurn)
+                        ) {
+                          updateGameStateForce(
+                            policy.func(gameState, params, cvsPos, mousePos, sw)
+                          );
+                        }
+                      }}
+                      className={`p-game__policy-button ${
+                        params[policy.point] > gameState.player.points
+                          ? "-inactive"
+                          : ""
+                      }`}
+                      ratio={
+                        policy.cooltime && lastTurn
+                          ? (gameState.sceneState.turns - lastTurn) /
+                            policy.cooltime
+                          : 1
+                      }
+                    />
+                  );
+                })
             : null}
         </div>
       </DndContext>
