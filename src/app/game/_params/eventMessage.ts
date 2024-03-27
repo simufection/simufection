@@ -7,7 +7,7 @@ export const eventMessage = (turns: number, data: any): EventMessage => {
   return {
     game_start: `${turns}: ゲーム開始！`,
     policy_v: `${turns}: ワクチン接種を実施！ウイルスの感染力が${data.prob}になりました！`,
-    policy_e: `${turns}: 抗菌薬の普及！回復までの最短ターン数が${data.turnsRequiredForHeal}になりました！`,
+    policy_e: `${turns}: 抗菌薬の普及！回復確率が${data.healProb}になりました！`,
     policy_m: `${turns}: マスク配布！感染者${data.all}人のうち${data.num}人がマスクをつけ、他人に感染させなくなりました！`,
     policy_l: `${turns}: ロックダウン！${
       data.name
