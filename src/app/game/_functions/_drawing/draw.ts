@@ -1,6 +1,5 @@
 import { COLORS } from "../../_params/colors";
 import { GameState } from "../../_states/state";
-import { drawBar } from "../../_states/bars";
 import { DrawRatio } from "../../_params/drawRatio";
 import { ParamsModel } from "../../_params/params";
 import { Pref } from "../../_states/pref";
@@ -11,18 +10,12 @@ export const drawGameScreen = (
   params: ParamsModel,
   offCvs: HTMLCanvasElement
 ) => {
-  const { balls, bars } = gameState;
+  const { balls } = gameState;
   const { turns } = gameState.sceneState;
 
   drawWhite(ctx, params);
 
   ctx.drawImage(offCvs, 0, 0);
-
-  if (bars.length > params.DEFAULT_BARS) {
-    for (let i = params.DEFAULT_BARS; i < bars.length; i++) {
-      drawBar(bars[i], ctx);
-    }
-  }
 
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {

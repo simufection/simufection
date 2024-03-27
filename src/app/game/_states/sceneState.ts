@@ -109,7 +109,8 @@ export const updateSceneState = (
   params: ParamsModel,
   balls: Ball[],
   currentPlaying: PlayingState
-): { sceneState: SceneState; playingState: PlayingState } => {
+) => {
+  const sceneEvents: string[] = [];
   const newCounts = updateCount(balls, params);
   const newSum = updateSum(state, newCounts);
   const newResults = updateResults(state, params);
@@ -129,5 +130,6 @@ export const updateSceneState = (
       ...newSum,
     },
     playingState: playingState,
+    sceneEvents: sceneEvents,
   };
 };
