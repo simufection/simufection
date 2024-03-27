@@ -1,5 +1,4 @@
 import { getRandomInt } from "@/services/random";
-import { Bar, contains } from "./bars";
 import { Virus } from "./virus";
 import { ParamsModel } from "../_params/params";
 import { levyDist, randLevy } from "../_stats/levy";
@@ -387,14 +386,14 @@ const setContacted = (
 
 export const updateBalls = (
   currentBalls: Ball[],
-  bars: Bar[],
   params: ParamsModel,
   turns: number,
   virus: Virus,
   map: Map,
   prefs: { [name: number]: Pref }
-): Ball[] => {
+) => {
+  const ballsEvents: string[] = [];
   const tmpBalls = updatePosition(currentBalls, map, params, prefs);
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
-  return balls;
+  return { balls: balls, ballsEvents: ballsEvents };
 };

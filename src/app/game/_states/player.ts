@@ -28,5 +28,5 @@ export const updatePlayer = (
 ): Player => {
   const player = updatePoint(currentState, currentPlayer, params);
 
-  return player;
+  return { player: player, playerEvents: playerEvents };
 };
