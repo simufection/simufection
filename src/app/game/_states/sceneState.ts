@@ -105,7 +105,7 @@ export const updateSceneState = (
   balls: Ball[],
   currentPlaying: PlayingState
 ) => {
-  const sceneEvents: string[] = [];
+  const sceneEvents: [number, string, any][] = [];
   const newCounts = updateCount(balls, params);
   const newSum = updateSum(state, newCounts);
   const newResults = updateResults(state, params);

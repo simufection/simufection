@@ -30,17 +30,19 @@ export const updatePrefs = (
   turns: number
 ) => {
   let prefs = { ...currentPrefs };
-  const prefsEvents = [];
+  const prefsEvents: [number, string, any][] = [];
   for (let prefId in prefs) {
     if (turns == prefs[prefId].turnLockdownEnds) {
       prefs[prefId].isLockedDown = false;
       prefs[prefId].lockdownCompliance *= params.LOCKDOWN_COMPLIANCE_RATE;
       prefs[prefId].updated = true;
-      prefsEvents.push(
-        `ロックダウン解除！${
-          allPrefs.filter((p) => p.id == parseInt(prefId))[0].name
-        }に自由に出入りできるようになりました`
-      );
+      prefsEvents.push([
+        turns,
+        "lockdown_end",
+        {
+          name: allPrefs.filter((p) => p.id == parseInt(prefId))[0].name,
+        },
+      ]);
     }
   }
   return { prefs: prefs, prefsEvents: prefsEvents };
