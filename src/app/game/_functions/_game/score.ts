@@ -9,6 +9,7 @@ export interface SendScoreData {
   map: string | null;
   feedback: string | null;
   turns: number | null;
+  events: [number, string, any][] | null;
 }
 
 export const calcScore = (state: GameState, params: ParamsModel) => {
@@ -34,7 +35,8 @@ export const sendScore = async (
   urName: string,
   feedback: string,
   map: string | null,
-  turns: number | null
+  turns: number | null,
+  events: [number, string, any][] | null
 ): Promise<boolean> => {
   const data: SendScoreData = {
     urName: urName,
@@ -42,6 +44,7 @@ export const sendScore = async (
     feedback: feedback,
     map: map,
     turns: turns,
+    events: events,
   };
   const body = JSON.stringify(data);
 

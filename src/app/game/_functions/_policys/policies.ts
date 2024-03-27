@@ -94,7 +94,7 @@ export const policies: Policy[] = [
         state.sceneState.turns,
         "policy_e",
         {
-          healProb: virus.healProb,
+          healProb: virus.healProb.toFixed(2),
         },
       ]);
       return { player: player, virus: virus, events: events };
@@ -144,7 +144,7 @@ export const policies: Policy[] = [
         "policy_l",
         {
           name: allPrefs.filter((row) => row.id == prefId)[0].name,
-          compliance: prefs[prefId].lockdownCompliance,
+          compliance: (1 - prefs[prefId].lockdownCompliance).toFixed(2),
         },
       ]);
       return { player: player, prefs: newPrefs, events: events };

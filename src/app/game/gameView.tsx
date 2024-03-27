@@ -26,7 +26,7 @@ import useWindowSize from "@/hooks/useWindowSize";
 import { stateIsPlaying, stateNotPlaying } from "./_params/consts";
 import { GameButtons } from "./_components/gameButtons";
 import { GameStateContext } from "./contextProvoder";
-import { calcScore, sendScore } from "./_functions/_game/score";
+import { calcScore } from "./_functions/_game/score";
 import Image from "next/image";
 
 import { Axios } from "@/services/axios";
