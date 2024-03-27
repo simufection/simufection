@@ -25,7 +25,8 @@ export const updatePlayer = (
   currentState: SceneState,
   currentPlayer: Player,
   params: ParamsModel
-): Player => {
+) => {
+  const playerEvents: string[] = [];
   const player = updatePoint(currentState, currentPlayer, params);
 
   return { player: player, playerEvents: playerEvents };
