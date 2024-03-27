@@ -165,13 +165,7 @@ export const updateGameState = (
       state.playingState
     );
     const rNote = updateRNote(state.rNote, state.sceneState.results);
-    const player = updatePlayer(
-      state.sceneState,
-      state.player,
-      1,
-      state.sceneState.turns,
-      params
-    );
+    const player = updatePlayer(state.sceneState, state.player, params);
     const prefs = updatePrefs(params, state.prefs, sceneState.turns);
     const balls = updateBalls(
       state.balls,

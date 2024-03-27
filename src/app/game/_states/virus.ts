@@ -39,7 +39,7 @@ const enhanceProb = (
   timeline: string,
   turns: number
 ) => {
-  virus.prob *= params.PROB_POWER;
+  virus.prob = Math.min(virus.prob * params.PROB_POWER, 1);
   const newTimeline = addToTimeline(
     timeline,
     turns,
