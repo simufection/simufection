@@ -1,12 +1,4 @@
-import { INF } from "../_params/inf";
-import { createBarFunc, createBarInit } from "../_functions/_policys/createBar";
-import {
-  createFenceFunc,
-  createFenceInit,
-} from "../_functions/_policys/createFence";
 import { Ball, createBalls, updateBalls } from "./balls";
-import { Bar, createBar, updateBars } from "./bars";
-import { Fence, updateFences } from "./fences";
 import { Keys, updateKeys } from "./keys";
 import { Player, updatePlayer } from "./player";
 import { RNote, updateRNote } from "./rNote";
@@ -40,14 +32,12 @@ export type GameState = {
   sceneState: SceneState;
   player: Player;
   balls: Ball[];
-  bars: Bar[];
-  fences: Fence[];
   prefs: { [name: number]: Pref };
   virus: Virus;
   rNote: RNote;
   keys: Keys;
   editing: Objects;
-  timeline: string;
+  events: string[];
 };
 
 export const initializeGameState = (
@@ -101,13 +91,6 @@ export const initializeGameState = (
       sum_healed: 0,
     },
     balls: createBalls(params, map),
-    bars: [
-      createBar(true, -INF, -INF, INF, INF * 2),
-      createBar(true, params.MAX_WIDTH, -INF, INF, INF * 2),
-      createBar(false, -INF, -INF, INF * 2, INF),
-      createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
-    ],
-    fences: [],
     prefs: initializePrefs(params, map.prefIds),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
@@ -135,7 +118,7 @@ export const initializeGameState = (
       downAll: new Set<string>(),
     },
     editing: Objects.none,
-    timeline: "0: ゲーム開始！",
+    events: ["0: ゲーム開始！"],
   };
 };
 
@@ -158,37 +141,54 @@ export const updateGameState = (
     // const effectsOfPolicy = usePolicy(currentState, params);
     // const state = { ...currentState, ...effectsOfPolicy };
     const state = { ...currentState };
-    const { sceneState, playingState } = updateSceneState(
+    const events = state.events;
+    const { sceneState, playingState, sceneEvents } = updateSceneState(
       state.sceneState,
       params,
       state.balls,
       state.playingState
     );
+    sceneEvents.forEach((e) => {
+      events.push(`${state.sceneState.turns}: ${e}`);
+    });
     const rNote = updateRNote(state.rNote, state.sceneState.results);
-    const player = updatePlayer(
+    const { player, playerEvents } = updatePlayer(
       state.sceneState,
       state.player,
       1,
       state.sceneState.turns,
       params
     );
-    const prefs = updatePrefs(params, state.prefs, sceneState.turns);
-    const balls = updateBalls(
+    playerEvents.forEach((e) => {
+      events.push(`${state.sceneState.turns}: ${e}`);
+    });
+    const { prefs, prefsEvents } = updatePrefs(
+      params,
+      state.prefs,
+      sceneState.turns
+    );
+    prefsEvents.forEach((e) => {
+      events.push(`${state.sceneState.turns}: ${e}`);
+    });
+    const { balls, ballsEvents } = updateBalls(
       state.balls,
-      state.bars,
       params,
       sceneState.turns,
       state.virus,
       state.map,
       state.prefs
     );
-    const bars = updateBars(state.bars);
-    const { virus, timeline } = updateVirus(
+    ballsEvents.forEach((e) => {
+      events.push(`${state.sceneState.turns}: ${e}`);
+    });
+    const { virus, virusEvents } = updateVirus(
       state.virus,
       sceneState.turns,
-      params,
-      state.timeline
+      params
     );
+    virusEvents.forEach((e) => {
+      events.push(`${state.sceneState.turns}: ${e}`);
+    });
 
     const keys = updateKeys(state.keys, inputKeys);
 
@@ -200,68 +200,10 @@ export const updateGameState = (
         sceneState: sceneState,
         prefs: prefs,
         balls: balls,
-        bars: bars,
         virus: virus,
         rNote: rNote,
         keys: keys,
-        timeline: timeline,
-      },
-    };
-  } else if (currentState.playingState == PlayingState.editing) {
-    const state = currentState;
-    const keys = updateKeys(state.keys, inputKeys);
-
-    let bars: Bar[];
-    let fences: Fence[];
-
-    if (state.editing == Objects.bar) {
-      const { bars: newBars, res, player } = createBarFunc(state, params);
-      if (res) {
-        return {
-          ...state,
-          ...{
-            keys: keys,
-            playingState: PlayingState.playing,
-            player: player || state.player,
-          },
-        };
-      }
-      bars = updateBars(newBars);
-    }
-    if (state.editing == Objects.fence) {
-      const {
-        bars: newBars,
-        res,
-        player,
-        fences: newFences,
-      } = createFenceFunc(state, params);
-      if (res) {
-        return {
-          ...state,
-          ...{
-            keys: keys,
-            playingState: PlayingState.playing,
-            player: player || state.player,
-          },
-        };
-      }
-      bars = updateBars(newBars);
-      fences = updateFences(newFences);
-    }
-    const { sceneState, playingState } = updateSceneState(
-      state.sceneState,
-      params,
-      state.balls,
-      state.playingState
-    );
-    return {
-      ...state,
-      ...{
-        playingState: playingState,
-        bars: bars! || state.bars,
-        fences: fences! || state.fences,
-        keys: keys,
-        sceneState: sceneState,
+        events: events,
       },
     };
   } else {

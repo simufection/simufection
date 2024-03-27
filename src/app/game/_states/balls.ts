@@ -1,5 +1,4 @@
 import { getRandomInt } from "@/services/random";
-import { Bar, contains } from "./bars";
 import { Virus } from "./virus";
 import { ParamsModel } from "../_params/params";
 import { levyDist, randLevy } from "../_stats/levy";
@@ -225,7 +224,7 @@ const updateBallState = (
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
     if (balls[i].dead) continue;
-    if (balls[i].turnRemoveMask == turn&&balls[i].masked) {
+    if (balls[i].turnRemoveMask == turn && balls[i].masked) {
       balls[i].masked = false;
     }
 
@@ -245,8 +244,8 @@ const updateBallState = (
           balls[i].contacted = false;
           balls[i].forecolor = params.COLOR_RECOVERED;
           balls[i].turnHealed = turn;
-          balls[i].stop=false
-          balls[i].turnReMove=0
+          balls[i].stop = false;
+          balls[i].turnReMove = 0;
         }
       }
     }
@@ -279,9 +278,14 @@ const updateBallState = (
       if (balls[i].turnReMove == turn) {
         if (!balls[i].contacted) {
           balls[i].stop = false;
-        }}
+        }
+      }
     }
-    const conditions_i = balls[i].contacted && !balls[i].healed&& !balls[i].dead&&!balls[i].masked;
+    const conditions_i =
+      balls[i].contacted &&
+      !balls[i].healed &&
+      !balls[i].dead &&
+      !balls[i].masked;
 
     for (let j = i + 1; j < ballNum; j++) {
       if (
@@ -291,7 +295,7 @@ const updateBallState = (
       ) {
         continue;
       }
-      if (balls[j].dead||balls[j].masked) continue;
+      if (balls[j].dead || balls[j].masked) continue;
       const conditions_j = balls[j].contacted && !balls[j].healed;
 
       if (conditions_i) {
@@ -389,14 +393,14 @@ const setContacted = (
 
 export const updateBalls = (
   currentBalls: Ball[],
-  bars: Bar[],
   params: ParamsModel,
   turns: number,
   virus: Virus,
   map: Map,
   prefs: { [name: number]: Pref }
-): Ball[] => {
+) => {
+  const ballsEvents: string[] = [];
   const tmpBalls = updatePosition(currentBalls, map, params, prefs);
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
-  return balls;
+  return { balls: balls, ballsEvents: ballsEvents };
 };
