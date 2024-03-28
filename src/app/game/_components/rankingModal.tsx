@@ -13,9 +13,8 @@ interface Props {
 
 const RankingModal = (props: Props) => {
   const version = appVersion;
-  const [ver, setVer] = useState(
-    `${version.split(".")[0]}.${version.split(".")[1]}`
-  );
+  const nowVer = `${version.split(".")[0]}.${version.split(".")[1]}`;
+  const [ver, setVer] = useState(nowVer);
   const { rankingData, setRankingData } = useContext(GameStateContext)!;
   const [err, setErr] = useState("読み込み中です");
   const versions = appVersions
@@ -73,15 +72,17 @@ const RankingModal = (props: Props) => {
               </li>
             ))}
           </div>
-          <div className="p-ranking__today">
-            <li className="p-ranking__row">今日のランキング</li>
-            {props.rankingData[ver].today.map((item, index) => (
-              <li key={index} className="p-ranking__row">
-                <div>{item.urName}</div>
-                <div>{item.score}</div>
-              </li>
-            ))}
-          </div>
+          {ver == nowVer ? (
+            <div className="p-ranking__today">
+              <li className="p-ranking__row">今日のランキング</li>
+              {props.rankingData[ver].today.map((item, index) => (
+                <li key={index} className="p-ranking__row">
+                  <div>{item.urName}</div>
+                  <div>{item.score}</div>
+                </li>
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : (
         <>{err}</>
