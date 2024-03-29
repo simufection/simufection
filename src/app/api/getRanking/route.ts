@@ -13,13 +13,14 @@ export async function POST(req: Request) {
     ];
     const today_str = `${year}/${month}/${date}`;
     const version = appVersion;
-    const ver =
-      data.version ?? `${version.split(".")[0]}.${version.split(".")[1]}`;
+    const nowVer = `${version.split(".")[0]}.${version.split(".")[1]}`;
+    const ver = data.version ?? nowVer;
     const res_all =
       await sql`SELECT ur_name, score FROM score where version = ${ver} ORDER BY score DESC limit 10;`;
-    const res_today =
-      await sql`SELECT ur_name, score FROM score WHERE to_char(date, 'yyyy/mm/dd') = ${today_str} and version = ${ver} ORDER BY score DESC limit 10;`;
 
+    const res_today = data.version
+      ? await sql`SELECT ur_name, score FROM score WHERE to_char(date, 'yyyy/mm/dd') = ${today_str} and version = ${ver} ORDER BY score DESC limit 10;`
+      : { rows: [] };
     return new Response(
       JSON.stringify({
         success: true,

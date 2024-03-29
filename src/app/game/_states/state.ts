@@ -37,7 +37,7 @@ export type GameState = {
   rNote: RNote;
   keys: Keys;
   editing: Objects;
-  events: string[];
+  events: [number, string, any][];
 };
 
 export const initializeGameState = (
@@ -98,10 +98,10 @@ export const initializeGameState = (
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
       turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
-      TURNS_JUDGE_HEAL: params.TURNS_JUDGE_HEAL,
-      TURNS_JUDGE_DEAD: params.TURNS_JUDGE_DEAD,
-      HEAL_PROB: params.HEAL_PROB,
-      DEAD_PROB: params.DEAD_PROB,
+      turnsJudgeHeal: params.TURNS_JUDGE_HEAL,
+      turnsJudgeDead: params.TURNS_JUDGE_DEAD,
+      healProb: params.HEAL_PROB,
+      deadProb: params.DEAD_PROB,
     },
     rNote: {
       resultsWIDTH: 4,
@@ -118,7 +118,7 @@ export const initializeGameState = (
       downAll: new Set<string>(),
     },
     editing: Objects.none,
-    events: ["0: ゲーム開始！"],
+    events: [[0, "game_start", {}]],
   };
 };
 
@@ -149,14 +149,16 @@ export const updateGameState = (
       state.playingState
     );
     sceneEvents.forEach((e) => {
-      events.push(`${state.sceneState.turns}: ${e}`);
+      events.push(e);
     });
     const rNote = updateRNote(state.rNote, state.sceneState.results);
     const { player, playerEvents } = updatePlayer(
-      state.sceneState, state.player, params
+      state.sceneState,
+      state.player,
+      params
     );
     playerEvents.forEach((e) => {
-      events.push(`${state.sceneState.turns}: ${e}`);
+      events.push(e);
     });
     const { prefs, prefsEvents } = updatePrefs(
       params,
@@ -164,7 +166,7 @@ export const updateGameState = (
       sceneState.turns
     );
     prefsEvents.forEach((e) => {
-      events.push(`${state.sceneState.turns}: ${e}`);
+      events.push(e);
     });
     const { balls, ballsEvents } = updateBalls(
       state.balls,
@@ -175,7 +177,7 @@ export const updateGameState = (
       state.prefs
     );
     ballsEvents.forEach((e) => {
-      events.push(`${state.sceneState.turns}: ${e}`);
+      events.push(e);
     });
     const { virus, virusEvents } = updateVirus(
       state.virus,
@@ -183,7 +185,7 @@ export const updateGameState = (
       params
     );
     virusEvents.forEach((e) => {
-      events.push(`${state.sceneState.turns}: ${e}`);
+      events.push(e);
     });
 
     const keys = updateKeys(state.keys, inputKeys);

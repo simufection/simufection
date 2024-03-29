@@ -6,10 +6,10 @@ export type Virus = {
   turnsRequiredForHeal: number;
   turnsRequiredForDead: number;
   turnsRequiredForReinfect: number;
-  TURNS_JUDGE_HEAL: number;
-  TURNS_JUDGE_DEAD: number;
-  HEAL_PROB: number;
-  DEAD_PROB: number;
+  turnsJudgeHeal: number;
+  turnsJudgeDead: number;
+  healProb: number;
+  deadProb: number;
 };
 
 const virusEvent = (
@@ -25,22 +25,24 @@ const virusEvent = (
 
   if (Object.keys(virus.turnEvent).includes(turns.toString())) {
     const eventNum = virus.turnEvent[turns];
-    return events[eventNum](virus, params);
+    return events[eventNum](virus, params, turns);
   }
   return { newVirus: virus, event: null };
 };
 
-const enhanceProb = (virus: Virus, params: ParamsModel) => {
+const enhanceProb = (virus: Virus, params: ParamsModel, turns: number) => {
   virus.prob = Math.min(virus.prob * params.PROB_POWER, 1);
-  const event = `ウイルスが強化！感染力が${virus.prob.toFixed(
-    2
-  )}になりました。`;
+  const event = [turns, "virus_e", { prob: virus.prob.toFixed(2) }];
   return { newVirus: virus, event: event };
 };
 
-const cureSlower = (virus: Virus, params: ParamsModel) => {
+const cureSlower = (virus: Virus, params: ParamsModel, turns: number) => {
   virus.turnsRequiredForHeal += params.CURE_SLOWER_EFFECT;
-  const event = `ウイルスが強化！回復までの最短ターン数が${virus.turnsRequiredForHeal}になりました。`;
+  const event = [
+    turns,
+    "virus_c",
+    { turnsRequiredForHeal: virus.turnsRequiredForHeal },
+  ];
   return { newVirus: virus, event: event };
 };
 
@@ -49,7 +51,7 @@ export const updateVirus = (
   turns: number,
   params: ParamsModel
 ) => {
-  const virusEvents: string[] = [];
+  const virusEvents: [number, string, any][] = [];
   const { newVirus, event } = virusEvent(virus, turns, params);
   if (event) virusEvents.push(event);
   return { virus: newVirus, virusEvents: virusEvents };

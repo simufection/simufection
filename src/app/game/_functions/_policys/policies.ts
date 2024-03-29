@@ -1,7 +1,6 @@
 import { StaticImageData } from "next/image";
 import { ParamsModel } from "../../_params/params";
 import { GameState, Objects, PlayingState } from "../../_states/state";
-import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
 import { pcr } from "./pcr";
 import { mask } from "./mask";
@@ -13,7 +12,6 @@ import maskImage from "@/assets/img/mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
 import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "../../_states/maps";
-import { kantoMapData } from "../../_maps/kanto/kantoMapData";
 import { allPrefs } from "../../_data/prefs";
 
 export type Policy = {
@@ -29,6 +27,7 @@ export type Policy = {
   point: string;
   isActive: boolean;
   image?: StaticImageData;
+  cooltime?: number;
 };
 
 const mapPos = (
@@ -69,18 +68,17 @@ export const policies: Policy[] = [
       player.points -= params.POINTS_FOR_VACCINE;
       const virus = vaccine(state, params);
       const events = [...state.events];
-      events.push(
-        `${
-          state.sceneState.turns
-        }: ワクチン接種を実施！ウイルスの感染力が${virus.prob.toFixed(
-          2
-        )}になりました！`
-      );
+      events.push([
+        state.sceneState.turns,
+        "policy_v",
+        { prob: virus.prob.toFixed(2) },
+      ]);
       return { player: player, virus: virus, events: events };
     },
     point: "POINTS_FOR_VACCINE",
     isActive: true,
     image: vaccineImage,
+    cooltime: 100,
   },
   {
     key: "e",
@@ -92,9 +90,13 @@ export const policies: Policy[] = [
       player.points -= params.POINTS_FOR_MEDICINE;
       const virus = medicine(state, params);
       const events = [...state.events];
-      events.push(
-        `${state.sceneState.turns}: 抗菌薬の普及！回復までの最短ターン数が${virus.turnsRequiredForHeal}になりました！`
-      );
+      events.push([
+        state.sceneState.turns,
+        "policy_e",
+        {
+          healProb: virus.healProb.toFixed(2),
+        },
+      ]);
       return { player: player, virus: virus, events: events };
     },
     point: "POINTS_FOR_MEDICINE",
@@ -111,9 +113,7 @@ export const policies: Policy[] = [
       player.points -= params.POINTS_FOR_MASK;
       const { balls, data } = mask(state, params);
       const events = [...state.events];
-      events.push(
-        `${state.sceneState.turns}: マスク配布！感染者${data.all}人のうち${data.num}人がマスクをつけ、他人に感染させなくなりました！`
-      );
+      events.push([state.sceneState.turns, "policy_m", { ...data }]);
       return { balls: balls, events: events };
     },
     point: "POINTS_FOR_MASK",
@@ -139,13 +139,14 @@ export const policies: Policy[] = [
         state.sceneState.turns
       );
       const events = [...state.events];
-      events.push(
-        `${state.sceneState.turns}: ロックダウン！${
-          allPrefs.filter((row) => row.id == prefId)[0].name
-        }がロックダウンされ、移動できる確率が${(
-          1 - prefs[prefId].lockdownCompliance
-        ).toFixed(2)}になりました！`
-      );
+      events.push([
+        state.sceneState.turns,
+        "policy_l",
+        {
+          name: allPrefs.filter((row) => row.id == prefId)[0].name,
+          compliance: (1 - prefs[prefId].lockdownCompliance).toFixed(2),
+        },
+      ]);
       return { player: player, prefs: newPrefs, events: events };
     },
     point: "POINTS_FOR_LOCKDOWN",
@@ -162,9 +163,7 @@ export const policies: Policy[] = [
       player.points -= params.POINTS_FOR_PCR;
       const { balls, data } = pcr(state, params);
       const events = [...state.events];
-      events.push(
-        `${state.sceneState.turns}: PCR検査を実施！${data.all}人が検査され、${data.positive}人が陽性となり自宅謹慎することになりました。`
-      );
+      events.push([state.sceneState.turns, "policy_p", { ...data }]);
       return { player: player, balls: balls, events: events };
     },
     point: "POINTS_FOR_PCR",

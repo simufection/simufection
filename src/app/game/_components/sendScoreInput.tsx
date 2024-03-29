@@ -54,7 +54,8 @@ const SendScoreInput = () => {
             urName,
             feedback,
             mapName,
-            gameState?.sceneState.turns || null
+            gameState?.sceneState.turns || null,
+            gameState?.events || null
           );
           if (res) {
             alert("送信しました");
