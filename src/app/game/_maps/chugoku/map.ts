@@ -1,9 +1,9 @@
-import { prefs } from "../../_data/prefs";
+import { allPrefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { chugokuMapData } from "./chugokuMapData";
 import chugokuMapPreview from "../../../../assets/img/chugoku_preview.png";
 
-const chugokuPrefs = prefs.filter((p) => p.area == "中国");
+const chugokuPrefs = allPrefs.filter((p) => p.area == "中国");
 const chugokuPrefIds = chugokuPrefs.map((p) => p.id);
 const totalPop = chugokuPrefs.reduce(
   (sum, { population }) => sum + population,

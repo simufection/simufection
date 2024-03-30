@@ -6,45 +6,53 @@ export type Virus = {
   turnsRequiredForHeal: number;
   turnsRequiredForDead: number;
   turnsRequiredForReinfect: number;
-  TURNS_JUDGE_HEAL: number;
-  TURNS_JUDGE_DEAD: number;
-  HEAL_PROB: number;
-  DEAD_PROB: number;
+  turnsJudgeHeal: number;
+  turnsJudgeDead: number;
+  healProb: number;
+  deadProb: number;
 };
 
-const virusEvents = (
+const virusEvent = (
   currentVirus: Virus,
-  turn: number,
+  turns: number,
   params: ParamsModel
-): Virus => {
+) => {
   const virus = { ...currentVirus };
   const events: { [num: number]: Function } = {
     0: enhanceProb,
     1: cureSlower,
   };
 
-  if (Object.keys(virus.turnEvent).includes(turn.toString())) {
-    const eventNum = virus.turnEvent[turn];
-    return events[eventNum](virus, params);
+  if (Object.keys(virus.turnEvent).includes(turns.toString())) {
+    const eventNum = virus.turnEvent[turns];
+    return events[eventNum](virus, params, turns);
   }
-  return virus;
+  return { newVirus: virus, event: null };
 };
 
-const enhanceProb = (virus: Virus, params: ParamsModel) => {
-  virus.prob *= params.PROB_POWER;
-  return virus;
+const enhanceProb = (virus: Virus, params: ParamsModel, turns: number) => {
+  virus.prob = Math.min(virus.prob * params.PROB_POWER, 1);
+  const event = [turns, "virus_e", { prob: virus.prob.toFixed(2) }];
+  return { newVirus: virus, event: event };
 };
 
-const cureSlower = (virus: Virus, params: ParamsModel) => {
+const cureSlower = (virus: Virus, params: ParamsModel, turns: number) => {
   virus.turnsRequiredForHeal += params.CURE_SLOWER_EFFECT;
-  return virus;
+  const event = [
+    turns,
+    "virus_c",
+    { turnsRequiredForHeal: virus.turnsRequiredForHeal },
+  ];
+  return { newVirus: virus, event: event };
 };
 
 export const updateVirus = (
   virus: Virus,
-  turn: number,
+  turns: number,
   params: ParamsModel
-): Virus => {
-  const newVirus = virusEvents(virus, turn, params);
-  return newVirus;
+) => {
+  const virusEvents: [number, string, any][] = [];
+  const { newVirus, event } = virusEvent(virus, turns, params);
+  if (event) virusEvents.push(event);
+  return { virus: newVirus, virusEvents: virusEvents };
 };

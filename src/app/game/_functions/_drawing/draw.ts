@@ -1,6 +1,5 @@
 import { COLORS } from "../../_params/colors";
 import { GameState } from "../../_states/state";
-import { drawBar } from "../../_states/bars";
 import { DrawRatio } from "../../_params/drawRatio";
 import { ParamsModel } from "../../_params/params";
 import { Pref } from "../../_states/pref";
@@ -11,18 +10,12 @@ export const drawGameScreen = (
   params: ParamsModel,
   offCvs: HTMLCanvasElement
 ) => {
-  const { balls, bars } = gameState;
+  const { balls } = gameState;
   const { turns } = gameState.sceneState;
 
   drawWhite(ctx, params);
 
   ctx.drawImage(offCvs, 0, 0);
-
-  if (bars.length > params.DEFAULT_BARS) {
-    for (let i = params.DEFAULT_BARS; i < bars.length; i++) {
-      drawBar(bars[i], ctx);
-    }
-  }
 
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
@@ -74,7 +67,7 @@ export const drawResult = (
   params: ParamsModel,
   score: number | null
 ) => {
-  const { turns, contactedCount } = state.sceneState;
+  const { turns, deadCount } = state.sceneState;
   drawWhite(ctx, params);
 
   ctx.save();
@@ -88,7 +81,7 @@ export const drawResult = (
   ctx.fillText(`turn : ${turns}`, posX, posY);
   posY += 100;
 
-  ctx.fillText(`survivor : ${params.MAX_BALLS - contactedCount}`, posX, posY);
+  ctx.fillText(`survivor : ${params.MAX_BALLS - deadCount}`, posX, posY);
   posY += 100;
 
   ctx.fillText(`score : ${score}`, posX, posY);
@@ -203,7 +196,6 @@ const drawPoints = (
   params: ParamsModel
 ) => {
   const { points } = gameState.player;
-  const { turns } = gameState.sceneState;
 
   const m = 5;
   const w = (params.MAX_WIDTH - m) / 10 - m;
@@ -216,7 +208,7 @@ const drawPoints = (
 
   ctx.fillStyle = COLORS.GREEN;
 
-  for (let i = 0; i < points; i++) {
+  for (let i = 0; i < Math.floor(points); i++) {
     ctx.fillRect(posX, params.MAX_HEIGHT + posY, w, h);
 
     posX += w + m;
@@ -224,7 +216,12 @@ const drawPoints = (
 
   ctx.fillStyle = COLORS.LIGHT_GREEN;
 
-  ctx.fillRect(posX, params.MAX_HEIGHT + posY, ((turns % 50) * w) / 50, h);
+  ctx.fillRect(
+    posX,
+    params.MAX_HEIGHT + posY,
+    (points - Math.floor(points)) * w,
+    h
+  );
 
   ctx.closePath();
 };

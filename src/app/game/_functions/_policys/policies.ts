@@ -1,20 +1,20 @@
 import { StaticImageData } from "next/image";
 import { ParamsModel } from "../../_params/params";
 import { GameState, Objects, PlayingState } from "../../_states/state";
-import { createBarInit } from "./createBar";
-import { createFenceInit } from "./createFence";
-import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
 import { mask } from "./mask";
 import { disposable_mask } from "./disposable_mask";
+import { pcr } from "./pcr";
+import { medicine } from "./medicine";
 import { lockdown } from "./lockdown";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import maskImage from "@/assets/img/mask.png";
 import disposableMaskImage from "@/assets/img/disposable_mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
+import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "../../_states/maps";
-import { kantoMapData } from "../../_maps/kanto/kantoMapData";
+import { allPrefs } from "../../_data/prefs";
 
 export type Policy = {
   key: string;
@@ -29,6 +29,7 @@ export type Policy = {
   point: string;
   isActive: boolean;
   image?: StaticImageData;
+  cooltime?: number;
 };
 
 const mapPos = (
@@ -60,26 +61,6 @@ const mapPos = (
 
 export const policies: Policy[] = [
   {
-    key: "b",
-    label: "create bar",
-    func: (state, params, cvsPos, mousePos) => {
-      createBarInit(state.bars, params);
-      return { playingState: PlayingState.editing, editing: Objects.bar };
-    },
-    point: "POINTS_FOR_BAR",
-    isActive: false,
-  },
-  {
-    key: "f",
-    label: "create fence",
-    func: (state, params, cvsPos, mousePos) => {
-      createFenceInit(state.fences, state.bars, params);
-      return { playingState: PlayingState.editing, editing: Objects.fence };
-    },
-    point: "POINTS_FOR_FENCE",
-    isActive: false,
-  },
-  {
     key: "v",
     label: "vaccinate",
     func: (state, params, cvsPos, mousePos, sw) => {
@@ -88,26 +69,41 @@ export const policies: Policy[] = [
       if (!droppedPos) return {};
       player.points -= params.POINTS_FOR_VACCINE;
       const virus = vaccine(state, params);
-      return { player: player, virus: virus };
+      const events = [...state.events];
+      events.push([
+        state.sceneState.turns,
+        "policy_v",
+        { prob: virus.prob.toFixed(2) },
+      ]);
+      return { player: player, virus: virus, events: events };
     },
     point: "POINTS_FOR_VACCINE",
     isActive: true,
     image: vaccineImage,
+    cooltime: 100,
   },
   {
-    key: "m",
-    label: "mask",
+    key: "e",
+    label: "medicine",
     func: (state, params, cvsPos, mousePos, sw) => {
-      const { player } = state;
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
       if (!droppedPos) return {};
-      player.points -= params.POINTS_FOR_MASK;
-      const balls = mask(state, params);
-      return { balls: balls };
+      const { player } = state;
+      player.points -= params.POINTS_FOR_MEDICINE;
+      const virus = medicine(state, params);
+      const events = [...state.events];
+      events.push([
+        state.sceneState.turns,
+        "policy_e",
+        {
+          healProb: virus.healProb.toFixed(2),
+        },
+      ]);
+      return { player: player, virus: virus, events: events };
     },
-    point: "POINTS_FOR_MASK",
+    point: "POINTS_FOR_MEDICINE",
     isActive: true,
-    image: maskImage,
+    image: medicineImage,
   },
   {
     key: "d",
@@ -125,19 +121,21 @@ export const policies: Policy[] = [
     image: disposableMaskImage,
   },
   {
-    key: "c",
-    label: "cure faster",
+    key: "m",
+    label: "mask",
     func: (state, params, cvsPos, mousePos, sw) => {
+      const { player } = state;
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
       if (!droppedPos) return {};
-      const { player } = state;
-      player.points -= params.POINTS_FOR_CURE_FASTER;
-      const virus = cureFaster(state, params);
-      return { player: player, virus: virus };
+      player.points -= params.POINTS_FOR_MASK;
+      const { balls, data } = mask(state, params);
+      const events = [...state.events];
+      events.push([state.sceneState.turns, "policy_m", { ...data }]);
+      return { balls: balls, events: events };
     },
-    point: "POINTS_FOR_CURE_FASTER",
+    point: "POINTS_FOR_MASK",
     isActive: true,
-    image: medicineImage,
+    image: maskImage,
   },
   {
     key: "l",
@@ -157,10 +155,36 @@ export const policies: Policy[] = [
         prefId,
         state.sceneState.turns
       );
-      return { player: player, prefs: newPrefs };
+      const events = [...state.events];
+      events.push([
+        state.sceneState.turns,
+        "policy_l",
+        {
+          name: allPrefs.filter((row) => row.id == prefId)[0].name,
+          compliance: (1 - prefs[prefId].lockdownCompliance).toFixed(2),
+        },
+      ]);
+      return { player: player, prefs: newPrefs, events: events };
     },
     point: "POINTS_FOR_LOCKDOWN",
     isActive: true,
     image: lockDownImage,
+  },
+  {
+    key: "p",
+    label: "pcr",
+    func: (state, params, cvsPos, mousePos, sw) => {
+      const { player } = state;
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
+      if (!droppedPos) return {};
+      player.points -= params.POINTS_FOR_PCR;
+      const { balls, data } = pcr(state, params);
+      const events = [...state.events];
+      events.push([state.sceneState.turns, "policy_p", { ...data }]);
+      return { player: player, balls: balls, events: events };
+    },
+    point: "POINTS_FOR_PCR",
+    isActive: true,
+    image: pcrImage,
   },
 ];

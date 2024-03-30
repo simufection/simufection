@@ -14,6 +14,13 @@
         left: 0;
     }
 
+    &__version {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        font-size: $fs-text;
+    }
+
     &__start-button {
         width: 50px;
         height: 50px;
@@ -64,6 +71,32 @@
         height: 50px;
         position: absolute;
         right: 10px;
+        top: 10px;
+
+        @include mq(sp) {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    &__ranking-button {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+
+        @include mq(sp) {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    &__ranking-button_result {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        right: 80px;
         top: 10px;
 
         @include mq(sp) {
@@ -132,8 +165,34 @@
         width: 200px;
         height: 30px;
         left: 50%;
-        top: 70%;
+        top: 60%;
         translate: -50% -50%;
+
+        &::placeholder {
+            color: $dark-gray;
+        }
+
+        &:disabled {
+            color: $gray;
+            border: 1px solid $gray;
+
+            &::placeholder {
+                color: $gray;
+            }
+        }
+    }
+
+    &__feedback-input {
+        position: absolute;
+        width: 200px;
+        height: 100px;
+        left: 50%;
+        top: 75%;
+        translate: -50% -50%;
+        border-radius: 5px;
+        border: 1px solid $black;
+        padding: 10px;
+        text-align: left;
 
         &::placeholder {
             color: $dark-gray;
@@ -154,7 +213,7 @@
         width: 200px;
         height: 30px;
         left: 50%;
-        top: 80%;
+        top: 90%;
         translate: -50% -50%;
 
         background-color: transparent;
@@ -175,17 +234,19 @@
 
     &__select-map-items {
         height: calc(100% - 100px);
+        overflow-y: auto;
     }
 
     &__select-map-item {
-        font-size: $fs-title;
-        height: 30px;
+        font-size: calc($fs-title * 1.2);
+        height: 5%;
+        min-height: 75px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
-        padding: 40px;
+        padding: 6%;
 
 
         &.-selected {
@@ -194,8 +255,9 @@
     }
 
     &__select-map-img {
-        height: 70px;
-        width: 70px;
+        height: auto;
+        width: 13%;
+        min-width: 65px;
     }
 
     &__select-map-buttons {
@@ -216,4 +278,16 @@
         height: 50px;
     }
 
+    &__timeline-container {
+        height: 50px;
+        width: 100%;
+        text-align: left;
+        overflow-y: scroll;
+        padding: 10px;
+    }
+
+    &__timeline {
+        font-size: $fs-text;
+        white-space: pre-wrap;
+    }
 }

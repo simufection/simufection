@@ -1,12 +1,4 @@
-import { INF } from "../_params/inf";
-import { createBarFunc, createBarInit } from "../_functions/_policys/createBar";
-import {
-  createFenceFunc,
-  createFenceInit,
-} from "../_functions/_policys/createFence";
 import { Ball, createBalls, updateBalls } from "./balls";
-import { Bar, createBar, updateBars } from "./bars";
-import { Fence, updateFences } from "./fences";
 import { Keys, updateKeys } from "./keys";
 import { Player, updatePlayer } from "./player";
 import { RNote, updateRNote } from "./rNote";
@@ -40,13 +32,12 @@ export type GameState = {
   sceneState: SceneState;
   player: Player;
   balls: Ball[];
-  bars: Bar[];
-  fences: Fence[];
   prefs: { [name: number]: Pref };
   virus: Virus;
   rNote: RNote;
   keys: Keys;
   editing: Objects;
+  events: [number, string, any][];
 };
 
 export const initializeGameState = (
@@ -84,35 +75,33 @@ export const initializeGameState = (
     map: map,
     playingState: PlayingState.loading,
     player: {
-      points: 0,
+      points: 3,
+      pt: params.INITIAL_DELTA_POINT,
     },
     sceneState: {
       turns: 0,
       results: [],
-      preResult: [0, 1, 1, 0],
+      preResult: [0, 1, 1, 0, 0],
       contactedCount: 0,
       infectedCount: 0,
       healedCount: 0,
+      deadCount: 0,
+      sum_infected: 0,
+      sum_dead: 0,
+      sum_healed: 0,
     },
     balls: createBalls(params, map),
-    bars: [
-      createBar(true, -INF, -INF, INF, INF * 2),
-      createBar(true, params.MAX_WIDTH, -INF, INF, INF * 2),
-      createBar(false, -INF, -INF, INF * 2, INF),
-      createBar(false, -INF, params.MAX_HEIGHT, INF * 2, INF),
-    ],
-    fences: [],
     prefs: initializePrefs(params, map.prefIds),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
-      turnEvent: { 250: 0, 350: 1, 450: 0 },
+      turnEvent: { 500: 0, 1000: 1, 1500: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
       turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
-      TURNS_JUDGE_HEAL: params.TURNS_JUDGE_HEAL,
-      TURNS_JUDGE_DEAD: params.TURNS_JUDGE_DEAD,
-      HEAL_PROB: params.HEAL_PROB,
-      DEAD_PROB: params.DEAD_PROB,
+      turnsJudgeHeal: params.TURNS_JUDGE_HEAL,
+      turnsJudgeDead: params.TURNS_JUDGE_DEAD,
+      healProb: params.HEAL_PROB,
+      deadProb: params.DEAD_PROB,
     },
     rNote: {
       resultsWIDTH: 4,
@@ -129,6 +118,7 @@ export const initializeGameState = (
       downAll: new Set<string>(),
     },
     editing: Objects.none,
+    events: [[0, "game_start", {}]],
   };
 };
 
@@ -151,31 +141,52 @@ export const updateGameState = (
     // const effectsOfPolicy = usePolicy(currentState, params);
     // const state = { ...currentState, ...effectsOfPolicy };
     const state = { ...currentState };
-    const { sceneState, playingState } = updateSceneState(
+    const events = state.events;
+    const { sceneState, playingState, sceneEvents } = updateSceneState(
       state.sceneState,
       params,
       state.balls,
       state.playingState
     );
+    sceneEvents.forEach((e) => {
+      events.push(e);
+    });
     const rNote = updateRNote(state.rNote, state.sceneState.results);
-    const player = updatePlayer(
+    const { player, playerEvents } = updatePlayer(
+      state.sceneState,
       state.player,
-      1,
-      state.sceneState.turns,
       params
     );
-    const prefs = updatePrefs(params, state.prefs, sceneState.turns);
-    const balls = updateBalls(
+    playerEvents.forEach((e) => {
+      events.push(e);
+    });
+    const { prefs, prefsEvents } = updatePrefs(
+      params,
+      state.prefs,
+      sceneState.turns
+    );
+    prefsEvents.forEach((e) => {
+      events.push(e);
+    });
+    const { balls, ballsEvents } = updateBalls(
       state.balls,
-      state.bars,
       params,
       sceneState.turns,
       state.virus,
       state.map,
       state.prefs
     );
-    const bars = updateBars(state.bars);
-    const virus = updateVirus(state.virus, sceneState.turns, params);
+    ballsEvents.forEach((e) => {
+      events.push(e);
+    });
+    const { virus, virusEvents } = updateVirus(
+      state.virus,
+      sceneState.turns,
+      params
+    );
+    virusEvents.forEach((e) => {
+      events.push(e);
+    });
 
     const keys = updateKeys(state.keys, inputKeys);
 
@@ -187,67 +198,10 @@ export const updateGameState = (
         sceneState: sceneState,
         prefs: prefs,
         balls: balls,
-        bars: bars,
         virus: virus,
         rNote: rNote,
         keys: keys,
-      },
-    };
-  } else if (currentState.playingState == PlayingState.editing) {
-    const state = currentState;
-    const keys = updateKeys(state.keys, inputKeys);
-
-    let bars: Bar[];
-    let fences: Fence[];
-
-    if (state.editing == Objects.bar) {
-      const { bars: newBars, res, player } = createBarFunc(state, params);
-      if (res) {
-        return {
-          ...state,
-          ...{
-            keys: keys,
-            playingState: PlayingState.playing,
-            player: player || state.player,
-          },
-        };
-      }
-      bars = updateBars(newBars);
-    }
-    if (state.editing == Objects.fence) {
-      const {
-        bars: newBars,
-        res,
-        player,
-        fences: newFences,
-      } = createFenceFunc(state, params);
-      if (res) {
-        return {
-          ...state,
-          ...{
-            keys: keys,
-            playingState: PlayingState.playing,
-            player: player || state.player,
-          },
-        };
-      }
-      bars = updateBars(newBars);
-      fences = updateFences(newFences);
-    }
-    const { sceneState, playingState } = updateSceneState(
-      state.sceneState,
-      params,
-      state.balls,
-      state.playingState
-    );
-    return {
-      ...state,
-      ...{
-        playingState: playingState,
-        bars: bars! || state.bars,
-        fences: fences! || state.fences,
-        keys: keys,
-        sceneState: sceneState,
+        events: events,
       },
     };
   } else {

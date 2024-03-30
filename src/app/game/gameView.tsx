@@ -26,7 +26,7 @@ import useWindowSize from "@/hooks/useWindowSize";
 import { stateIsPlaying, stateNotPlaying } from "./_params/consts";
 import { GameButtons } from "./_components/gameButtons";
 import { GameStateContext } from "./contextProvoder";
-import { calcScore, sendScore } from "./_functions/_game/score";
+import { calcScore } from "./_functions/_game/score";
 import Image from "next/image";
 
 import { Axios } from "@/services/axios";
@@ -41,11 +41,16 @@ import { getMousePosition } from "@/app/game/_functions/getMousePosition";
 import { Pref } from "./_states/pref";
 import SendScoreInput from "./_components/sendScoreInput";
 import SelectMap from "./_components/selectMap";
+import RankingModal from "./_components/rankingModal";
+import { appVersion } from "@/consts/appVersion";
+import { eventMessage } from "./_params/eventMessage";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
   const [[sw, sh], setScreenSize] = useState([0, 0]);
   const [ctx, setContext] = useState<CanvasRenderingContext2D | null>(null);
+
+  const [showRanking, setShowRanking] = useState(false);
 
   const {
     offCvs,
@@ -53,8 +58,10 @@ const GameView = () => {
     mapName,
     score,
     gameState,
-    updateGameStateFromGameView,
+    updateGameStateForce,
     setScore,
+    rankingData,
+    setRankingData,
   } = useContext(GameStateContext)!;
 
   const [params, setParams] = useState<ParamsModel | null>(null);
@@ -65,10 +72,20 @@ const GameView = () => {
 
   const [updateDraw, updateDrawState] = useState(false);
 
+  const version = appVersion;
+  const ver = `${version.split(".")[0]}.${version.split(".")[1]}`;
+
   useEffect(() => {
     const canvas = document.getElementById("screen") as HTMLCanvasElement;
     const canvasctx = canvas.getContext("2d");
     setContext(canvasctx);
+
+    Axios.post("/api/getRanking", {}).then((res) => {
+      setRankingData({
+        ...rankingData,
+        ...{ [ver]: { all: res.data.all, today: res.data.today } },
+      });
+    });
 
     Axios.get(
       `https://sheets.googleapis.com/v4/spreadsheets/${process.env.NEXT_PUBLIC_GOOGLE_SHEETS_DOC_ID}/values/${process.env.NEXT_PUBLIC_SHEET_NAME}?key=${process.env.NEXT_PUBLIC_GOOGLE_SHEETS_API_KEY}`
@@ -80,7 +97,7 @@ const GameView = () => {
 
   useEffect(() => {
     if (params) {
-      updateGameStateFromGameView(initializeGameState(params, mapName));
+      updateGameStateForce(initializeGameState(params, mapName));
 
       const canvas = document.getElementById("screen") as HTMLCanvasElement;
       canvas.width = params.MAX_WIDTH;
@@ -92,7 +109,7 @@ const GameView = () => {
         screenWidth = Math.min(params.MAX_WIDTH, w);
         screenHeight = screenWidth * canvasAspect;
       } else {
-        screenHeight = Math.min(params.MAX_HEIGHT + 50, h);
+        screenHeight = Math.min(params.MAX_HEIGHT, h);
         screenWidth = screenHeight / canvasAspect;
       }
 
@@ -103,7 +120,7 @@ const GameView = () => {
   useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
-      updateGameStateFromGameView({ playingState: PlayingState.waiting });
+      updateGameStateForce({ playingState: PlayingState.waiting });
     }
   }, [ctx, params, gameState, onReady]);
 
@@ -130,9 +147,7 @@ const GameView = () => {
         if (gameState.playingState == PlayingState.pausing) {
           drawOverLay(ctx, params);
         } else {
-          updateGameStateFromGameView(
-            updateGameState(gameState, params, pressedKey)
-          );
+          updateGameStateForce(updateGameState(gameState, params, pressedKey));
         }
       } else if (updateDraw) {
         if (
@@ -192,6 +207,18 @@ const GameView = () => {
             サポートされていません
           </canvas>
         </Droppable>
+        <div className="p-game__timeline-container">
+          <div className="p-game__timeline">
+            {onReady
+              ? gameState.events
+                  .toReversed()
+                  .map((r) => {
+                    return eventMessage(r[0], r[2])[r[1]];
+                  })
+                  .join("\n")
+              : ""}
+          </div>
+        </div>
 
         <div
           className="p-game__policies"
@@ -202,30 +229,49 @@ const GameView = () => {
           {onReady && stateIsPlaying.includes(gameState.playingState)
             ? policies
                 .filter((policy) => policy.isActive)
-                .map((policy) => (
-                  <PolicyIcon
-                    key={policy.key}
-                    id={`policy-${policy.key}`}
-                    image={policy.image}
-                    disabled={
-                      gameState.playingState == PlayingState.pausing ||
-                      params[policy.point] > gameState.player.points
-                    }
-                    cost={params[policy.point]}
-                    func={(mousePos: Position, cvsPos: Position) => {
-                      if (params[policy.point] <= gameState.player.points) {
-                        updateGameStateFromGameView(
-                          policy.func(gameState, params, cvsPos, mousePos, sw)
-                        );
+                .map((policy) => {
+                  const events = gameState.events.filter(
+                    (e) => e[1] == `policy_${policy.key}`
+                  );
+                  const lastTurn =
+                    events.length > 0 ? events[events.length - 1][0] : null;
+                  return (
+                    <PolicyIcon
+                      key={policy.key}
+                      id={`policy-${policy.key}`}
+                      image={policy.image}
+                      disabled={
+                        gameState.playingState == PlayingState.pausing ||
+                        params[policy.point] > gameState.player.points
                       }
-                    }}
-                    className={`p-game__policy-button ${
-                      params[policy.point] > gameState.player.points
-                        ? "-inactive"
-                        : ""
-                    }`}
-                  />
-                ))
+                      cost={params[policy.point]}
+                      func={(mousePos: Position, cvsPos: Position) => {
+                        if (
+                          params[policy.point] <= gameState.player.points &&
+                          (!policy.cooltime ||
+                            !lastTurn ||
+                            gameState.sceneState.turns >
+                              policy.cooltime + lastTurn)
+                        ) {
+                          updateGameStateForce(
+                            policy.func(gameState, params, cvsPos, mousePos, sw)
+                          );
+                        }
+                      }}
+                      className={`p-game__policy-button ${
+                        params[policy.point] > gameState.player.points
+                          ? "-inactive"
+                          : ""
+                      }`}
+                      ratio={
+                        policy.cooltime && lastTurn
+                          ? (gameState.sceneState.turns - lastTurn) /
+                            policy.cooltime
+                          : 1
+                      }
+                    />
+                  );
+                })
             : null}
         </div>
       </DndContext>
@@ -241,7 +287,7 @@ const GameView = () => {
           priority
         />
       ) : null}
-      <GameButtons params={params} ctx={ctx} />
+      <GameButtons params={params} ctx={ctx} showRanking={setShowRanking} />
       {onReady && gameState.playingState == PlayingState.finishing ? (
         gameState.sceneState.contactedCount === 1 ? null : (
           <SendScoreInput />
@@ -249,6 +295,12 @@ const GameView = () => {
       ) : null}
       {onReady && gameState.playingState == PlayingState.selecting ? (
         <SelectMap params={params} ctx={ctx} />
+      ) : null}
+      {showRanking ? (
+        <RankingModal
+          closeModal={() => setShowRanking(false)}
+          rankingData={rankingData}
+        />
       ) : null}
     </div>
   );

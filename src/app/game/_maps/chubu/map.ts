@@ -1,9 +1,9 @@
-import { prefs } from "../../_data/prefs";
+import { allPrefs } from "../../_data/prefs";
 import { Map } from "../../_states/maps";
 import { chubuMapData } from "./chubuMapData";
 import chubuMapPreview from "../../../../assets/img/chubu_preview.png";
 
-const chubuPrefs = prefs.filter((p) => p.area == "中部");
+const chubuPrefs = allPrefs.filter((p) => p.area == "中部");
 const chubuPrefIds = chubuPrefs.map((p) => p.id);
 const totalPop = chubuPrefs.reduce(
   (sum, { population }) => sum + population,

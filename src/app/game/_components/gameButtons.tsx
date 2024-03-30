@@ -6,19 +6,22 @@ import pauseImage from "@/assets/img/pause-icon.png";
 import startImage from "@/assets/img/start-icon.png";
 import quitImage from "@/assets/img/quit-icon.png";
 import homeImage from "@/assets/img/home-icon.png";
+import rankingImage from "@/assets/img/ranking-icon.png";
 import { ParamsModel } from "../_params/params";
 import { stateIsPlaying } from "../_params/consts";
-import { useContext } from "react";
+import { Dispatch, useContext } from "react";
 import { GameStateContext } from "../contextProvoder";
+import { appVersion } from "@/consts/appVersion";
 
 type Props = {
   params: ParamsModel | null;
   ctx: CanvasRenderingContext2D | null;
+  showRanking: Dispatch<boolean>;
 };
 
 export const GameButtons = (props: Props) => {
   const { params, ctx } = props;
-  const { gameState, quitSimulate, updateGameStateFromGameView } =
+  const { gameState, quitSimulate, updateGameStateForce } =
     useContext(GameStateContext)!;
 
   const onReady = !!(params && ctx && gameState);
@@ -29,15 +32,18 @@ export const GameButtons = (props: Props) => {
   return (
     <>
       {gameState.playingState == PlayingState.waiting ? (
-        <Button
-          className="p-game__start-button u-tr"
-          image={startImage}
-          onClick={() =>
-            updateGameStateFromGameView({
-              playingState: PlayingState.selecting,
-            })
-          }
-        />
+        <>
+          <Button
+            className="p-game__start-button u-tr"
+            image={startImage}
+            onClick={() =>
+              updateGameStateForce({
+                playingState: PlayingState.selecting,
+              })
+            }
+          />
+          <span className="p-game__version">{appVersion}</span>
+        </>
       ) : null}
       {gameState.playingState == PlayingState.pausing ? (
         <Button
@@ -56,10 +62,10 @@ export const GameButtons = (props: Props) => {
           }
           onClick={() => {
             gameState.playingState == PlayingState.pausing
-              ? updateGameStateFromGameView({
+              ? updateGameStateForce({
                   playingState: PlayingState.playing,
                 })
-              : updateGameStateFromGameView({
+              : updateGameStateForce({
                   playingState: PlayingState.pausing,
                 });
           }}
@@ -70,8 +76,18 @@ export const GameButtons = (props: Props) => {
           className="p-game__restart-button u-tr"
           image={homeImage}
           onClick={() =>
-            updateGameStateFromGameView({ playingState: PlayingState.waiting })
+            updateGameStateForce({ playingState: PlayingState.waiting })
           }
+        />
+      ) : null}
+      {gameState.playingState == PlayingState.waiting ||
+      gameState.playingState == PlayingState.finishing ? (
+        <Button
+          className={`p-game__ranking-button${
+            gameState.playingState == PlayingState.finishing ? "_result" : ""
+          } u-tr`}
+          image={rankingImage}
+          onClick={() => props.showRanking(true)}
         />
       ) : null}
     </>
