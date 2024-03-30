@@ -5,11 +5,13 @@ import { createBarInit } from "./createBar";
 import { createFenceInit } from "./createFence";
 import { cureFaster } from "./cureFaster";
 import { vaccine } from "./vaccine";
-import{mask} from "./mask";
+import { mask } from "./mask";
+import { disposable_mask } from "./disposable_mask";
 import { lockdown } from "./lockdown";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import maskImage from "@/assets/img/mask.png";
+import disposableMaskImage from "@/assets/img/disposable_mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
 import { Map } from "../../_states/maps";
 import { kantoMapData } from "../../_maps/kanto/kantoMapData";
@@ -95,7 +97,7 @@ export const policies: Policy[] = [
   {
     key: "m",
     label: "mask",
-    func: (state, params, cvsPos, mousePos,sw) => {
+    func: (state, params, cvsPos, mousePos, sw) => {
       const { player } = state;
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
       if (!droppedPos) return {};
@@ -106,6 +108,21 @@ export const policies: Policy[] = [
     point: "POINTS_FOR_MASK",
     isActive: true,
     image: maskImage,
+  },
+  {
+    key: "d",
+    label: "disposable_mask",
+    func: (state, params, cvsPos, mousePos, sw) => {
+      const { player } = state;
+      const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
+      if (!droppedPos) return {};
+      player.points -= params.POINTS_FOR_DISPOSABLE_MASK;
+      const balls = disposable_mask(state, params);
+      return { balls: balls };
+    },
+    point: "POINTS_FOR_DISPOSABLE_MASK",
+    isActive: true,
+    image: disposableMaskImage,
   },
   {
     key: "c",
