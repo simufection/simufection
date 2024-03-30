@@ -113,8 +113,11 @@ export const policies: Policy[] = [
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
       if (!droppedPos) return {};
       player.points -= params.POINTS_FOR_DISPOSABLE_MASK;
-      const balls = disposable_mask(state, params);
-      return { balls: balls };
+      const { balls, data } = disposable_mask(state, params);
+      const events = [...state.events];
+      // return { balls: balls };
+      events.push([state.sceneState.turns, "policy_d", { ...data }]);
+      return { balls: balls, events: events };
     },
     point: "POINTS_FOR_DISPOSABLE_MASK",
     isActive: true,
