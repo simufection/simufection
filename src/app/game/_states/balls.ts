@@ -397,3 +397,9 @@ export const updateBalls = (
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
   return { balls: balls, ballsEvents: ballsEvents };
 };
+
+export const infectionRate = (balls: Ball[], prefId: number) => {
+  const totBalls = balls.filter((b) => b.prefId == prefId);
+  const infectedBalls = totBalls.filter((b) => b.infectedState == 1);
+  return totBalls.length > 0 ? infectedBalls.length / totBalls.length : 0;
+};

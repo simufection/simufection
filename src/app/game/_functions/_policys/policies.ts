@@ -6,6 +6,7 @@ import { pcr } from "./pcr";
 import { mask } from "./mask";
 import { medicine } from "./medicine";
 import { lockdown } from "./lockdown";
+import { infectionRate } from "../../_states/balls";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import maskImage from "@/assets/img/mask.png";
@@ -125,10 +126,13 @@ export const policies: Policy[] = [
     label: "lockdown",
     func: (state, params, cvsPos, mousePos, sw) => {
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
-      const { player, prefs, map } = state;
+      const { player, prefs, map ,balls} = state;
       if (!droppedPos) return {};
       const prefId = map.map[droppedPos.x][droppedPos.y];
       if (prefId <= 0 || prefs[prefId].isLockedDown) {
+        return {};
+      }
+      if (infectionRate(balls,prefId) < params.INFECTION_RATE_FOR_LOCKDOWN){
         return {};
       }
       player.points -= params.POINTS_FOR_LOCKDOWN;

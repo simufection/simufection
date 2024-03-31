@@ -1,6 +1,7 @@
 import { initialize } from "next/dist/server/lib/render-server";
 import { ParamsModel } from "../_params/params";
 import { allPrefs } from "../_data/prefs";
+import { Ball, infectionRate } from "./balls";
 
 export type Pref = {
   isLockedDown: boolean;
@@ -27,12 +28,16 @@ export const initializePrefs = (params: ParamsModel, prefIds: number[]) => {
 export const updatePrefs = (
   params: ParamsModel,
   currentPrefs: { [name: number]: Pref },
+  balls: Ball[],
   turns: number
 ) => {
   let prefs = { ...currentPrefs };
   const prefsEvents: [number, string, any][] = [];
   for (let prefId in prefs) {
-    if (turns == prefs[prefId].turnLockdownEnds) {
+    if (
+      prefs[prefId].isLockedDown &&
+      infectionRate(balls, parseInt(prefId)) < params.INFECTION_RATE_LOCKDOWN_ENDS
+    ) {
       prefs[prefId].isLockedDown = false;
       prefs[prefId].lockdownCompliance *= params.LOCKDOWN_COMPLIANCE_RATE;
       prefs[prefId].updated = true;

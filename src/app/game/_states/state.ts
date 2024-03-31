@@ -163,6 +163,7 @@ export const updateGameState = (
     const { prefs, prefsEvents } = updatePrefs(
       params,
       state.prefs,
+      state.balls,
       sceneState.turns
     );
     prefsEvents.forEach((e) => {
