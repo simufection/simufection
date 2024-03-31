@@ -126,14 +126,22 @@ export const policies: Policy[] = [
     label: "lockdown",
     func: (state, params, cvsPos, mousePos, sw) => {
       const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
-      const { player, prefs, map ,balls} = state;
+      const { player, prefs, map, balls } = state;
       if (!droppedPos) return {};
       const prefId = map.map[droppedPos.x][droppedPos.y];
       if (prefId <= 0 || prefs[prefId].isLockedDown) {
         return {};
       }
-      if (infectionRate(balls,prefId) < params.INFECTION_RATE_FOR_LOCKDOWN){
-        return {};
+      if (infectionRate(balls, prefId) < params.INFECTION_RATE_FOR_LOCKDOWN) {
+        const events = [...state.events];
+        events.push([
+          state.sceneState.turns,
+          "lockdown_failure",
+          {
+            name: allPrefs.filter((row) => row.id == prefId)[0].name,
+          },
+        ]);
+        return { events: events };
       }
       player.points -= params.POINTS_FOR_LOCKDOWN;
       const { newPrefs } = lockdown(
