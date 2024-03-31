@@ -5,7 +5,6 @@ import { Ball, infectionRate } from "./balls";
 
 export type Pref = {
   isLockedDown: boolean;
-  turnLockdownEnds: number;
   lockdownCompliance: number;
   updated: boolean;
 };
@@ -13,7 +12,6 @@ export type Pref = {
 export const initializePrefs = (params: ParamsModel, prefIds: number[]) => {
   const pref: Pref = {
     isLockedDown: false,
-    turnLockdownEnds: -1,
     lockdownCompliance: params.LOCKDOWN_COMPLIANCE,
     updated: false,
   };
@@ -36,7 +34,8 @@ export const updatePrefs = (
   for (let prefId in prefs) {
     if (
       prefs[prefId].isLockedDown &&
-      infectionRate(balls, parseInt(prefId)) < params.INFECTION_RATE_LOCKDOWN_ENDS
+      infectionRate(balls, parseInt(prefId)) <
+        params.INFECTION_RATE_LOCKDOWN_ENDS
     ) {
       prefs[prefId].isLockedDown = false;
       prefs[prefId].lockdownCompliance *= params.LOCKDOWN_COMPLIANCE_RATE;
