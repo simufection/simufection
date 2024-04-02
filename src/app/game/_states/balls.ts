@@ -186,8 +186,12 @@ const updatePosition = (
 
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
-      dx = Math.cos(randDeg);
-      dy = Math.sin(randDeg);
+      dx =
+        Math.cos(randDeg) *
+        (prefs[prefId].isLockedDown ? params.SPEED_UNDER_LOCKDOWN : 1);
+      dy =
+        Math.sin(randDeg) *
+        (prefs[prefId].isLockedDown ? params.SPEED_UNDER_LOCKDOWN : 1);
       remainLevy = Math.floor(randDis);
     }
     x += dx;
