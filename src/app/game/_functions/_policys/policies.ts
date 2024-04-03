@@ -115,7 +115,6 @@ export const policies: Policy[] = [
       player.points -= params.POINTS_FOR_DISPOSABLE_MASK;
       const { balls, data } = disposable_mask(state, params);
       const events = [...state.events];
-      // return { balls: balls };
       events.push([state.sceneState.turns, "policy_d", { ...data }]);
       return { balls: balls, events: events };
     },

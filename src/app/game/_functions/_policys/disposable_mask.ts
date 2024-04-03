@@ -8,8 +8,10 @@ export const disposable_mask = (state: GameState, params: ParamsModel) => {
   let distribute_num = params.DISTRIBUTE_NUM;
   for (let i = 0; i < balls.length; i++) {
     if (distribute_num == 0) break;
-    if (balls[i].infectedState == InfectedState.infected) {
-      balls[i].disposable_masked = false;
+    if (
+      balls[i].infectedState == InfectedState.infected &&
+      balls[i].disposable_masked == false
+    ) {
       distribute_num -= 1;
       data.num++;
       balls[i].disposable_masked = true;

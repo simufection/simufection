@@ -69,6 +69,7 @@ const createBall = (
     infectedState: InfectedState.notInfected,
     first: false,
     masked: false,
+    disposable_masked: false,
     remainLevy: 0,
     count: 0,
     reinfect: false,
