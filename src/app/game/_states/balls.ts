@@ -186,8 +186,12 @@ const updatePosition = (
 
       randDeg = Math.random() * Math.PI * 2;
       randDis = randLevy(1, params.LEVY_SCALE, params.LEVY_MAX);
-      dx = Math.cos(randDeg);
-      dy = Math.sin(randDeg);
+      dx =
+        Math.cos(randDeg) *
+        (prefs[prefId].isLockedDown ? params.SPEED_UNDER_LOCKDOWN : 1);
+      dy =
+        Math.sin(randDeg) *
+        (prefs[prefId].isLockedDown ? params.SPEED_UNDER_LOCKDOWN : 1);
       remainLevy = Math.floor(randDis);
     }
     x += dx;
@@ -281,7 +285,9 @@ const updateBallState = (
         balls[i].stop = false;
       }
     }
-
+    const lockdownCoef: number = prefs[balls[i].prefId].isLockedDown
+      ? params.INFECTION_PROB_RATE_LOCKDOWN
+      : 1;
     for (let j = i + 1; j < ballNum; j++) {
       if (
         balls[i].prefId != balls[j].prefId &&
@@ -299,10 +305,13 @@ const updateBallState = (
           (balls[i].first
             ? true
             : balls[j].count == 0
-            ? Math.random() < virus.prob
+            ? Math.random() < virus.prob * lockdownCoef
             : balls[j].reinfect &&
               Math.random() <
-                params.REINFECT_PROB * virus.prob * (1 / balls[j].count))
+                params.REINFECT_PROB *
+                  virus.prob *
+                  lockdownCoef *
+                  (1 / balls[j].count))
         ) {
           setContacted(
             balls[j],
@@ -319,10 +328,13 @@ const updateBallState = (
           (balls[j].first
             ? true
             : balls[i].count == 0
-            ? Math.random() < virus.prob
+            ? Math.random() < virus.prob * lockdownCoef
             : balls[i].reinfect &&
               Math.random() <
-                params.REINFECT_PROB * virus.prob * (1 / balls[i].count))
+                params.REINFECT_PROB *
+                  virus.prob *
+                  lockdownCoef *
+                  (1 / balls[i].count))
         ) {
           setContacted(
             balls[i],
@@ -396,4 +408,12 @@ export const updateBalls = (
   const tmpBalls = updatePosition(currentBalls, map, params, prefs);
   const balls = updateBallState(tmpBalls, params, turns, virus, prefs);
   return { balls: balls, ballsEvents: ballsEvents };
+};
+
+export const infectionRate = (balls: Ball[], prefId: number) => {
+  const totBalls = balls.filter((b) => b.prefId == prefId);
+  const infectedBalls = totBalls.filter(
+    (b) => b.infectedState == InfectedState.infected
+  );
+  return totBalls.length > 0 ? infectedBalls.length / totBalls.length : 0;
 };
