@@ -308,8 +308,11 @@ const updateBallState = (
               Math.random() <
                 params.REINFECT_PROB * virus.prob * (1 / balls[j].count))
         ) {
-          if (balls[i].disposable_mask_num>0) {
+          if (balls[i].disposable_mask_num > 0) {
             balls[i].disposable_mask_num--;
+            if (balls[i].disposable_mask_num % 10 == 0) {
+              console.log(balls[i].disposable_mask_num, i);
+            }
             break;
           }
           setContacted(
@@ -332,7 +335,7 @@ const updateBallState = (
               Math.random() <
                 params.REINFECT_PROB * virus.prob * (1 / balls[i].count))
         ) {
-          if (balls[j].disposable_mask_num>0) {
+          if (balls[j].disposable_mask_num > 0) {
             balls[j].disposable_mask_num--;
             continue;
           }

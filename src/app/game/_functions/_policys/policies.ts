@@ -121,6 +121,7 @@ export const policies: Policy[] = [
     point: "POINTS_FOR_DISPOSABLE_MASK",
     isActive: true,
     image: disposableMaskImage,
+    cooltime: 1000,
   },
   {
     key: "m",
