@@ -23,7 +23,7 @@ export type Ball = {
   first: boolean;
   infectedState: InfectedState;
   masked: boolean;
-  disposable_masked: boolean;
+  disposable_mask_num: number;
   remainLevy: number;
   count: number;
   reinfect: boolean;
@@ -69,7 +69,7 @@ const createBall = (
     infectedState: InfectedState.notInfected,
     first: false,
     masked: false,
-    disposable_masked: false,
+    disposable_mask_num: 0,
     remainLevy: 0,
     count: 0,
     reinfect: false,
@@ -278,11 +278,6 @@ const updateBallState = (
         continue;
       }
     }
-    const conditions_i =
-      balls[i].contacted &&
-      !balls[i].healed &&
-      !balls[i].dead &&
-      !balls[i].masked;
 
     if (balls[i].turnReMove == turn) {
       if (balls[i].infectedState == InfectedState.notInfected) {
@@ -299,7 +294,6 @@ const updateBallState = (
         continue;
       }
       if (balls[j].dead || balls[j].masked) continue;
-      const conditions_j = balls[j].contacted && !balls[j].healed;
       if (balls[j].infectedState == InfectedState.dead || balls[j].masked)
         continue;
 
@@ -314,8 +308,8 @@ const updateBallState = (
               Math.random() <
                 params.REINFECT_PROB * virus.prob * (1 / balls[j].count))
         ) {
-          if (balls[i].disposable_masked) {
-            balls[i].disposable_masked = false;
+          if (balls[i].disposable_mask_num>0) {
+            balls[i].disposable_mask_num--;
             break;
           }
           setContacted(
@@ -338,8 +332,8 @@ const updateBallState = (
               Math.random() <
                 params.REINFECT_PROB * virus.prob * (1 / balls[i].count))
         ) {
-          if (balls[j].disposable_masked) {
-            balls[j].disposable_masked = false;
+          if (balls[j].disposable_mask_num>0) {
+            balls[j].disposable_mask_num--;
             continue;
           }
           setContacted(
