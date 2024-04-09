@@ -227,7 +227,7 @@ const GameView = () => {
           }}
         >
           {onReady && stateIsPlaying.includes(gameState.playingState)
-            ? policies
+            ? policies(params)
                 .filter((policy) => policy.isActive)
                 .map((policy) => {
                   const events = gameState.events.filter(
@@ -242,12 +242,14 @@ const GameView = () => {
                       image={policy.image}
                       disabled={
                         gameState.playingState == PlayingState.pausing ||
-                        params[policy.point] > gameState.player.points
+                        gameState.policyData[policy.key].cost >
+                          gameState.player.points
                       }
-                      cost={params[policy.point]}
+                      cost={gameState.policyData[policy.key].cost}
                       func={(mousePos: Position, cvsPos: Position) => {
                         if (
-                          params[policy.point] <= gameState.player.points &&
+                          gameState.policyData[policy.key].cost <=
+                            gameState.player.points &&
                           (!policy.cooltime ||
                             !lastTurn ||
                             gameState.sceneState.turns >
@@ -259,7 +261,8 @@ const GameView = () => {
                         }
                       }}
                       className={`p-game__policy-button ${
-                        params[policy.point] > gameState.player.points
+                        gameState.policyData[policy.key].cost >
+                        gameState.player.points
                           ? "-inactive"
                           : ""
                       }`}
