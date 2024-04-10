@@ -29,7 +29,7 @@ export const Params: ParamsModel = {
   LEVY_SCALE: 4,
   LEVY_MAX: 50,
   MAX_POINTS: 10,
-  VIRUS_INITIAL_PROB: 0.05,
+  VIRUS_INITIAL_PROB: 0.06,
   HEAL_PROB: 0.1,
   REINFECT_PROB: 0.1,
   BORDER_RATE: 0.5,
