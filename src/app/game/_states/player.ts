@@ -15,7 +15,8 @@ export const updatePoint = (
   const damage_count = currentState.infectedCount + currentState.deadCount;
 
   player.pt =
-    params.INITIAL_DELTA_POINT / (1 - damage_count / params.MAX_BALLS + 1e-8);
+    params.INITIAL_DELTA_POINT * ((2 * damage_count) / params.MAX_BALLS + 1);
+  // params.INITIAL_DELTA_POINT / (1 - damage_count / params.MAX_BALLS + 1e-8);
   player.points += player.pt;
 
   return player;
