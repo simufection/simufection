@@ -19,6 +19,6 @@ export const disposable_mask = (state: GameState, params: ParamsModel) => {
         balls[i].disposable_mask_num = disposable_block_time;
       }
     }
-    return { balls: balls, data: data };
   }
+  return { balls: balls, data: data };
 };

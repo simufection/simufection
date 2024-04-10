@@ -107,29 +107,24 @@ export const policies = (params: ParamsModel): Policy[] => {
       isActive: true,
       image: medicineImage,
     },
-
-    point: "POINTS_FOR_MEDICINE",
-    isActive: true,
-    image: medicineImage,
-  },
-  {
-    key: "d",
-    label: "disposable_mask",
-    func: (state, params, cvsPos, mousePos, sw) => {
-      const { player } = state;
-      const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
-      if (!droppedPos) return {};
-      player.points -= params.POINTS_FOR_DISPOSABLE_MASK;
-      const { balls, data } = disposable_mask(state, params);
-      const events = [...state.events];
-      events.push([state.sceneState.turns, "policy_d", { ...data }]);
-      return { balls: balls, events: events };
+    {
+      key: "d",
+      label: "disposable_mask",
+      func: (state, params, cvsPos, mousePos, sw) => {
+        const { player } = state;
+        const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
+        if (!droppedPos) return {};
+        player.points -= params.POINTS_FOR_DISPOSABLE_MASK;
+        const { balls, data } = disposable_mask(state, params);
+        const events = [...state.events];
+        events.push([state.sceneState.turns, "policy_d", { ...data }]);
+        return { balls: balls, events: events };
+      },
+      initPoint: params["POINTS_FOR_DISPOSABLE_MASK"],
+      isActive: true,
+      image: disposableMaskImage,
+      cooltime: 500,
     },
-    point: "POINTS_FOR_DISPOSABLE_MASK",
-    isActive: true,
-    image: disposableMaskImage,
-    cooltime: 500,
-  },
     {
       key: "m",
       label: "mask",
