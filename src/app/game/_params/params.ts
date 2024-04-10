@@ -7,7 +7,7 @@ export interface ParamsModel {
 export const Params: ParamsModel = {
   MAX_WIDTH: 640,
   MAX_HEIGHT: 480,
-  MAX_BALLS: 1000,
+  MAX_BALLS: 600,
   RADIUS: 1,
   RATIO_OF_BALLS_STOPPED: 0.0,
   COLOR_INFECTED: COLORS.RED,
@@ -29,7 +29,7 @@ export const Params: ParamsModel = {
   LEVY_SCALE: 4,
   LEVY_MAX: 50,
   MAX_POINTS: 10,
-  VIRUS_INITIAL_PROB: 0.1,
+  VIRUS_INITIAL_PROB: 0.05,
   HEAL_PROB: 0.1,
   REINFECT_PROB: 0.1,
   BORDER_RATE: 0.5,
