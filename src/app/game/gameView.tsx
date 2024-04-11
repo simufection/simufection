@@ -30,7 +30,7 @@ import { calcScore } from "./_functions/_game/score";
 import Image from "next/image";
 
 import { Axios } from "@/services/axios";
-import titleImage from "@/assets/img/title.png";
+import titleImage from "@/assets/img/simufection-title.png";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import PolicyIcon from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
@@ -44,6 +44,7 @@ import SelectMap from "./_components/selectMap";
 import RankingModal from "./_components/rankingModal";
 import { appVersion } from "@/consts/appVersion";
 import { eventMessage } from "./_params/eventMessage";
+import Result from "./_components/result";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -118,18 +119,15 @@ const GameView = () => {
   }, [params]);
 
   useEffect(() => {
+    updateDrawState(true);
+  }, [gameState?.playingState]);
+
+  useEffect(() => {
     if (onReady && gameState.playingState == PlayingState.loading) {
       drawWhite(ctx, params);
       updateGameStateForce({ playingState: PlayingState.waiting });
     }
   }, [ctx, params, gameState, onReady]);
-
-  useEffect(() => {
-    if (onReady && gameState.playingState == PlayingState.finishing && score) {
-      drawResult(ctx, gameState.sceneState.results, gameState, params, score);
-    }
-    updateDrawState(true);
-  }, [gameState?.playingState, score]);
 
   useInterval(() => {
     if (onReady && offCvs) {
@@ -157,14 +155,6 @@ const GameView = () => {
           drawWhite(ctx, params);
         } else if (gameState.playingState == PlayingState.finishing && !score) {
           setScore(calcScore(gameState, params));
-        } else {
-          drawResult(
-            ctx,
-            gameState.sceneState.results,
-            gameState,
-            params,
-            score
-          );
         }
         updateDrawState(false);
       }
@@ -227,7 +217,7 @@ const GameView = () => {
           }}
         >
           {onReady && stateIsPlaying.includes(gameState.playingState)
-            ? policies
+            ? policies(params)
                 .filter((policy) => policy.isActive)
                 .map((policy) => {
                   const events = gameState.events.filter(
@@ -242,12 +232,14 @@ const GameView = () => {
                       image={policy.image}
                       disabled={
                         gameState.playingState == PlayingState.pausing ||
-                        params[policy.point] > gameState.player.points
+                        gameState.policyData[policy.key].cost >
+                          gameState.player.points
                       }
-                      cost={params[policy.point]}
+                      cost={gameState.policyData[policy.key].cost}
                       func={(mousePos: Position, cvsPos: Position) => {
                         if (
-                          params[policy.point] <= gameState.player.points &&
+                          gameState.policyData[policy.key].cost <=
+                            gameState.player.points &&
                           (!policy.cooltime ||
                             !lastTurn ||
                             gameState.sceneState.turns >
@@ -259,7 +251,8 @@ const GameView = () => {
                         }
                       }}
                       className={`p-game__policy-button ${
-                        params[policy.point] > gameState.player.points
+                        gameState.policyData[policy.key].cost >
+                        gameState.player.points
                           ? "-inactive"
                           : ""
                       }`}
@@ -288,13 +281,11 @@ const GameView = () => {
         />
       ) : null}
       <GameButtons params={params} ctx={ctx} showRanking={setShowRanking} />
-      {onReady && gameState.playingState == PlayingState.finishing ? (
-        gameState.sceneState.contactedCount === 1 ? null : (
-          <SendScoreInput />
-        )
-      ) : null}
       {onReady && gameState.playingState == PlayingState.selecting ? (
         <SelectMap params={params} ctx={ctx} />
+      ) : null}
+      {onReady && gameState.playingState == PlayingState.finishing ? (
+        <Result state={gameState} score={score ?? 0} />
       ) : null}
       {showRanking ? (
         <RankingModal
