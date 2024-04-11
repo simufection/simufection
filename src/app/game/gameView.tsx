@@ -285,7 +285,7 @@ const GameView = () => {
         <SelectMap params={params} ctx={ctx} />
       ) : null}
       {onReady && gameState.playingState == PlayingState.finishing ? (
-        <Result state={gameState} score={score ?? 0} />
+        <Result />
       ) : null}
       {showRanking ? (
         <RankingModal
