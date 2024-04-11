@@ -30,7 +30,7 @@ import { calcScore } from "./_functions/_game/score";
 import Image from "next/image";
 
 import { Axios } from "@/services/axios";
-import titleImage from "@/assets/img/title.png";
+import titleImage from "@/assets/img/simufection-title.png";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import PolicyIcon from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
