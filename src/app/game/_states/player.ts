@@ -16,7 +16,7 @@ export const updatePoint = (
 
   player.pt =
     params.INITIAL_DELTA_POINT / (1 - damage_count / params.MAX_BALLS + 1e-8);
-  player.points += player.pt;
+  player.points = Math.min(player.points + player.pt, 10);
 
   return player;
 };

@@ -125,13 +125,6 @@ const GameView = () => {
     }
   }, [ctx, params, gameState, onReady]);
 
-  useEffect(() => {
-    if (onReady && gameState.playingState == PlayingState.finishing && score) {
-      drawResult(ctx, gameState.sceneState.results, gameState, params, score);
-    }
-    updateDrawState(true);
-  }, [gameState?.playingState, score]);
-
   useInterval(() => {
     if (onReady && offCvs) {
       if (stateIsPlaying.includes(gameState.playingState)) {
@@ -158,14 +151,6 @@ const GameView = () => {
           drawWhite(ctx, params);
         } else if (gameState.playingState == PlayingState.finishing && !score) {
           setScore(calcScore(gameState, params));
-        } else {
-          drawResult(
-            ctx,
-            gameState.sceneState.results,
-            gameState,
-            params,
-            score
-          );
         }
         updateDrawState(false);
       }
