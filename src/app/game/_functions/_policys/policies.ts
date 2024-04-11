@@ -139,7 +139,7 @@ export const policies = (params: ParamsModel): Policy[] => {
         return { balls: balls, events: events };
       },
       initPoint: params["POINTS_FOR_MASK"],
-      isActive: true,
+      isActive: false,
       image: maskImage,
     },
     {
