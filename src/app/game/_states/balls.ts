@@ -317,9 +317,6 @@ const updateBallState = (
         ) {
           if (balls[i].disposable_mask_num > 0) {
             balls[i].disposable_mask_num--;
-            if (balls[i].disposable_mask_num % 10 == 0) {
-              console.log(balls[i].disposable_mask_num, i);
-            }
             break;
           }
           setContacted(
