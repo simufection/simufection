@@ -159,7 +159,7 @@ const GameView = () => {
         updateDrawState(false);
       }
     }
-  }, 30);
+  }, params?.INTERVAL * 1000 ?? 30);
 
   return (
     <div
