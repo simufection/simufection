@@ -9,7 +9,6 @@ export const lockdown = (
 ) => {
   let prefs = { ...state.prefs };
   prefs[prefId].isLockedDown = true;
-  prefs[prefId].turnLockdownEnds = turns + params.TURNS_LOCKDOWN_PERSISTS;
   prefs[prefId].updated = true;
   return { newPrefs: prefs };
 };

@@ -9,6 +9,7 @@ import { ParamsModel } from "../_params/params";
 import { policies } from "../_functions/_policys/policies";
 import { Map, maps } from "./maps";
 import { kantoMap } from "../_maps/kanto/map";
+import { initializePolicydata, PolicyData } from "./policyData";
 
 export enum PlayingState {
   loading = 0,
@@ -38,6 +39,7 @@ export type GameState = {
   keys: Keys;
   editing: Objects;
   events: [number, string, any][];
+  policyData: PolicyData;
 };
 
 export const initializeGameState = (
@@ -119,6 +121,7 @@ export const initializeGameState = (
     },
     editing: Objects.none,
     events: [[0, "game_start", {}]],
+    policyData: initializePolicydata(params),
   };
 };
 
@@ -163,6 +166,7 @@ export const updateGameState = (
     const { prefs, prefsEvents } = updatePrefs(
       params,
       state.prefs,
+      state.balls,
       sceneState.turns
     );
     prefsEvents.forEach((e) => {
