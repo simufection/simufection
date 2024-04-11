@@ -17,10 +17,10 @@ export async function POST(req: Request) {
     const ver = data.version ?? nowVer;
     const res_all =
       await sql`SELECT ur_name, score FROM score where version = ${ver} ORDER BY score DESC limit 10;`;
-
     const res_today = data.version
-      ? await sql`SELECT ur_name, score FROM score WHERE to_char(date, 'yyyy/mm/dd') = ${today_str} and version = ${ver} ORDER BY score DESC limit 10;`
-      : { rows: [] };
+      ? { rows: [] }
+      : await sql`SELECT ur_name, score FROM score WHERE to_char(date, 'yyyy/mm/dd') = ${today_str} and version = ${ver} ORDER BY score DESC limit 10;`;
+
     return new Response(
       JSON.stringify({
         success: true,

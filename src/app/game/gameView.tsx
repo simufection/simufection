@@ -30,7 +30,7 @@ import { calcScore } from "./_functions/_game/score";
 import Image from "next/image";
 
 import { Axios } from "@/services/axios";
-import titleImage from "@/assets/img/title.png";
+import titleImage from "@/assets/img/simufection-title.png";
 import { SendScoreState } from "@/hooks/game/useGameControl";
 import PolicyIcon from "./_components/policyIcon";
 import { useGetElementProperty } from "@/hooks/useGetElementProperty";
@@ -44,6 +44,7 @@ import SelectMap from "./_components/selectMap";
 import RankingModal from "./_components/rankingModal";
 import { appVersion } from "@/consts/appVersion";
 import { eventMessage } from "./_params/eventMessage";
+import Result from "./_components/result";
 
 const GameView = () => {
   const [w, h] = useWindowSize();
@@ -291,13 +292,11 @@ const GameView = () => {
         />
       ) : null}
       <GameButtons params={params} ctx={ctx} showRanking={setShowRanking} />
-      {onReady && gameState.playingState == PlayingState.finishing ? (
-        gameState.sceneState.contactedCount === 1 ? null : (
-          <SendScoreInput />
-        )
-      ) : null}
       {onReady && gameState.playingState == PlayingState.selecting ? (
         <SelectMap params={params} ctx={ctx} />
+      ) : null}
+      {onReady && gameState.playingState == PlayingState.finishing ? (
+        <Result state={gameState} score={score ?? 0} />
       ) : null}
       {showRanking ? (
         <RankingModal
