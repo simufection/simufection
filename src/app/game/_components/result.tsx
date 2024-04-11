@@ -26,9 +26,6 @@ const Result = ({ state, score }: Props) => {
       <div className="p-result__score-container">
         <div className="p-result__score">スコア　　：　　{score}</div>
         <div className="p-result__score">
-          感染者数　：　　{state.sceneState.infectedCount}
-        </div>
-        <div className="p-result__score">
           死者数　　：　　{state.sceneState.deadCount}
         </div>
       </div>
