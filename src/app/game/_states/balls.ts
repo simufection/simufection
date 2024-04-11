@@ -23,6 +23,7 @@ export type Ball = {
   first: boolean;
   infectedState: InfectedState;
   masked: boolean;
+  disposable_mask_num: number;
   remainLevy: number;
   count: number;
   reinfect: boolean;
@@ -68,6 +69,7 @@ const createBall = (
     infectedState: InfectedState.notInfected,
     first: false,
     masked: false,
+    disposable_mask_num: 0,
     remainLevy: 0,
     count: 0,
     reinfect: false,
@@ -313,6 +315,13 @@ const updateBallState = (
                   lockdownCoef *
                   (1 / balls[j].count))
         ) {
+          if (balls[i].disposable_mask_num > 0) {
+            balls[i].disposable_mask_num--;
+            if (balls[i].disposable_mask_num % 10 == 0) {
+              console.log(balls[i].disposable_mask_num, i);
+            }
+            break;
+          }
           setContacted(
             balls[j],
             turn,
@@ -336,6 +345,10 @@ const updateBallState = (
                   lockdownCoef *
                   (1 / balls[i].count))
         ) {
+          if (balls[j].disposable_mask_num > 0) {
+            balls[j].disposable_mask_num--;
+            continue;
+          }
           setContacted(
             balls[i],
             turn,

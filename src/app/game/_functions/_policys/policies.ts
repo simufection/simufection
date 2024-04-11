@@ -2,14 +2,16 @@ import { StaticImageData } from "next/image";
 import { ParamsModel } from "../../_params/params";
 import { GameState, Objects, PlayingState } from "../../_states/state";
 import { vaccine } from "./vaccine";
-import { pcr } from "./pcr";
 import { mask } from "./mask";
+import { disposable_mask } from "./disposable_mask";
+import { pcr } from "./pcr";
 import { medicine } from "./medicine";
 import { lockdown } from "./lockdown";
 import { infectionRate } from "../../_states/balls";
 import vaccineImage from "@/assets/img/vaccine.png";
 import medicineImage from "@/assets/img/medicine.png";
 import maskImage from "@/assets/img/mask.png";
+import disposableMaskImage from "@/assets/img/disposable_mask.png";
 import lockDownImage from "@/assets/img/lockDown.png";
 import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "../../_states/maps";
@@ -104,6 +106,24 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_MEDICINE"],
       isActive: true,
       image: medicineImage,
+    },
+    {
+      key: "d",
+      label: "disposable_mask",
+      func: (state, params, cvsPos, mousePos, sw) => {
+        const { player } = state;
+        const droppedPos = mapPos(cvsPos, mousePos, state.map, params, sw);
+        if (!droppedPos) return {};
+        player.points -= params.POINTS_FOR_DISPOSABLE_MASK;
+        const { balls, data } = disposable_mask(state, params);
+        const events = [...state.events];
+        events.push([state.sceneState.turns, "policy_d", { ...data }]);
+        return { balls: balls, events: events };
+      },
+      initPoint: params["POINTS_FOR_DISPOSABLE_MASK"],
+      isActive: true,
+      image: disposableMaskImage,
+      cooltime: 500,
     },
     {
       key: "m",
