@@ -5,6 +5,8 @@ import { Axios } from "@/services/axios";
 import { useContext, useEffect, useState } from "react";
 import { GameStateContext } from "../contextProvoder";
 import { appVersion, appVersions } from "@/consts/appVersion";
+import { rank, scoreToRank } from "../_functions/_game/rank";
+import Image from "next/image";
 
 interface Props {
   rankingData: RankingData | null;
@@ -67,7 +69,12 @@ const RankingModal = (props: Props) => {
             <li className="p-ranking__row">{`スコアランキング`}</li>
             {props.rankingData[ver].all.map((item, index) => (
               <li key={index} className="p-ranking__row">
-                <div>{item.urName}</div>
+                <Image
+                  className="p-ranking__rank-image"
+                  alt="rank"
+                  src={scoreToRank(item.score).image}
+                />
+                <div className="p-ranking__urname">{item.urName}</div>
                 <div>{item.score}</div>
               </li>
             ))}
@@ -77,7 +84,12 @@ const RankingModal = (props: Props) => {
               <li className="p-ranking__row">今日のランキング</li>
               {props.rankingData[ver].today.map((item, index) => (
                 <li key={index} className="p-ranking__row">
-                  <div>{item.urName}</div>
+                  <Image
+                    className="p-ranking__rank-image"
+                    alt="rank"
+                    src={scoreToRank(item.score).image}
+                  />
+                  <div className="p-ranking__urname">{item.urName}</div>
                   <div>{item.score}</div>
                 </li>
               ))}
