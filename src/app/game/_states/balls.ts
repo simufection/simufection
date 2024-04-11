@@ -231,7 +231,6 @@ const updateBallState = (
 
   const ballNum = balls.length;
   for (let i = 0; i < ballNum; i++) {
-    if (balls[i].dead) continue;
     if (balls[i].infectedState == InfectedState.dead) continue;
     if (balls[i].turnRemoveMask == turn && balls[i].masked) {
       balls[i].masked = false;
@@ -299,7 +298,6 @@ const updateBallState = (
       ) {
         continue;
       }
-      if (balls[j].dead || balls[j].masked) continue;
       if (balls[j].infectedState == InfectedState.dead || balls[j].masked)
         continue;
 
