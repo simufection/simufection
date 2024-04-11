@@ -8,13 +8,11 @@ import Image from "next/image";
 import virusImage1 from "@/assets/img/virus1.png";
 import virusImage2 from "@/assets/img/virus2.png";
 
-interface Props {
-  state: GameState;
-  score: number;
-}
 const colorList = ["yw", "gr", "bl", "wt", "gy", "re"];
 
-const Result = ({ state, score }: Props) => {
+const Result = () => {
+  const { gameState: state, score } = useContext(GameStateContext)!;
+  if (!state || !score) return null;
   const rank = scoreToRank(score);
   return (
     <div className="p-result">

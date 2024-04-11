@@ -159,7 +159,7 @@ const GameView = () => {
         updateDrawState(false);
       }
     }
-  }, 30);
+  }, params?.INTERVAL * 1000 ?? 30);
 
   return (
     <div
@@ -285,7 +285,7 @@ const GameView = () => {
         <SelectMap params={params} ctx={ctx} />
       ) : null}
       {onReady && gameState.playingState == PlayingState.finishing ? (
-        <Result state={gameState} score={score ?? 0} />
+        <Result />
       ) : null}
       {showRanking ? (
         <RankingModal
