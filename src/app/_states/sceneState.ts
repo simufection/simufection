@@ -59,8 +59,6 @@ const updateTurns = (
     } else if (infectedCount === 0) {
       console.log("End ... The infected ball is gone.");
       playingState = PlayingState.finishing;
-    } else if (turns > 100) {
-      playingState = PlayingState.finishing;
     } else {
       turns += 1;
     }
