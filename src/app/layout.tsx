@@ -17,7 +17,6 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/destyle.css@1.0.15/destyle.css"
         />
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       </head>
       <body>
         <div className="l-main">
