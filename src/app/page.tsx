@@ -1,6 +1,12 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const Home = () => {
-  return <div>main page</div>;
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/title");
+  }, []);
 };
+
 export default Home;

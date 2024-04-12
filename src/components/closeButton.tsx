@@ -1,14 +1,14 @@
 import { MouseEventHandler } from "react";
 
 interface Props {
-  addClass?: string;
+  className?: string;
   onClick?: MouseEventHandler;
 }
 
 export const CloseButton = (props: Props) => {
   return (
     <button
-      className={`c-close-button ${props.addClass || ""}`}
+      className={`c-close-button ${props.className || ""}`}
       onClick={props.onClick}
     >
       ×
