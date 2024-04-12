@@ -1,6 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 const Home = () => {
-  return <div>main page</div>;
+  const router = useRouter();
+
+  router.push("/title");
 };
+
 export default Home;

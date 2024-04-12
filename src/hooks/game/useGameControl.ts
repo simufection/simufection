@@ -2,14 +2,14 @@ import {
   drawBackground,
   drawWhite,
   initializeBackground,
-} from "@/app/game/_functions/_drawing/draw";
-import { ParamsModel } from "@/app/game/_params/params";
-import { maps } from "@/app/game/_states/maps";
+} from "@/app/_functions/_drawing/draw";
+import { ParamsModel } from "@/app/_params/params";
+import { maps } from "@/app/_states/maps";
 import {
   GameState,
   PlayingState,
   initializeGameState,
-} from "@/app/game/_states/state";
+} from "@/app/_states/state";
 import { useState, useCallback, Dispatch } from "react";
 
 export enum SendScoreState {
@@ -21,7 +21,7 @@ export enum SendScoreState {
 export type GameControl = {
   offCvs: HTMLCanvasElement | null;
   mapName: string;
-  score: number | null;
+  score: number;
   gameState: GameState | undefined;
   sendScoreState: SendScoreState;
   startSimulate: Function;
@@ -29,32 +29,31 @@ export type GameControl = {
   updateGameStateForce: Function;
   rankingData: RankingData | null;
   setGameState: Dispatch<GameState>;
-  setScore: Dispatch<number | null>;
+  setScore: Dispatch<number>;
   setSendScoreState: Dispatch<SendScoreState>;
   setMap: Dispatch<string>;
   setOffCvs: Dispatch<HTMLCanvasElement | null>;
   setRankingData: Dispatch<RankingData | null>;
+  params: ParamsModel | null;
+  setParams: Dispatch<ParamsModel>;
 };
 
 const useGameControl = (): GameControl => {
   const [gameState, setGameState] = useState<GameState>();
-  const [score, setScore] = useState<number | null>(null);
+  const [score, setScore] = useState<number>(0);
   const [mapName, setMap] = useState(Object.keys(maps)[0]);
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
   const [rankingData, setRankingData] = useState<RankingData | null>(null);
+  const [params, setParams] = useState<ParamsModel | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
-    (params: ParamsModel, onReady: boolean, newMap: string) => {
-      if (!onReady) {
-        return;
-      }
-
+    (params: ParamsModel, newMap: string) => {
       setMap(newMap);
       setOffCvs(initializeBackground(maps[newMap].map, params));
       setSendScoreState(SendScoreState.before);
-      setScore(null);
+      setScore(0);
       setGameState({
         ...initializeGameState(params, newMap),
         playingState: PlayingState.playing,
@@ -72,7 +71,7 @@ const useGameControl = (): GameControl => {
       drawWhite(ctx, params);
       setGameState({
         ...initializeGameState(params, mapName),
-        playingState: PlayingState.waiting,
+        playingState: PlayingState.title,
       });
     },
     [gameState]
@@ -101,6 +100,8 @@ const useGameControl = (): GameControl => {
     setMap,
     setOffCvs,
     setRankingData,
+    params,
+    setParams,
   };
 };
 

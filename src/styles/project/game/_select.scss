@@ -1,0 +1,55 @@
+@use "../../foundation" as *;
+
+.p-select {
+    &__map-box {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__map-items {
+        height: calc(100% - 100px);
+        overflow-y: auto;
+    }
+
+    &__map-item {
+        font-size: calc($fs-title * 1.2);
+        height: 5%;
+        min-height: 75px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        padding: 6%;
+
+
+        &.-selected {
+            background-color: $pale-blue;
+        }
+    }
+
+    &__map-img {
+        height: auto;
+        width: 13%;
+        min-width: 65px;
+    }
+
+    &__map-buttons {
+        height: 100px;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    &__map-button {
+        background-color: transparent;
+        color: $black;
+        border-radius: 10px;
+        border: 1px solid $black;
+        width: 100px;
+        height: 50px;
+    }
+}
