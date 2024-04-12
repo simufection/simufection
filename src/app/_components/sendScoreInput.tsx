@@ -26,21 +26,21 @@ const SendScoreInput = () => {
   return (
     <>
       <InputBox
-        className="p-game__result-input"
+        className="p-score-input__result-input"
         placeholder="プレーヤー名を入力"
         disabled={sendScoreState != SendScoreState.before}
         value={urName}
         onChange={(e) => setUrName(e.target.value)}
       />
       <textarea
-        className="p-game__feedback-input"
+        className="p-score-input__feedback-input"
         placeholder="感想を入力"
         disabled={sendScoreState != SendScoreState.before}
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
       />
       <Button
-        className="p-game__result-submit"
+        className="p-score-input__result-submit"
         label={`${
           sendScoreState != SendScoreState.done ? "スコア送信" : "送信済"
         }`}

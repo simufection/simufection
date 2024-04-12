@@ -1,7 +1,7 @@
 interface Props {
-  addClass?: string;
+  className?: string;
 }
 
 export const OverLay = (props: Props) => {
-  return <div className={`c-overlay ${props.addClass || ""}`} />;
+  return <div className={`c-overlay ${props.className || ""}`} />;
 };

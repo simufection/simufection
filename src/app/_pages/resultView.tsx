@@ -1,16 +1,15 @@
 import { useContext, useEffect } from "react";
-import { GameState, PlayingState } from "@/app/_states/state";
-import SendScoreInput from "@/app/_components/sendScoreInput";
-import { GameStateContext } from "@/app/contextProvoder";
-import { scoreToRank } from "@/app/_functions/_game/rank";
 import Image from "next/image";
-
+import { RankingButton } from "@/app/_components/gameButtons";
+import SendScoreInput from "@/app/_components/sendScoreInput";
+import { scoreToRank } from "@/app/_functions/_game/rank";
+import { calcScore } from "@/app/_functions/_game/score";
+import { PlayingState } from "@/app/_states/state";
+import { GameStateContext } from "@/app/contextProvoder";
+import homeImage from "@/assets/img/home-icon.png";
 import virusImage1 from "@/assets/img/virus1.png";
 import virusImage2 from "@/assets/img/virus2.png";
-import homeImage from "@/assets/img/home-icon.png";
 import { Button } from "@/components/button";
-import { RankingButton } from "../_components/gameButtons";
-import { calcScore } from "../_functions/_game/score";
 
 const colorList = ["yw", "gr", "bl", "wt", "gy", "re"];
 
@@ -56,7 +55,7 @@ const ResultView = () => {
       </div>
       {gameState.sceneState.contactedCount === 1 ? null : <SendScoreInput />}
       <Button
-        className="p-game__restart-button u-tr"
+        className="p-result__restart-button u-tr"
         image={homeImage}
         onClick={() =>
           updateGameStateForce({ playingState: PlayingState.title })
@@ -65,7 +64,7 @@ const ResultView = () => {
 
       <RankingButton
         playingState={PlayingState.finishing}
-        className="p-game__ranking-button_result"
+        className="p-result__ranking-button"
       />
     </div>
   );

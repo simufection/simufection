@@ -34,7 +34,6 @@ export type GameState = {
   prefs: { [name: number]: Pref };
   virus: Virus;
   rNote: RNote;
-  keys: Keys;
   editing: Objects;
   events: [number, string, any][];
   policyData: PolicyData;
@@ -112,35 +111,17 @@ export const initializeGameState = (
       valueMaxTurnBegin: 0,
       valueMaxTurnEnd: 0,
     },
-    keys: {
-      down: new Set<string>(),
-      up: new Set<string>(),
-      downAll: new Set<string>(),
-    },
     editing: Objects.none,
     events: [[0, "game_start", {}]],
     policyData: initializePolicydata(params),
   };
 };
 
-// export const usePolicy = (state: GameState, params: ParamsModel): Object => {
-//   const { keys } = state;
-//   policies
-//     .filter((policy) => policy.isActive)
-//     .forEach((policy) => {
-//       if (keys.down.has(policy.key)) return policy.func(state, params);
-//     });
-//   return state;
-// };
-
 export const updateGameState = (
   currentState: GameState,
-  params: ParamsModel,
-  inputKeys: Set<string>
+  params: ParamsModel
 ): GameState => {
   if (currentState.playingState == PlayingState.playing) {
-    // const effectsOfPolicy = usePolicy(currentState, params);
-    // const state = { ...currentState, ...effectsOfPolicy };
     const state = { ...currentState };
     const events = state.events;
     const { sceneState, playingState, sceneEvents } = updateSceneState(
@@ -190,8 +171,6 @@ export const updateGameState = (
       events.push(e);
     });
 
-    const keys = updateKeys(state.keys, inputKeys);
-
     return {
       ...state,
       ...{
@@ -202,7 +181,6 @@ export const updateGameState = (
         balls: balls,
         virus: virus,
         rNote: rNote,
-        keys: keys,
         events: events,
       },
     };

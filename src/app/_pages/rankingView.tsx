@@ -1,12 +1,10 @@
-"use strict";
-
+import { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 import { CloseButton } from "@/components/closeButton";
 import { Axios } from "@/services/axios";
-import { useContext, useEffect, useState } from "react";
 import { GameStateContext } from "@/app/contextProvoder";
 import { appVersion, appVersions } from "@/consts/appVersion";
-import { rank, scoreToRank } from "@/app/_functions/_game/rank";
-import Image from "next/image";
+import { scoreToRank } from "@/app/_functions/_game/rank";
 
 interface Props {
   rankingData: RankingData | null;
@@ -60,7 +58,7 @@ const RankingView = (props: Props) => {
         </select>
         <CloseButton
           onClick={() => props.close()}
-          addClass="p-ranking__close-button"
+          className="p-ranking__close-button"
         />
       </div>
       {props.rankingData && Object.keys(props.rankingData).includes(ver) ? (

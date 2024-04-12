@@ -1,11 +1,10 @@
-"use strict";
-import { useContext, useEffect, useState } from "react";
-import { CanvasContext, GameStateContext } from "@/app/contextProvoder";
-import { Button } from "@/components/button";
-import { maps } from "@/app/_states/maps";
-import { ParamsModel } from "@/app/_params/params";
-import { PlayingState } from "@/app/_states/state";
+import { useContext, useState } from "react";
 import Image from "next/image";
+import { ParamsModel } from "@/app/_params/params";
+import { maps } from "@/app/_states/maps";
+import { PlayingState } from "@/app/_states/state";
+import { GameStateContext } from "@/app/contextProvoder";
+import { Button } from "@/components/button";
 
 type Props = {
   params: ParamsModel | null;
@@ -19,12 +18,12 @@ const SelectView = (props: Props) => {
 
   return (
     <>
-      <div className="p-game__select-map-box">
-        <ul className="p-game__select-map-items">
+      <div className="p-select__map-box">
+        <ul className="p-select__map-items">
           {Object.keys(maps).map((m) => {
             return (
               <li
-                className={`p-game__select-map-item ${
+                className={`p-select__map-item ${
                   m == mapName ? "-selected" : ""
                 }`}
                 key={m}
@@ -36,15 +35,15 @@ const SelectView = (props: Props) => {
                 <Image
                   src={maps[m].preview}
                   alt="map"
-                  className="p-game__select-map-img"
+                  className="p-select__map-img"
                 />
               </li>
             );
           })}
         </ul>
-        <div className="p-game__select-map-buttons">
+        <div className="p-select__map-buttons">
           <Button
-            className="p-game__select-map-button"
+            className="p-select__map-button"
             label="戻る"
             onClick={() => {
               updateGameStateForce({
@@ -53,7 +52,7 @@ const SelectView = (props: Props) => {
             }}
           />
           <Button
-            className="p-game__select-map-button"
+            className="p-select__map-button"
             label="開始"
             onClick={() => {
               startSimulate(params, mapName);

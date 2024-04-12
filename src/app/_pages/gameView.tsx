@@ -1,57 +1,32 @@
-"use client";
-
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect } from "react";
+import { DndContext, DragEndEvent, getClientRect } from "@dnd-kit/core";
 import {
   updateBackGround,
   drawGameScreen,
   drawOverLay,
-  drawWhite,
 } from "@/app/_functions/_drawing/draw";
-import useInterval from "@/hooks/useInterval";
-import { usePressKey } from "@/hooks/usePressKey";
-import { PlayingState, updateGameState } from "@/app/_states/state";
 import { policies } from "@/app/_functions/_policies/policies";
-
-import { stateIsPlaying, stateNotPlaying } from "@/app/_params/consts";
-import { GameButtons } from "@/app/_components/gameButtons";
+import { PlayingButtons } from "@/app/_components/gameButtons";
+import PolicyIcon from "@/app/_components/policyIcon";
+import { getMousePosition } from "@/app/_functions/getMousePosition";
+import { eventMessage } from "@/app/_params/eventMessage";
+import { stateIsPlaying } from "@/app/_params/consts";
+import { PlayingState, updateGameState } from "@/app/_states/state";
 import {
   CanvasContext,
   GameSizeContext,
   GameStateContext,
 } from "@/app/contextProvoder";
-import { calcScore } from "@/app/_functions/_game/score";
-
-import PolicyIcon from "@/app/_components/policyIcon";
-import { DndContext, DragEndEvent, getClientRect } from "@dnd-kit/core";
+import Loading from "@/app/loading";
 import { Droppable } from "@/components/droppable";
-import { getMousePosition } from "@/app/_functions/getMousePosition";
-import SelectMap from "@/app/_pages/selectView";
-import RankingModal from "@/app/_pages/rankingView";
-import { appVersion } from "@/consts/appVersion";
-import { eventMessage } from "@/app/_params/eventMessage";
+import useInterval from "@/hooks/useInterval";
 
 const GameView = () => {
-  const { gameSize, calcGameSize } = useContext(GameSizeContext)!;
+  const { gameSize } = useContext(GameSizeContext)!;
   const { ctx, createCtx } = useContext(CanvasContext)!;
-
-  const [showRanking, setShowRanking] = useState(false);
-
-  const {
-    offCvs,
-    setOffCvs,
-    score,
-    gameState,
-    updateGameStateForce,
-    setScore,
-    rankingData,
-    params,
-  } = useContext(GameStateContext)!;
-
-  const pressedKey = usePressKey();
-
+  const { offCvs, setOffCvs, gameState, updateGameStateForce, params } =
+    useContext(GameStateContext)!;
   const onReady = !!(params && ctx && gameState);
-
-  const [updateDraw, updateDrawState] = useState(false);
 
   useEffect(() => {
     if (params) {
@@ -60,15 +35,11 @@ const GameView = () => {
       canvas.height = params.MAX_HEIGHT + 50;
       createCtx(params);
     }
-  }, [params]);
+  }, []);
 
-  useEffect(() => {
-    updateDrawState(true);
-  }, [gameState?.playingState]);
-
-  useInterval(() => {
-    if (onReady && offCvs) {
-      if (stateIsPlaying.includes(gameState.playingState)) {
+  useInterval(
+    () => {
+      if (onReady && offCvs) {
         if (
           gameState.map.prefIds.reduce((flag: boolean, prefId: number) => {
             return flag || gameState.prefs[prefId].updated;
@@ -82,32 +53,15 @@ const GameView = () => {
         if (gameState.playingState == PlayingState.pausing) {
           drawOverLay(ctx, params);
         } else {
-          updateGameStateForce(updateGameState(gameState, params, pressedKey));
+          updateGameStateForce(updateGameState(gameState, params));
         }
-      } else if (updateDraw) {
-        if (
-          gameState.playingState == PlayingState.selecting ||
-          gameState.playingState == PlayingState.title
-        ) {
-          drawWhite(ctx, params);
-        } else if (gameState.playingState == PlayingState.finishing && !score) {
-          setScore(calcScore(gameState, params));
-        }
-        updateDrawState(false);
       }
-    }
-  }, params?.INTERVAL * 1000 ?? 30);
+    },
+    params?.INTERVAL * 1000 ?? 30
+  );
 
   return (
-    <div
-      className={`p-game`}
-      style={{
-        width: gameSize[0],
-        height: stateIsPlaying.includes(gameState?.playingState!)
-          ? "100%"
-          : gameSize[0],
-      }}
-    >
+    <div className={`p-game`}>
       <DndContext
         onDragEnd={async (event: DragEndEvent) => {
           const { active } = event;
@@ -210,13 +164,7 @@ const GameView = () => {
             : null}
         </div>
       </DndContext>
-      <GameButtons params={params} showRanking={setShowRanking} />
-      {showRanking ? (
-        <RankingModal
-          close={() => setShowRanking(false)}
-          rankingData={rankingData}
-        />
-      ) : null}
+      <PlayingButtons params={params!} />
     </div>
   );
 };
