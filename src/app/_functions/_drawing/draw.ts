@@ -1,6 +1,5 @@
 import { COLORS } from "@/app/_params/colors";
 import { GameState } from "@/app/_states/state";
-import { DrawRatio } from "@/app/_params/drawRatio";
 import { ParamsModel } from "@/app/_params/params";
 import { Pref } from "@/app/_states/pref";
 
@@ -151,10 +150,10 @@ export const drawBackground = (
         item == -1
           ? COLORS.BLACK
           : item == 0
-          ? COLORS.GRAY
-          : state.prefs[item].isLockedDown
-          ? params.COLOR_LOCKDOWN
-          : COLORS.WHITE;
+            ? COLORS.GRAY
+            : state.prefs[item].isLockedDown
+              ? params.COLOR_LOCKDOWN
+              : COLORS.WHITE;
       ctx.fill();
       ctx.closePath();
     });
@@ -226,164 +225,164 @@ const drawPoints = (
   ctx.closePath();
 };
 
-const drawChart = (
-  ctx: CanvasRenderingContext2D,
-  gameState: GameState,
-  params: ParamsModel
-) => {
-  const { sceneState, player, virus, rNote, balls } = gameState;
-  const { contactedCount, infectedCount, healedCount, turns, results } =
-    sceneState;
+// const drawChart = (
+//   ctx: CanvasRenderingContext2D,
+//   gameState: GameState,
+//   params: ParamsModel
+// ) => {
+//   const { sceneState, player, virus, rNote, balls } = gameState;
+//   const { contactedCount, infectedCount, healedCount, turns, results } =
+//     sceneState;
 
-  const drawRatio = DrawRatio(params);
+//   const drawRatio = DrawRatio(params);
 
-  if (turns > 0 && results.length > 0) {
-    let drawWidth = 0;
-    for (let i = 0; i < 5; i++) {
-      if (params.MAX_WIDTH * i >= turns) {
-        drawWidth = i;
-        break;
-      }
-    }
+//   if (turns > 0 && results.length > 0) {
+//     let drawWidth = 0;
+//     for (let i = 0; i < 5; i++) {
+//       if (params.MAX_WIDTH * i >= turns) {
+//         drawWidth = i;
+//         break;
+//       }
+//     }
 
-    let preX = 0;
-    let preInfected = 0;
-    let preHealed = 0;
-    const yInfected = params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT;
-    const yHealed = params.MAX_HEIGHT + params.RADIUS;
+//     let preX = 0;
+//     let preInfected = 0;
+//     let preHealed = 0;
+//     const yInfected = params.MAX_HEIGHT + params.RADIUS + params.CHART_HEIGHT;
+//     const yHealed = params.MAX_HEIGHT + params.RADIUS;
 
-    for (const data of results) {
-      const x = Math.floor(data[0] / drawWidth);
+//     for (const data of results) {
+//       const x = Math.floor(data[0] / drawWidth);
 
-      ctx.strokeStyle = COLORS.RED;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, yInfected);
-      ctx.lineTo(x, yInfected - data[2] * drawRatio.HEIGHT);
-      ctx.stroke();
+//       ctx.strokeStyle = COLORS.RED;
+//       ctx.lineWidth = 1;
+//       ctx.beginPath();
+//       ctx.moveTo(x, yInfected);
+//       ctx.lineTo(x, yInfected - data[2] * drawRatio.HEIGHT);
+//       ctx.stroke();
 
-      const incrementalX = x - preX;
-      if (incrementalX > 0) {
-        for (let i = preX; i < x; i++) {
-          ctx.beginPath();
-          ctx.moveTo(i, yInfected);
-          ctx.lineTo(i, yInfected - preInfected * drawRatio.HEIGHT);
-          ctx.stroke();
-        }
-      }
-      preInfected = data[2];
+//       const incrementalX = x - preX;
+//       if (incrementalX > 0) {
+//         for (let i = preX; i < x; i++) {
+//           ctx.beginPath();
+//           ctx.moveTo(i, yInfected);
+//           ctx.lineTo(i, yInfected - preInfected * drawRatio.HEIGHT);
+//           ctx.stroke();
+//         }
+//       }
+//       preInfected = data[2];
 
-      if (data[3] > 0) {
-        ctx.strokeStyle = COLORS.GREEN;
-        ctx.beginPath();
-        ctx.moveTo(x, yHealed);
-        ctx.lineTo(x, yHealed + data[3] * drawRatio.HEIGHT);
-        ctx.stroke();
+//       if (data[3] > 0) {
+//         ctx.strokeStyle = COLORS.GREEN;
+//         ctx.beginPath();
+//         ctx.moveTo(x, yHealed);
+//         ctx.lineTo(x, yHealed + data[3] * drawRatio.HEIGHT);
+//         ctx.stroke();
 
-        const incrementalX = x - preX;
-        if (incrementalX > 0) {
-          for (let i = preX; i < x; i++) {
-            ctx.beginPath();
-            ctx.moveTo(i, yHealed);
-            ctx.lineTo(i, yHealed + preHealed * drawRatio.HEIGHT);
-            ctx.stroke();
-          }
-        }
-      }
-      preX = x;
-      preHealed = data[3];
-    }
-  }
+//         const incrementalX = x - preX;
+//         if (incrementalX > 0) {
+//           for (let i = preX; i < x; i++) {
+//             ctx.beginPath();
+//             ctx.moveTo(i, yHealed);
+//             ctx.lineTo(i, yHealed + preHealed * drawRatio.HEIGHT);
+//             ctx.stroke();
+//           }
+//         }
+//       }
+//       preX = x;
+//       preHealed = data[3];
+//     }
+//   }
 
-  ctx.font = "12px Arial";
-  ctx.fillStyle = COLORS.BLACK;
+//   ctx.font = "12px Arial";
+//   ctx.fillStyle = COLORS.BLACK;
 
-  let posY = 10;
+//   let posY = 10;
 
-  ctx.fillText("turn = " + turns, 0, params.MAX_HEIGHT + posY);
-  posY += 20;
-  ctx.fillText(
-    "TURNS_REQUIRED_FOR_HEAL = " + virus.turnsRequiredForHeal,
-    0,
-    params.MAX_HEIGHT + posY
-  );
-  posY += 20;
+//   ctx.fillText("turn = " + turns, 0, params.MAX_HEIGHT + posY);
+//   posY += 20;
+//   ctx.fillText(
+//     "TURNS_REQUIRED_FOR_HEAL = " + virus.turnsRequiredForHeal,
+//     0,
+//     params.MAX_HEIGHT + posY
+//   );
+//   posY += 20;
 
-  const ballNum = balls.length;
-  ctx.fillText(
-    "contacted = " + contactedCount + "/" + ballNum,
-    0,
-    params.MAX_HEIGHT + posY
-  );
-  posY += 20;
-  ctx.fillText(
-    "healed = " + healedCount + "/" + ballNum + "(GREEN)",
-    0,
-    params.MAX_HEIGHT + posY
-  );
-  posY += 20;
-  ctx.fillText(
-    "infected = " + infectedCount + "/" + ballNum + "(RED)",
-    0,
-    params.MAX_HEIGHT + posY
-  );
-  posY += 20;
-  ctx.fillText(
-    "Basic reproduction number(R0(max)) = " +
-      Math.round(rNote.valueMax * 100) / 100.0 +
-      " (turn ... " +
-      rNote.valueMaxTurnBegin +
-      " to " +
-      rNote.valueMaxTurnEnd +
-      ")",
-    0,
-    params.MAX_HEIGHT + posY
-  );
-  posY += 20;
-  ctx.fillText("points = " + player.points, 0, params.MAX_HEIGHT + posY);
-  posY += 20;
+//   const ballNum = balls.length;
+//   ctx.fillText(
+//     "contacted = " + contactedCount + "/" + ballNum,
+//     0,
+//     params.MAX_HEIGHT + posY
+//   );
+//   posY += 20;
+//   ctx.fillText(
+//     "healed = " + healedCount + "/" + ballNum + "(GREEN)",
+//     0,
+//     params.MAX_HEIGHT + posY
+//   );
+//   posY += 20;
+//   ctx.fillText(
+//     "infected = " + infectedCount + "/" + ballNum + "(RED)",
+//     0,
+//     params.MAX_HEIGHT + posY
+//   );
+//   posY += 20;
+//   ctx.fillText(
+//     "Basic reproduction number(R0(max)) = " +
+//       Math.round(rNote.valueMax * 100) / 100.0 +
+//       " (turn ... " +
+//       rNote.valueMaxTurnBegin +
+//       " to " +
+//       rNote.valueMaxTurnEnd +
+//       ")",
+//     0,
+//     params.MAX_HEIGHT + posY
+//   );
+//   posY += 20;
+//   ctx.fillText("points = " + player.points, 0, params.MAX_HEIGHT + posY);
+//   posY += 20;
 
-  ctx.fillText("probability = " + virus.prob, 0, params.MAX_HEIGHT + posY);
-  posY += 20;
+//   ctx.fillText("probability = " + virus.prob, 0, params.MAX_HEIGHT + posY);
+//   posY += 20;
 
-  ctx.fillText(
-    "turns required for heal = " + virus.turnsRequiredForHeal,
-    0,
-    params.MAX_HEIGHT + posY
-  );
-  posY += 20;
+//   ctx.fillText(
+//     "turns required for heal = " + virus.turnsRequiredForHeal,
+//     0,
+//     params.MAX_HEIGHT + posY
+//   );
+//   posY += 20;
 
-  if (contactedCount === params.MAX_BALLS) {
-    const text1 =
-      "infected incremental(BLUE)(ratio ... x" +
-      drawRatio.INFECTED_INCREMENTAL +
-      ")";
-    const text2 = "end ... All balls are infected.";
+//   if (contactedCount === params.MAX_BALLS) {
+//     const text1 =
+//       "infected incremental(BLUE)(ratio ... x" +
+//       drawRatio.INFECTED_INCREMENTAL +
+//       ")";
+//     const text2 = "end ... All balls are infected.";
 
-    ctx.fillStyle = COLORS.BLACK;
-    ctx.font = "14px Arial";
+//     ctx.fillStyle = COLORS.BLACK;
+//     ctx.font = "14px Arial";
 
-    ctx.fillText(text1, 0, params.MAX_HEIGHT + posY);
-    posY += 20;
+//     ctx.fillText(text1, 0, params.MAX_HEIGHT + posY);
+//     posY += 20;
 
-    ctx.fillText(text2, 0, params.MAX_HEIGHT + posY);
-    posY += 20;
-  }
+//     ctx.fillText(text2, 0, params.MAX_HEIGHT + posY);
+//     posY += 20;
+//   }
 
-  if (infectedCount === 0) {
-    const text1 =
-      "infected incremental(BLUE)(ratio ... x" +
-      drawRatio.INFECTED_INCREMENTAL +
-      ")";
-    const text2 = "end ... The infected balls are gone.";
+//   if (infectedCount === 0) {
+//     const text1 =
+//       "infected incremental(BLUE)(ratio ... x" +
+//       drawRatio.INFECTED_INCREMENTAL +
+//       ")";
+//     const text2 = "end ... The infected balls are gone.";
 
-    ctx.fillStyle = COLORS.BLACK;
-    ctx.font = "14px Arial";
+//     ctx.fillStyle = COLORS.BLACK;
+//     ctx.font = "14px Arial";
 
-    ctx.fillText(text1, 0, params.MAX_HEIGHT + 170);
-    posY += 20;
+//     ctx.fillText(text1, 0, params.MAX_HEIGHT + 170);
+//     posY += 20;
 
-    ctx.fillText(text2, 0, params.MAX_HEIGHT + 210);
-    posY += 20;
-  }
-};
+//     ctx.fillText(text2, 0, params.MAX_HEIGHT + 210);
+//     posY += 20;
+//   }
+// };
