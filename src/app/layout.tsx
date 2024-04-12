@@ -1,4 +1,5 @@
 import "@/styles/style.scss";
+import { GameStateProvider } from "@/app/contextProvoder";
 export const metadata = {
   title: "Simufection",
   description: "simulator of infection",
@@ -21,7 +22,7 @@ export default function RootLayout({
       <body>
         <div className="l-main">
           <div className="l-header"></div>
-          {children}
+          <GameStateProvider>{children}</GameStateProvider>
           <div className="l-footer"></div>
         </div>
       </body>

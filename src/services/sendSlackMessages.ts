@@ -1,6 +1,6 @@
 "use server";
 
-import { SendScoreData } from "@/app/game/_functions/_game/score";
+import { SendScoreData } from "@/app/_functions/_game/score";
 import { IncomingWebhook } from "@slack/webhook";
 
 export const sendSlackMessage = async (data: SendScoreData) => {
