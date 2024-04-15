@@ -8,7 +8,7 @@ import {
 import { policies } from "@/app/_functions/_policies/policies";
 import { PlayingButtons } from "@/app/_components/gameButtons";
 import PolicyIcon from "@/app/_components/policyIcon";
-import { getMousePosition } from "@/app/_functions/getMousePosition";
+import { getPointerPosition } from "@/app/_functions/getPointerPosition";
 import { eventMessage } from "@/app/_params/eventMessage";
 import { stateIsPlaying } from "@/app/_params/consts";
 import { PlayingState, updateGameState } from "@/app/_states/state";
@@ -68,7 +68,7 @@ const GameView = () => {
           if (!active.data.current || !active.data.current.func) {
             return;
           }
-          const mousePos = await getMousePosition();
+          const mousePos = await getPointerPosition();
           const cvsRect = getClientRect(document.getElementById("screen")!);
           const cvsPos = { x: cvsRect.left, y: cvsRect.top };
 
