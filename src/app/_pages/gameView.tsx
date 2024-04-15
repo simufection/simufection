@@ -1,14 +1,27 @@
-import { useContext, useEffect } from "react";
-import { DndContext, DragEndEvent, getClientRect } from "@dnd-kit/core";
+import { useContext, useEffect, useState } from "react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  getClientRect,
+} from "@dnd-kit/core";
 import {
   updateBackGround,
   drawGameScreen,
   drawOverLay,
 } from "@/app/_functions/_drawing/draw";
-import { policies } from "@/app/_functions/_policies/policies";
+import {
+  Policy,
+  PolicyPreviewArea,
+  mapPos,
+  policies,
+} from "@/app/_functions/_policies/policies";
 import { PlayingButtons } from "@/app/_components/gameButtons";
 import PolicyIcon from "@/app/_components/policyIcon";
-import { getPointerPosition } from "@/app/_functions/getPointerPosition";
+import {
+  getPointerPosition,
+  getPointerStopPosition,
+} from "@/app/_functions/getPointerPosition";
 import { eventMessage } from "@/app/_params/eventMessage";
 import { stateIsPlaying } from "@/app/_params/consts";
 import { PlayingState, updateGameState } from "@/app/_states/state";
@@ -17,9 +30,9 @@ import {
   GameSizeContext,
   GameStateContext,
 } from "@/app/contextProvoder";
-import Loading from "@/app/loading";
 import { Droppable } from "@/components/droppable";
 import useInterval from "@/hooks/useInterval";
+import { updatePrefPreview } from "../_states/pref";
 
 const GameView = () => {
   const { gameSize } = useContext(GameSizeContext)!;
@@ -27,6 +40,56 @@ const GameView = () => {
   const { offCvs, setOffCvs, gameState, updateGameStateForce, params } =
     useContext(GameStateContext)!;
   const onReady = !!(params && ctx && gameState);
+  const [draggingPos, setDraggingPos] = useState<Position | null>(null);
+  const [draggingPolicy, setDraggingPolicy] = useState<Policy | null>(null);
+
+  const [updatePreview, setUpdatePreview] = useState(false);
+  const [handlers, setHandlers] = useState<{
+    addListener: () => void;
+    removeListener: () => void;
+  } | null>(null);
+
+  const updateLockdown =
+    gameState &&
+    gameState.map.prefIds.reduce((flag: boolean, prefId: number) => {
+      return flag || gameState.prefs[prefId].updated;
+    }, false);
+
+  const setPreviewPrefs = () => {
+    if (onReady) {
+      const previewPrefs = [];
+      if (draggingPos) {
+        const cvsRect = getClientRect(document.getElementById("screen")!);
+        const cvsPos = { x: cvsRect.left, y: cvsRect.top };
+        const pos = mapPos(
+          cvsPos,
+          draggingPos,
+          gameState.map,
+          params,
+          gameSize[0]
+        );
+        if (pos && draggingPolicy) {
+          switch (draggingPolicy.previewArea) {
+            case PolicyPreviewArea.pref:
+              const prefId = gameState.map.map[pos.x][pos.y];
+              if (prefId > 0) {
+                previewPrefs.push(prefId);
+              }
+              break;
+            case PolicyPreviewArea.all:
+              previewPrefs.push(0);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      updateGameStateForce({
+        prefs: updatePrefPreview(gameState.prefs, previewPrefs),
+      });
+      setUpdatePreview(true);
+    }
+  };
 
   useEffect(() => {
     if (params) {
@@ -37,17 +100,24 @@ const GameView = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (handlers) {
+      handlers.addListener();
+    }
+  }, [handlers]);
+
+  useEffect(() => {
+    setPreviewPrefs();
+  }, [draggingPos]);
+
   useInterval(
     () => {
       if (onReady && offCvs) {
-        if (
-          gameState.map.prefIds.reduce((flag: boolean, prefId: number) => {
-            return flag || gameState.prefs[prefId].updated;
-          }, false)
-        ) {
+        if (updateLockdown || updatePreview) {
           setOffCvs(
             updateBackGround(gameState.map.map, gameState.prefs, params, offCvs)
           );
+          setUpdatePreview(false);
         }
         drawGameScreen(ctx, gameState, params, offCvs);
         if (gameState.playingState == PlayingState.pausing) {
@@ -64,15 +134,28 @@ const GameView = () => {
     <div className={`p-game`}>
       <DndContext
         onDragEnd={async (event: DragEndEvent) => {
+          if (handlers) {
+            handlers.removeListener();
+            setHandlers(null);
+          }
+          setDraggingPolicy(null);
           const { active } = event;
           if (!active.data.current || !active.data.current.func) {
             return;
           }
           const mousePos = await getPointerPosition();
+
           const cvsRect = getClientRect(document.getElementById("screen")!);
           const cvsPos = { x: cvsRect.left, y: cvsRect.top };
-
           active.data.current.func(mousePos, cvsPos);
+        }}
+        onDragStart={(event: DragStartEvent) => {
+          if (event.active.data.current) {
+            setDraggingPolicy(event.active.data.current.data);
+          }
+          if (!handlers) {
+            setHandlers(getPointerStopPosition(setDraggingPos));
+          }
         }}
       >
         <Droppable id="canvas" className="p-game__canvas-container">
@@ -118,6 +201,7 @@ const GameView = () => {
                     <PolicyIcon
                       key={policy.key}
                       id={`policy-${policy.key}`}
+                      data={policy}
                       image={policy.image}
                       disabled={
                         gameState.playingState == PlayingState.pausing ||

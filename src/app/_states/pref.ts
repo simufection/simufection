@@ -7,6 +7,7 @@ export type Pref = {
   isLockedDown: boolean;
   lockdownCompliance: number;
   updated: boolean;
+  isPreview: boolean;
 };
 
 export const initializePrefs = (params: ParamsModel, prefIds: number[]) => {
@@ -14,6 +15,7 @@ export const initializePrefs = (params: ParamsModel, prefIds: number[]) => {
     isLockedDown: false,
     lockdownCompliance: params.LOCKDOWN_COMPLIANCE,
     updated: false,
+    isPreview: false
   };
   let prefs: { [name: number]: Pref } = {};
   prefIds.forEach((prefId) => {
@@ -22,6 +24,21 @@ export const initializePrefs = (params: ParamsModel, prefIds: number[]) => {
 
   return prefs;
 };
+
+export const updatePrefPreview = (currentPrefs: { [name: number]: Pref }, previewPrefs: number[]) => {
+  const prefs = { ...currentPrefs }
+  Object.keys(prefs).forEach((prefId) => {
+    if (prefs[parseInt(prefId)].isPreview == true) {
+      prefs[parseInt(prefId)].isPreview = false;
+      prefs[parseInt(prefId)].updated = true;
+    }
+    if (previewPrefs.includes(0) || previewPrefs.includes(parseInt(prefId))) {
+      prefs[parseInt(prefId)].isPreview = true;
+      prefs[parseInt(prefId)].updated = true;
+    }
+  })
+  return prefs
+}
 
 export const updatePrefs = (
   params: ParamsModel,
@@ -35,7 +52,7 @@ export const updatePrefs = (
     if (
       prefs[prefId].isLockedDown &&
       infectionRate(balls, parseInt(prefId)) <
-        params.INFECTION_RATE_LOCKDOWN_ENDS
+      params.INFECTION_RATE_LOCKDOWN_ENDS
     ) {
       prefs[prefId].isLockedDown = false;
       prefs[prefId].lockdownCompliance *= params.LOCKDOWN_COMPLIANCE_RATE;

@@ -1,6 +1,7 @@
 "use strict";
 import Image, { StaticImageData } from "next/image";
 import { Draggable } from "@/components/draggable";
+import { Policy } from "../_functions/_policies/policies";
 
 interface Props {
   className?: string;
@@ -10,6 +11,7 @@ interface Props {
   cost: number;
   id: string;
   ratio: number;
+  data: Policy;
 }
 
 const PolicyIcon = (props: Props) => {
@@ -21,11 +23,12 @@ const PolicyIcon = (props: Props) => {
   return (
     <Draggable
       id={props.id}
-      data={{ func: props.func }}
+      data={{ func: props.func, data: props.data }}
+      disabled={props.disabled}
       children={
         <>
           <div
-            className={`c-policy-icon ${props.className || ""}`}
+            className={`c-policy-icon ${props.className || ""} ${props.disabled ? "-inactive" : ""}`}
             style={style}
           >
             <div className="c-policy-icon__overlay" style={style}></div>

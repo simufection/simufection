@@ -14,4 +14,5 @@ export const COLORS: ColorsModel = {
   GRAY: "#bababa",
   LIGHT_GREEN: "#99ff99",
   SHELL_PINK: "#fbccc3",
+  PALE_BLUE: "rgba(205, 209, 228, 0.5)"
 };
