@@ -16,6 +16,8 @@ import lockDownImage from "@/assets/img/lockDown.png";
 import pcrImage from "@/assets/img/pcr.png";
 import { Map } from "@/app/_states/maps";
 import { allPrefs } from "@/app/_data/prefs";
+import { kantoMap } from "@/app/_maps/kanto/map";
+import { kantoMapData } from "@/app/_maps/kanto/kantoMapData";
 
 export type Policy = {
   key: string;
@@ -31,9 +33,15 @@ export type Policy = {
   isActive: boolean;
   image?: StaticImageData;
   cooltime?: number;
+  previewArea: PolicyPreviewArea;
 };
 
-const mapPos = (
+export enum PolicyPreviewArea {
+  all,
+  pref
+}
+
+export const mapPos = (
   cvsPos: Position,
   mousePos: Position,
   map: Map,
@@ -56,7 +64,6 @@ const mapPos = (
     Math.floor((diffX * mapWidth) / (ratio * params.MAX_WIDTH)),
     Math.floor((diffY * mapLength) / (ratio * params.MAX_HEIGHT)),
   ];
-
   return { x: x, y: y };
 };
 
@@ -83,6 +90,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       isActive: true,
       image: vaccineImage,
       cooltime: 100,
+      previewArea: PolicyPreviewArea.all
     },
     {
       key: "e",
@@ -106,6 +114,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_MEDICINE"],
       isActive: true,
       image: medicineImage,
+      previewArea: PolicyPreviewArea.all
     },
     {
       key: "d",
@@ -124,6 +133,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       isActive: true,
       image: disposableMaskImage,
       cooltime: 500,
+      previewArea: PolicyPreviewArea.all
     },
     {
       key: "m",
@@ -141,6 +151,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_MASK"],
       isActive: false,
       image: maskImage,
+      previewArea: PolicyPreviewArea.all
     },
     {
       key: "l",
@@ -150,7 +161,7 @@ export const policies = (params: ParamsModel): Policy[] => {
         const { player, prefs, map, balls } = state;
         if (!droppedPos) return {};
         const prefId = map.map[droppedPos.x][droppedPos.y];
-        if (prefId <= 0 || prefs[prefId].isLockedDown) {
+        if (!prefId || prefId <= 0 || prefs[prefId].isLockedDown) {
           return {};
         }
         if (infectionRate(balls, prefId) < params.INFECTION_RATE_FOR_LOCKDOWN) {
@@ -185,6 +196,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_LOCKDOWN"],
       isActive: true,
       image: lockDownImage,
+      previewArea: PolicyPreviewArea.pref
     },
     {
       key: "p",
@@ -202,6 +214,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_PCR"],
       isActive: true,
       image: pcrImage,
+      previewArea: PolicyPreviewArea.all
     },
   ];
 };

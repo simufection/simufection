@@ -160,11 +160,12 @@ export const drawBackground = (
   });
   return canvas;
 };
+
 export const updateBackGround = (
   map: number[][],
   prefs: { [name: number]: Pref },
   params: ParamsModel,
-  offCvs: HTMLCanvasElement
+  offCvs: HTMLCanvasElement,
 ) => {
   const ctx = offCvs.getContext("2d")!;
 
@@ -173,12 +174,12 @@ export const updateBackGround = (
       if (item > 0 && prefs[item].updated) {
         ctx.beginPath();
         ctx.rect(x, y, 1, 1);
-        ctx.fillStyle = prefs[item].isLockedDown
-          ? params.COLOR_LOCKDOWN
-          : COLORS.WHITE;
+        ctx.fillStyle = prefs[item].isPreview ? COLORS.PALE_BLUE : prefs[item].isLockedDown
+          ? params.COLOR_LOCKDOWN : COLORS.WHITE;
         ctx.fill();
         ctx.closePath();
       }
+
     });
   });
   for (let prefId in prefs) {
@@ -224,6 +225,7 @@ const drawPoints = (
 
   ctx.closePath();
 };
+
 
 // const drawChart = (
 //   ctx: CanvasRenderingContext2D,
