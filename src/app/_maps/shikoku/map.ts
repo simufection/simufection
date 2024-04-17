@@ -29,6 +29,7 @@ function rand() {
 export const shikokuMap: Map = {
   map: shikokuMapData,
   prefIds: shikokuPrefIds,
+  initialPrefs: shikokuPrefIds,
   func: rand,
   preview: shikokuMapPreview,
 };

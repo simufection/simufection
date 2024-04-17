@@ -27,6 +27,7 @@ function rand() {
 export const tohokuMap: Map = {
   map: tohokuMapData,
   prefIds: tohokuPrefIds,
+  initialPrefs: tohokuPrefIds,
   func: rand,
   preview: tohokuMapPreview,
 };

@@ -27,6 +27,7 @@ function rand() {
 export const chubuMap: Map = {
   map: chubuMapData,
   prefIds: chubuPrefIds,
+  initialPrefs: chubuPrefIds,
   func: rand,
   preview: chubuMapPreview,
 };

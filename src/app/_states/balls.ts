@@ -91,21 +91,27 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
     params.MAX_BALLS * (1.0 - params.RATIO_OF_BALLS_STOPPED)
   );
 
-  const randNum = getRandomInt(0, targetMax);
+  let infection_flag = false;
 
   for (let i = 0; i < targetMax; i++) {
     const randPref = map.func();
     balls.push(createBall(false, params, mp, randPref));
+    if (
+      infection_flag ||
+      randPref == undefined ||
+      !map.initialPrefs.includes(randPref)
+    )
+      continue;
+    setFirstContacted(
+      balls[i],
+      0,
+      params,
+      params.TURNS_REQUIRED_FOR_HEAL * 5,
+      params.TURNS_REQUIRED_FOR_DEAD * 5,
+      params.TURNS_REQUIRED_FOR_REINFECT
+    );
+    infection_flag = true;
   }
-
-  setFirstContacted(
-    balls[randNum],
-    0,
-    params,
-    params.TURNS_REQUIRED_FOR_HEAL * 5,
-    params.TURNS_REQUIRED_FOR_DEAD * 5,
-    params.TURNS_REQUIRED_FOR_REINFECT
-  );
 
   for (let i = 0; i < params.MAX_BALLS - targetMax; i++) {
     const randPref = map.func();
@@ -307,13 +313,13 @@ const updateBallState = (
           (balls[i].first
             ? true
             : balls[j].count == 0
-            ? Math.random() < virus.prob * lockdownCoef
-            : balls[j].reinfect &&
-              Math.random() <
-                params.REINFECT_PROB *
-                  virus.prob *
-                  lockdownCoef *
-                  (1 / balls[j].count))
+              ? Math.random() < virus.prob * lockdownCoef
+              : balls[j].reinfect &&
+                Math.random() <
+                  params.REINFECT_PROB *
+                    virus.prob *
+                    lockdownCoef *
+                    (1 / balls[j].count))
         ) {
           if (balls[i].disposable_mask_num > 0) {
             balls[i].disposable_mask_num--;
@@ -334,13 +340,13 @@ const updateBallState = (
           (balls[j].first
             ? true
             : balls[i].count == 0
-            ? Math.random() < virus.prob * lockdownCoef
-            : balls[i].reinfect &&
-              Math.random() <
-                params.REINFECT_PROB *
-                  virus.prob *
-                  lockdownCoef *
-                  (1 / balls[i].count))
+              ? Math.random() < virus.prob * lockdownCoef
+              : balls[i].reinfect &&
+                Math.random() <
+                  params.REINFECT_PROB *
+                    virus.prob *
+                    lockdownCoef *
+                    (1 / balls[i].count))
         ) {
           if (balls[j].disposable_mask_num > 0) {
             balls[j].disposable_mask_num--;
