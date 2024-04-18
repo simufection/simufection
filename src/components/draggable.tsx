@@ -7,6 +7,7 @@ interface Props {
   children?: ReactNode;
   data?: { [name: string]: any };
   ratio?: number;
+  disabled?: boolean;
 }
 
 export const Draggable = (props: Props) => {
@@ -15,9 +16,11 @@ export const Draggable = (props: Props) => {
     data: props.data,
   });
   const data = props.data;
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  };
+  const style = props.disabled
+    ? {}
+    : {
+        transform: CSS.Translate.toString(transform),
+      };
 
   return (
     <button

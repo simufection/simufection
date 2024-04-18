@@ -27,6 +27,7 @@ function rand() {
 export const kinkiMap: Map = {
   map: kinkiMapData,
   prefIds: kinkiPrefIds,
+  initialPrefs: [27],
   func: rand,
   preview: kinkiMapPreview,
 };

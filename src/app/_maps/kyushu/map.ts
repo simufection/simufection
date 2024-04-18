@@ -29,6 +29,7 @@ function rand() {
 export const kyushuMap: Map = {
   map: kyushuMapData,
   prefIds: kyushuPrefIds,
+  initialPrefs: [40],
   func: rand,
   preview: kyushuMapPreview,
 };

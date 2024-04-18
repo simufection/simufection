@@ -10,6 +10,7 @@ import { kyushuMap } from "@/app/_maps/kyushu/map";
 export type Map = {
   map: number[][];
   prefIds: number[];
+  initialPrefs: number[];
   func: () => number | undefined;
   preview: StaticImageData;
 };
