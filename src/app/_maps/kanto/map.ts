@@ -27,6 +27,7 @@ function rand() {
 export const kantoMap: Map = {
   map: kantoMapData,
   prefIds: kantoPrefIds,
+  initialPrefs: [13],
   func: rand,
   preview: kantoMapPreview,
 };
