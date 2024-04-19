@@ -1,0 +1,30 @@
+.p-share {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background: none;
+    z-index: 100;
+
+    &__button {
+        padding: 10px 10px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: bold;
+        width: 150px;
+        height: 50px;
+
+        &.-twitter {
+            background-color: #1DA1F2;
+        }
+
+        &.-facebook {
+            background-color: #4267B2;
+        }
+
+    }
+}
