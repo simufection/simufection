@@ -1,15 +1,10 @@
 import React from "react";
 import { scoreToRank } from "@/app/_functions/_game/rank";
+import { testShareText } from "@/consts/shareText";
 
 const ShareButtons = ({ score }: { score: number }) => {
   const rank = scoreToRank(score).name; // 仮の関数を呼び出し
-  const shareMessage = encodeURIComponent(`東大五月祭でSimufectionを遊んだよ！
-
-スコア：${score}
-ランク：${rank}
-
-みんなも遊んでみよう！
-simufection.vercel.app`);
+  const shareMessage = encodeURIComponent(testShareText(score, rank));
 
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${shareMessage}`;
   const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsimufection.vercel.app&quote=${shareMessage}`;
