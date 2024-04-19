@@ -37,7 +37,7 @@ import { ParamsModel } from "../_params/params";
 import { Spotlight, tutorialEventsData } from "../_tutorial/tutorial";
 
 const TutorialView = () => {
-  const { gameSize } = useContext(GameSizeContext)!;
+  const { gameSize, ratio } = useContext(GameSizeContext)!;
   const { ctx, createCtx } = useContext(CanvasContext)!;
   const { offCvs, setOffCvs, gameState, updateGameStateForce, params } =
     useContext(GameStateContext)!;
@@ -64,7 +64,6 @@ const TutorialView = () => {
     gameState.map.prefIds.reduce((flag: boolean, prefId: number) => {
       return flag || gameState.prefs[prefId].updated;
     }, false);
-
   const setPreviewPrefs = () => {
     if (onReady) {
       const previewPrefs = [];
@@ -239,10 +238,10 @@ const TutorialView = () => {
               className="p-game__tutorial-overlay"
               style={
                 {
-                  "--posX": `${spotlight?.position.x}px`,
-                  "--posY": `${spotlight?.position.y}px`,
-                  "--width": `${spotlight?.size.x}px`,
-                  "--height": `${spotlight?.size.y}px`,
+                  "--posX": `${(spotlight?.position.x ?? 0) * ratio}px`,
+                  "--posY": `${(spotlight?.position.y ?? 0) * ratio}px`,
+                  "--width": `${(spotlight?.size.x ?? 0) * ratio}px`,
+                  "--height": `${(spotlight?.size.y ?? 0) * ratio}px`,
                 } as CSSProperties
               }
             >
