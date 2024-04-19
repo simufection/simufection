@@ -22,7 +22,9 @@ export const Draggable = (props: Props) => {
         transform: CSS.Translate.toString(transform),
       };
 
-  return (
+  return props.disabled ? (
+    props.children
+  ) : (
     <button
       id={props.id}
       ref={setNodeRef}

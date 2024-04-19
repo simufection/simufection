@@ -14,7 +14,7 @@ import { Button } from "@/components/button";
 const colorList = ["yw", "gr", "bl", "wt", "gy", "re"];
 
 const ResultView = () => {
-  const { gameState, score, updateGameStateForce, params, setScore } =
+  const { gameState, score, updateGameStateForce, params, setScore, mapName } =
     useContext(GameStateContext)!;
 
   if (!gameState || !params) return null;
@@ -53,7 +53,10 @@ const ResultView = () => {
           {scoreToRank(score).name}
         </div>
       </div>
-      {gameState.sceneState.contactedCount === 1 ? null : <SendScoreInput />}
+      {gameState.sceneState.contactedCount === 1 ||
+      mapName == "tutorial" ? null : (
+        <SendScoreInput />
+      )}
       <Button
         className="p-result__restart-button u-tr"
         image={homeImage}

@@ -77,4 +77,48 @@
         font-size: $fs-text;
         white-space: pre-wrap;
     }
+
+    &__tutorial-message {
+        height: 100px;
+        background-color: $gray;
+        color: $black;
+        font-size: 15px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
+
+    &__tutorial-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        background-color: rgba(25, 25, 25, 0.4);
+        z-index: 100;
+        clip-path: polygon(0% 0%,
+                100% 0%,
+                100% var(--posY),
+                var(--posX) var(--posY),
+                var(--posX) calc(var(--posY) + var(--height)),
+                calc(var(--posX) + var(--width)) calc(var(--posY) + var(--height)),
+                calc(var(--posX) + var(--width)) var(--posY),
+                100% var(--posY),
+                100% 100%,
+                0% 100%);
+    }
+
+    &__tutorial-next {
+        position: absolute;
+        font-size: 15px;
+        bottom: 10px;
+        right: 10px;
+    }
 }

@@ -52,4 +52,6 @@ export const allPrefs = [
   { id: 45, name: "宮崎県", population: 1061, area: "九州" },
   { id: 46, name: "鹿児島県", population: 1576, area: "九州" },
   { id: 47, name: "沖縄県", population: 1468, area: "九州" },
+  { id: 100, name: "エリア１", population: 200, area: "チュートリアル" },
+  { id: 101, name: "エリア２", population: 50, area: "チュートリアル" },
 ];

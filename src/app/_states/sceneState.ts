@@ -49,19 +49,21 @@ const updateTurns = (
   turns: number,
   counts: { deadCount: number; infectedCount: number },
   params: ParamsModel,
-  playingState: PlayingState
+  playingState: PlayingState,
+  isTutorial = false
 ) => {
   if (playingState == PlayingState.playing) {
     let { deadCount, infectedCount } = counts;
-    if (deadCount >= params.MAX_BALLS) {
-      console.log("End ... All balls are infected.");
-      playingState = PlayingState.finishing;
-    } else if (infectedCount === 0) {
-      console.log("End ... The infected ball is gone.");
-      playingState = PlayingState.finishing;
-    } else {
-      turns += 1;
+    if (!isTutorial) {
+      if (deadCount >= params.MAX_BALLS) {
+        console.log("End ... All balls are infected.");
+        playingState = PlayingState.finishing;
+      } else if (infectedCount === 0) {
+        console.log("End ... The infected ball is gone.");
+        playingState = PlayingState.finishing;
+      }
     }
+    turns += 1;
   }
 
   return { turns: turns, playingState: playingState };
@@ -79,6 +81,7 @@ const updateCount = (balls: Ball[], params: ParamsModel) => {
     contactedCount: contactedCount,
     infectedCount: infectedCount,
     deadCount: deadCount,
+    healedCount: contactedCount - deadCount - infectedCount,
   };
 };
 
@@ -103,7 +106,8 @@ export const updateSceneState = (
   state: SceneState,
   params: ParamsModel,
   balls: Ball[],
-  currentPlaying: PlayingState
+  currentPlaying: PlayingState,
+  isTutorial: boolean
 ) => {
   const sceneEvents: [number, string, any][] = [];
   const newCounts = updateCount(balls, params);
@@ -113,7 +117,8 @@ export const updateSceneState = (
     state.turns,
     newCounts,
     params,
-    currentPlaying
+    currentPlaying,
+    isTutorial
   );
 
   return {

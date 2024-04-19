@@ -1,7 +1,6 @@
 import { Ball, createBalls, updateBalls } from "@/app/_states/balls";
 import { Keys, updateKeys } from "@/app/_states/keys";
 import { Player, updatePlayer } from "@/app/_states/player";
-import { RNote, updateRNote } from "@/app/_states/rNote";
 import { SceneState, updateSceneState } from "@/app/_states/sceneState";
 import { Virus, updateVirus } from "@/app/_states/virus";
 import { Pref, initializePrefs, updatePrefs } from "@/app/_states/pref";
@@ -17,6 +16,7 @@ export enum PlayingState {
   playing,
   pausing,
   finishing,
+  tutorial
 }
 
 export enum Objects {
@@ -33,15 +33,16 @@ export type GameState = {
   balls: Ball[];
   prefs: { [name: number]: Pref };
   virus: Virus;
-  rNote: RNote;
   editing: Objects;
   events: [number, string, any][];
   policyData: PolicyData;
+  tutorialMessage: string
 };
 
 export const initializeGameState = (
   params: ParamsModel,
-  mapName: string
+  mapName: string,
+  isTutorial: boolean = false
 ): GameState => {
   let map: Map;
   switch (mapName) {
@@ -66,16 +67,21 @@ export const initializeGameState = (
     case "kyushu":
       map = maps.kyushu;
       break;
+    case "tutorial":
+      map = maps.tutorial
+      break;
     default:
       map = maps.kanto;
+      break;
   }
 
   return {
     map: map,
     playingState: PlayingState.title,
     player: {
-      points: params.INITIAL_POINT,
+      points: isTutorial ? 0 : params.INITIAL_POINT,,
       pt: params.INITIAL_DELTA_POINT,
+      zero: isTutorial
     },
     sceneState: {
       turns: 0,
@@ -89,11 +95,11 @@ export const initializeGameState = (
       sum_dead: 0,
       sum_healed: 0,
     },
-    balls: createBalls(params, map),
+    balls: createBalls(params, map, isTutorial),
     prefs: initializePrefs(params, map.prefIds),
     virus: {
       prob: params.VIRUS_INITIAL_PROB,
-      turnEvent: { 500: 0, 1000: 1, 1500: 0 },
+      turnEvent: mapName == "tutorial" ? {} : { 500: 0, 1000: 1, 1500: 0 },
       turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
       turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
       turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
@@ -102,24 +108,18 @@ export const initializeGameState = (
       healProb: params.HEAL_PROB,
       deadProb: params.DEAD_PROB,
     },
-    rNote: {
-      resultsWIDTH: 4,
-      termTurn: 0,
-      termIncremental: 0,
-      value: 0,
-      valueMax: 0,
-      valueMaxTurnBegin: 0,
-      valueMaxTurnEnd: 0,
-    },
+
     editing: Objects.none,
     events: [[0, "game_start", {}]],
     policyData: initializePolicydata(params),
+    tutorialMessage: ""
   };
 };
 
 export const updateGameState = (
   currentState: GameState,
-  params: ParamsModel
+  params: ParamsModel,
+  isTutorial: boolean = false
 ): GameState => {
   if (currentState.playingState == PlayingState.playing) {
     const state = { ...currentState };
@@ -128,12 +128,12 @@ export const updateGameState = (
       state.sceneState,
       params,
       state.balls,
-      state.playingState
+      state.playingState,
+      isTutorial
     );
     sceneEvents.forEach((e) => {
       events.push(e);
     });
-    const rNote = updateRNote(state.rNote, state.sceneState.results);
     const { player, playerEvents } = updatePlayer(
       state.sceneState,
       state.player,
@@ -180,7 +180,6 @@ export const updateGameState = (
         prefs: prefs,
         balls: balls,
         virus: virus,
-        rNote: rNote,
         events: events,
       },
     };

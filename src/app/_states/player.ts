@@ -4,6 +4,7 @@ import { SceneState } from "@/app/_states/sceneState";
 export type Player = {
   points: number;
   pt: number;
+  zero?: boolean
 };
 
 export const updatePoint = (
@@ -17,10 +18,10 @@ export const updatePoint = (
   player.pt =
     params.MAX_DELTA_POINT -
     (a * (params.MAX_DELTA_POINT - params.INITIAL_DELTA_POINT)) /
-      (a +
-        (params.MAX_DELTA_POINT - params.INITIAL_DELTA_POINT) *
-          (damage_count / params.MAX_BALLS));
-  player.points = Math.min(player.points + player.pt, 10);
+    (a +
+      (params.MAX_DELTA_POINT - params.INITIAL_DELTA_POINT) *
+      (damage_count / params.MAX_BALLS));
+  player.points = Math.min(player.points + (player.zero ? 0 : pt), 10);
 
   return player;
 };
