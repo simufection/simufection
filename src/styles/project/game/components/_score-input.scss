@@ -2,12 +2,8 @@
 
 .p-score-input {
     &__result-input {
-        position: absolute;
         width: 200px;
         height: 30px;
-        left: 50%;
-        top: 60%;
-        translate: -50% -50%;
 
         &::placeholder {
             color: $dark-gray;
@@ -24,12 +20,8 @@
     }
 
     &__feedback-input {
-        position: absolute;
         width: 200px;
         height: 100px;
-        left: 50%;
-        top: 75%;
-        translate: -50% -50%;
         border-radius: 5px;
         border: 1px solid $black;
         padding: 10px;
@@ -50,12 +42,8 @@
     }
 
     &__result-submit {
-        position: absolute;
         width: 200px;
         height: 30px;
-        left: 50%;
-        top: 90%;
-        translate: -50% -50%;
 
         background-color: transparent;
         color: $black;

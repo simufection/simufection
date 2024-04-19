@@ -1,7 +1,7 @@
 @use "../../../foundation" as *;
 
 .c-policy-icon {
-  height: 120px;
+  height: 110px;
   width: 70px;
   border-radius: 15px;
   box-shadow: none;
@@ -40,6 +40,13 @@
   &.-inactive {
     filter: grayscale(100%);
     transition: 0.2s;
+  }
+
+  &.-spotted {
+    filter: none;
+    transform: translateY(-7px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    transition: 0.3s;
   }
 
   &__overlay {

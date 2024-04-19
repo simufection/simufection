@@ -27,7 +27,7 @@ function rand() {
 export const chugokuMap: Map = {
   map: chugokuMapData,
   prefIds: chugokuPrefIds,
-  initialPrefs: [33],
+  initialPrefs: [34],
   func: rand,
   preview: chugokuMapPreview,
 };

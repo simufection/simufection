@@ -27,26 +27,30 @@ export const PlayingButtons = ({ params }: { params: ParamsModel }) => {
         <Button
           className="p-game__quit-button u-tr"
           image={quitImage}
-          onClick={() => quitSimulate(params, onReady, ctx)}
+          onClick={() => quitSimulate(onReady, ctx)}
         />
       ) : null}
-      <Button
-        className={`p-game__pause-button u-tr`}
-        image={
-          gameState.playingState == PlayingState.pausing
-            ? startImage
-            : pauseImage
-        }
-        onClick={() => {
-          gameState.playingState == PlayingState.pausing
-            ? updateGameStateForce({
-                playingState: PlayingState.playing,
-              })
-            : updateGameStateForce({
-                playingState: PlayingState.pausing,
-              });
-        }}
-      />
+      {[PlayingState.playing, PlayingState.pausing].includes(
+        gameState.playingState
+      ) ? (
+        <Button
+          className={`p-game__pause-button u-tr`}
+          image={
+            gameState.playingState == PlayingState.pausing
+              ? startImage
+              : pauseImage
+          }
+          onClick={() => {
+            gameState.playingState == PlayingState.pausing
+              ? updateGameStateForce({
+                  playingState: PlayingState.playing,
+                })
+              : updateGameStateForce({
+                  playingState: PlayingState.pausing,
+                });
+          }}
+        />
+      ) : null}
     </>
   );
 };
