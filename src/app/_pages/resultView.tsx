@@ -10,6 +10,7 @@ import homeImage from "@/assets/img/home-icon.png";
 import virusImage1 from "@/assets/img/virus1.png";
 import virusImage2 from "@/assets/img/virus2.png";
 import { Button } from "@/components/button";
+import ShareButtons from "@/app/_components/shareButton";
 
 const colorList = ["yw", "gr", "bl", "wt", "gy", "re"];
 
@@ -69,6 +70,7 @@ const ResultView = () => {
         playingState={PlayingState.finishing}
         className="p-result__ranking-button"
       />
+      <ShareButtons score={score} />
     </div>
   );
 };
