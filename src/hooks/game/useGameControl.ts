@@ -36,6 +36,8 @@ export type GameControl = {
   setRankingData: Dispatch<RankingData | null>;
   params: ParamsModel | null;
   setParams: Dispatch<ParamsModel>;
+  tutorialParams: ParamsModel | null
+  setTutorialParams: Dispatch<ParamsModel>;
 };
 
 const useGameControl = (): GameControl => {
@@ -45,26 +47,37 @@ const useGameControl = (): GameControl => {
   const [offCvs, setOffCvs] = useState<HTMLCanvasElement | null>(null);
   const [rankingData, setRankingData] = useState<RankingData | null>(null);
   const [params, setParams] = useState<ParamsModel | null>(null);
+  const [tutorialParams, setTutorialParams] = useState<ParamsModel | null>(null);
 
   const [sendScoreState, setSendScoreState] = useState(SendScoreState.before);
 
   const startSimulate = useCallback(
-    (params: ParamsModel, newMap: string) => {
+    (newMap: string) => {
       setMap(newMap);
-      setOffCvs(initializeBackground(maps[newMap].map, params));
       setSendScoreState(SendScoreState.before);
       setScore(0);
-      setGameState({
-        ...initializeGameState(params, newMap),
-        playingState: PlayingState.playing,
-      });
+      if (newMap == "tutorial") {
+        if (!tutorialParams) return
+        setOffCvs(initializeBackground(maps[newMap].map, tutorialParams));
+        setGameState({
+          ...initializeGameState(tutorialParams, newMap, true),
+          playingState: PlayingState.playing,
+        });
+      } else {
+        if (!params) return
+        setOffCvs(initializeBackground(maps[newMap].map, params));
+        setGameState({
+          ...initializeGameState(params, newMap),
+          playingState: PlayingState.playing,
+        });
+      }
     },
     [gameState]
   );
 
   const quitSimulate = useCallback(
-    (params: ParamsModel, onReady: boolean, ctx: CanvasRenderingContext2D) => {
-      if (!onReady) {
+    (onReady: boolean, ctx: CanvasRenderingContext2D) => {
+      if (!onReady || !params) {
         return;
       }
 
@@ -102,6 +115,7 @@ const useGameControl = (): GameControl => {
     setRankingData,
     params,
     setParams,
+    tutorialParams, setTutorialParams
   };
 };
 

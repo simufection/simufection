@@ -6,6 +6,7 @@ import { kinkiMap } from "@/app/_maps/kinki/map";
 import { chugokuMap } from "@/app/_maps/chugoku/map";
 import { shikokuMap } from "@/app/_maps/shikoku/map";
 import { kyushuMap } from "@/app/_maps/kyushu/map";
+import { tutorialMap } from "../_maps/tutorial/map";
 
 export type Map = {
   map: number[][];
@@ -16,6 +17,7 @@ export type Map = {
 };
 
 export const maps: { [name: string]: Map } = {
+  tutorial: tutorialMap,
   tohoku: tohokuMap,
   kanto: kantoMap,
   chubu: chubuMap,

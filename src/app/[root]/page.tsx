@@ -13,6 +13,7 @@ import SelectView from "@/app/_pages/selectView";
 import TitleView from "@/app/_pages/titleView";
 import RankingView from "../_pages/rankingView";
 import ResultView from "../_pages/resultView";
+import TutorialView from "../_pages/tutorialView";
 
 const Page = () => {
   const { root } = useParams();
@@ -22,6 +23,7 @@ const Page = () => {
     rankingData,
     params,
     setRankingData,
+    setTutorialParams,
     setParams,
     updateGameStateForce,
     mapName,
@@ -31,6 +33,12 @@ const Page = () => {
   const ver = `${version.split(".")[0]}.${version.split(".")[1]}`;
 
   const router = useRouter();
+
+  const diffParams = {
+    MAX_BALLS: 200,
+    HEAL_PROB: 0,
+    DEAD_PROB: 0,
+  };
 
   useEffect(() => {
     if (!rankingData) {
@@ -45,13 +53,17 @@ const Page = () => {
       )
         .then((res) => res.data)
         .then((datas) => setParams({ ...Params, ...listToDict(datas.values) }))
-        .catch(() => setParams(Params));
+        .catch(() => {
+          setParams(Params);
+          console.log("params load error");
+        });
       // setParams(Params);
     }
   }, []);
 
   useEffect(() => {
     if (params && !gameState) {
+      setTutorialParams({ ...params, ...diffParams });
       updateGameStateForce(initializeGameState(params, mapName));
       calcGameSize(params);
     }
@@ -69,9 +81,6 @@ const Page = () => {
       case PlayingState.playing:
         router.push("/game");
         break;
-      case PlayingState.pausing:
-        router.push("/game");
-        break;
       case PlayingState.finishing:
         router.push("/result");
         break;
@@ -84,9 +93,9 @@ const Page = () => {
     case "title":
       return <TitleView />;
     case "select":
-      return <SelectView params={params} />;
+      return <SelectView />;
     case "game":
-      return <GameView />;
+      return mapName == "tutorial" ? <TutorialView /> : <GameView />;
     case "ranking":
       return (
         <RankingView

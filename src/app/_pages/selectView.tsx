@@ -1,20 +1,13 @@
 import { useContext, useState } from "react";
 import Image from "next/image";
-import { ParamsModel } from "@/app/_params/params";
 import { maps } from "@/app/_states/maps";
 import { PlayingState } from "@/app/_states/state";
 import { GameStateContext } from "@/app/contextProvoder";
 import { Button } from "@/components/button";
 
-type Props = {
-  params: ParamsModel | null;
-};
-
-const SelectView = (props: Props) => {
+const SelectView = () => {
   const [mapName, selectMapName] = useState("kanto");
-  const { params } = props;
-  const { gameState, startSimulate, updateGameStateForce } =
-    useContext(GameStateContext)!;
+  const { startSimulate, updateGameStateForce } = useContext(GameStateContext)!;
 
   return (
     <>
@@ -55,7 +48,7 @@ const SelectView = (props: Props) => {
             className="p-select__map-button"
             label="開始"
             onClick={() => {
-              startSimulate(params, mapName);
+              startSimulate(mapName);
             }}
           />
         </div>

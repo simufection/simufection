@@ -30,13 +30,13 @@ const virusEvent = (
   return { newVirus: virus, event: null };
 };
 
-const enhanceProb = (virus: Virus, params: ParamsModel, turns: number) => {
+export const enhanceProb = (virus: Virus, params: ParamsModel, turns: number) => {
   virus.prob = Math.min(virus.prob * params.PROB_POWER, 1);
   const event = [turns, "virus_e", { prob: virus.prob.toFixed(2) }];
   return { newVirus: virus, event: event };
 };
 
-const cureSlower = (virus: Virus, params: ParamsModel, turns: number) => {
+export const cureSlower = (virus: Virus, params: ParamsModel, turns: number) => {
   virus.turnsRequiredForHeal += params.CURE_SLOWER_EFFECT;
   const event = [
     turns,
