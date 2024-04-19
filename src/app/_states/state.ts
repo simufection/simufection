@@ -79,7 +79,7 @@ export const initializeGameState = (
     map: map,
     playingState: PlayingState.title,
     player: {
-      points: isTutorial ? 0 : params.INITIAL_POINT,
+      points: isTutorial ? 0 : params.INITIAL_POINT,,
       pt: params.INITIAL_DELTA_POINT,
       zero: isTutorial
     },
