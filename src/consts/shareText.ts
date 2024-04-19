@@ -6,7 +6,7 @@ export const testShareText = (score: number, rank: string) => `Simufectionのテ
 みんなも遊んでみよう！
 simufection.vercel.app`
 
-export const prodShareText = (score: number, rank: string) => `東大五月祭でSimufectionを遊んだよ！
+export const prodShareText = (score: number, rank: string) => `東大医学部5月祭企画でSimufectionを遊んだよ！
 
 スコア：${score}
 ランク：${rank}

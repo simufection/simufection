@@ -41,7 +41,7 @@ export const tutorialEventsData = (gameState: GameState, tutorialTurns: number):
             sceneState.turns = 0;
             return { balls: balls, sceneState: sceneState, playingState: PlayingState.tutorial }
         },
-        spotlight: { position: { x: 90, y: 230 }, size: { x: 20, y: 20 } }
+        spotlight: { position: { x: 100, y: 250 }, size: { x: 20, y: 20 } }
     },
     {
         condition: gameState.tutorialMessage == "clicked", func: (_) => {
