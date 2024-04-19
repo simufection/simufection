@@ -27,6 +27,7 @@ function rand() {
 export const tutorialMap: Map = {
   map: tutorialMapData,
   prefIds: tutorialPrefIds,
+  initialPrefs: [100],
   func: rand,
   preview: tutorialMapPreview,
 };
