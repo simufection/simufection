@@ -1,0 +1,47 @@
+.c-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+
+    &__content {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        transition: visibility 0.2s linear;
+
+        // 各方向ごとのスタイリング
+        &--top {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        &--bottom {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        &--left {
+            top: 50%;
+            right: 100%;
+            transform: translateY(-50%);
+        }
+
+        &--right {
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+        }
+    }
+
+    &:hover &__content {
+        visibility: visible;
+    }
+}

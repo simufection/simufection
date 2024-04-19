@@ -36,16 +36,18 @@ export type Ball = {
   turnRemoveMask: number;
 };
 
-const createBall = (
+export const createBall = (
   flag_stop: boolean,
   params: ParamsModel,
   map: number[][],
-  prefId?: number
+  prefId?: number,
+  position?: Position,
+  contacted: boolean = false
 ): Ball => {
   const maxX = map.length;
   const maxY = map[0].length;
-  let x = getRandomInt(params.RADIUS, maxX - params.RADIUS);
-  let y = getRandomInt(params.RADIUS, maxY - params.RADIUS);
+  let x = position ? position.x : getRandomInt(params.RADIUS, maxX - params.RADIUS);
+  let y = position ? position.y : getRandomInt(params.RADIUS, maxY - params.RADIUS);
   if (prefId) {
     while (map[x][y] != prefId) {
       x = getRandomInt(params.RADIUS, maxX - params.RADIUS);
@@ -57,7 +59,7 @@ const createBall = (
       y = getRandomInt(params.RADIUS, maxY - params.RADIUS);
     }
   }
-  return {
+  const ball = {
     forecolor: params.COLOR_UNINFECTED,
     radius: params.RADIUS,
     prefId: map[x][y],
@@ -80,10 +82,23 @@ const createBall = (
     turnRemoveMask: 0,
     turnsRequiredForReinfect: 0,
     turnReMove: 0,
-  };
+  }
+
+  if (contacted) {
+    setFirstContacted(
+      ball,
+      0,
+      params,
+      params.TURNS_REQUIRED_FOR_HEAL * 5,
+      params.TURNS_REQUIRED_FOR_DEAD * 5,
+      params.TURNS_REQUIRED_FOR_REINFECT
+    );
+  }
+
+  return ball;
 };
 
-export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
+export const createBalls = (params: ParamsModel, map: Map, isTutorial = false): Ball[] => {
   const balls: Ball[] = [];
   const mp = map.map;
 
@@ -98,14 +113,16 @@ export const createBalls = (params: ParamsModel, map: Map): Ball[] => {
     balls.push(createBall(false, params, mp, randPref));
   }
 
-  setFirstContacted(
-    balls[randNum],
-    0,
-    params,
-    params.TURNS_REQUIRED_FOR_HEAL * 5,
-    params.TURNS_REQUIRED_FOR_DEAD * 5,
-    params.TURNS_REQUIRED_FOR_REINFECT
-  );
+  if (!isTutorial) {
+    setFirstContacted(
+      balls[randNum],
+      0,
+      params,
+      params.TURNS_REQUIRED_FOR_HEAL * 5,
+      params.TURNS_REQUIRED_FOR_DEAD * 5,
+      params.TURNS_REQUIRED_FOR_REINFECT
+    );
+  }
 
   for (let i = 0; i < params.MAX_BALLS - targetMax; i++) {
     const randPref = map.func();
@@ -159,14 +176,14 @@ const updatePosition = (
         rand < prefs[prefId].lockdownCompliance &&
         prefs[prefId].isLockedDown &&
         mp[Math.floor(x + dx * remainLevy)][Math.floor(y + dy * remainLevy)] !=
-          prefId;
+        prefId;
 
       const toPrefLockedDown: boolean =
         mp[Math.floor(x + dx)][Math.floor(y + dy)] > 0 &&
         mp[Math.floor(x + dx)][Math.floor(y + dy)] != prefId &&
         rand <
-          prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]]
-            .lockdownCompliance &&
+        prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]]
+          .lockdownCompliance &&
         prefs[mp[Math.floor(x + dx)][Math.floor(y + dy)]].isLockedDown;
 
       return fromPrefLockedDown || toPrefLockedDown;
@@ -242,7 +259,7 @@ const updateBallState = (
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForHeal) %
-          virus.turnsJudgeHeal ==
+        virus.turnsJudgeHeal ==
         0
       ) {
         const rand = Math.random();
@@ -269,7 +286,7 @@ const updateBallState = (
     ) {
       if (
         (turn - balls[i].turnInfection - balls[i].turnsRequiredForDead) %
-          virus.turnsJudgeDead ==
+        virus.turnsJudgeDead ==
         0
       ) {
         const rand = Math.random();
@@ -307,13 +324,13 @@ const updateBallState = (
           (balls[i].first
             ? true
             : balls[j].count == 0
-            ? Math.random() < virus.prob * lockdownCoef
-            : balls[j].reinfect &&
+              ? Math.random() < virus.prob * lockdownCoef
+              : balls[j].reinfect &&
               Math.random() <
-                params.REINFECT_PROB *
-                  virus.prob *
-                  lockdownCoef *
-                  (1 / balls[j].count))
+              params.REINFECT_PROB *
+              virus.prob *
+              lockdownCoef *
+              (1 / balls[j].count))
         ) {
           if (balls[i].disposable_mask_num > 0) {
             balls[i].disposable_mask_num--;
@@ -334,13 +351,13 @@ const updateBallState = (
           (balls[j].first
             ? true
             : balls[i].count == 0
-            ? Math.random() < virus.prob * lockdownCoef
-            : balls[i].reinfect &&
+              ? Math.random() < virus.prob * lockdownCoef
+              : balls[i].reinfect &&
               Math.random() <
-                params.REINFECT_PROB *
-                  virus.prob *
-                  lockdownCoef *
-                  (1 / balls[i].count))
+              params.REINFECT_PROB *
+              virus.prob *
+              lockdownCoef *
+              (1 / balls[i].count))
         ) {
           if (balls[j].disposable_mask_num > 0) {
             balls[j].disposable_mask_num--;
