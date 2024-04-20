@@ -1,4 +1,5 @@
 import { ParamsModel } from "@/app/_params/params";
+import { getRandomInt } from "@/services/random";
 
 export type Virus = {
   prob: number;
@@ -30,13 +31,21 @@ const virusEvent = (
   return { newVirus: virus, event: null };
 };
 
-export const enhanceProb = (virus: Virus, params: ParamsModel, turns: number) => {
+export const enhanceProb = (
+  virus: Virus,
+  params: ParamsModel,
+  turns: number
+) => {
   virus.prob = Math.min(virus.prob * params.PROB_POWER, 1);
   const event = [turns, "virus_e", { prob: virus.prob.toFixed(2) }];
   return { newVirus: virus, event: event };
 };
 
-export const cureSlower = (virus: Virus, params: ParamsModel, turns: number) => {
+export const cureSlower = (
+  virus: Virus,
+  params: ParamsModel,
+  turns: number
+) => {
   virus.turnsRequiredForHeal += params.CURE_SLOWER_EFFECT;
   const event = [
     turns,
@@ -55,4 +64,28 @@ export const updateVirus = (
   const { newVirus, event } = virusEvent(virus, turns, params);
   if (event) virusEvents.push(event);
   return { virus: newVirus, virusEvents: virusEvents };
+};
+
+export const initializeVirus = (
+  mapName: string,
+  params: ParamsModel
+): Virus => {
+  let turnEvent: { [turn: number]: number } = {};
+  if (mapName != "tutorial") {
+    for (let i = 1; params.VIRUS_EVENT_INTERVAL * i < 10000; i++) {
+      turnEvent[params.VIRUS_EVENT_INTERVAL * i] = getRandomInt(0, 2);
+    }
+  }
+
+  return {
+    prob: params.VIRUS_INITIAL_PROB,
+    turnEvent: turnEvent,
+    turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
+    turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
+    turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
+    turnsJudgeHeal: params.TURNS_JUDGE_HEAL,
+    turnsJudgeDead: params.TURNS_JUDGE_DEAD,
+    healProb: params.HEAL_PROB,
+    deadProb: params.DEAD_PROB,
+  };
 };
