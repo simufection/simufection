@@ -22,6 +22,7 @@ const virusEvent = (
   const events: { [num: number]: Function } = {
     0: enhanceProb,
     1: cureSlower,
+    2: enhanceDeadProb,
   };
 
   if (Object.keys(virus.turnEvent).includes(turns.toString())) {
@@ -55,6 +56,16 @@ export const cureSlower = (
   return { newVirus: virus, event: event };
 };
 
+export const enhanceDeadProb = (
+  virus: Virus,
+  params: ParamsModel,
+  turns: number
+) => {
+  virus.deadProb = Math.min(virus.deadProb * params.DEAD_PROB_RATE, 1);
+  const event = [turns, "virus_d", { prob: virus.deadProb.toFixed(2) }];
+  return { newVirus: virus, event: event };
+};
+
 export const updateVirus = (
   virus: Virus,
   turns: number,
@@ -73,7 +84,7 @@ export const initializeVirus = (
   let turnEvent: { [turn: number]: number } = {};
   if (mapName != "tutorial") {
     for (let i = 1; params.VIRUS_EVENT_INTERVAL * i < 10000; i++) {
-      turnEvent[params.VIRUS_EVENT_INTERVAL * i] = getRandomInt(0, 2);
+      turnEvent[params.VIRUS_EVENT_INTERVAL * i] = getRandomInt(0, 3);
     }
   }
 
