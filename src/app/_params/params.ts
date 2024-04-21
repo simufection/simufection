@@ -57,4 +57,6 @@ export const Params: ParamsModel = {
   TURNS_REQUIRED_FOR_RE_MOVE: 150,
   CHECK_INFECTED: 50,
   MASK_PROB: 0.8,
+  VIRUS_EVENT_INTERVAL: 300,
+  DEAD_PROB_RATE: 2,
 };
