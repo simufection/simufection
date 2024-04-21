@@ -4,20 +4,23 @@
 
     &__img {
         position: absolute;
+        @include flexCentering();
+        /*
         top: 0;
         left: 0;
+        */
     }
 
     &__version {
         position: absolute;
         left: 10px;
-        top: 10px;
+        top: 92%;
         font-size: $fs-text;
     }
 
     &__start-button {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         position: absolute;
         left: 50%;
         top: 92%;
@@ -28,8 +31,16 @@
         font-size: $fs-text;
 
         @include mq(sp) {
+            width: 45px;
+            height: 45px;
+        }
+        @include mq(tb) {
             width: 30px;
             height: 30px;
+        }
+        @include mq(min) {
+            width: 15px;
+            height: 15px;
         }
     }
 
@@ -62,14 +73,22 @@
     }
 
     &__ranking-button {
-        width: 50px;
-        height: 50px;
+        width: 120px;
+        height: 120px;
         position: absolute;
         right: 10px;
         top: 10px;
         z-index: 1;
 
+        @include mq(tb) {
+            width: 90px;
+            height: 90px;
+        }
         @include mq(sp) {
+            width: 60px;
+            height: 60px;
+        }
+        @include mq(min) {
             width: 30px;
             height: 30px;
         }
