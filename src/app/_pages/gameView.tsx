@@ -4,6 +4,7 @@ import {
   DragEndEvent,
   DragStartEvent,
   getClientRect,
+  MouseSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -134,10 +135,9 @@ const GameView = () => {
     params?.INTERVAL * 1000 ?? 30
   );
 
-  //https://github.com/clauderic/dnd-kit/issues/435
   const detectSensor = () => {
-    const isWebEntry: boolean | null = JSON.parse(sessionStorage.getItem('isWebEntry') || 'null');
-    return isWebEntry ? PointerSensor : TouchSensor
+    const isPointer = window.matchMedia("(min-width: 960px)").matches;
+    return isPointer ? PointerSensor : TouchSensor 
   }
   const sensors = useSensors(useSensor(detectSensor()))
 
