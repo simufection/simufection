@@ -8,6 +8,7 @@ export const COLORS: ColorsModel = {
   GREEN: "#00ff00",
   SKY: "#00ffff",
   RED: "#ff0000",
+  LIGHT_RED: "#ff9999",
   MAGENTA: "#ff00ff",
   YELLOW: "#ffff00",
   WHITE: "#ffffff",
