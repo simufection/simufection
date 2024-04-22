@@ -5,3 +5,10 @@
         @content;
     }
 }
+
+//https://qiita.com/utf8sjis/items/4b69c864aa0f4f79bc94
+@mixin flexCentering($justify:center, $align:center) {
+    display: flex;
+    justify-content: $justify;
+    align-items: $align;
+}
