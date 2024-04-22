@@ -16,5 +16,6 @@ export const eventMessage = (turns: number, data: any): EventMessage => {
     lockdown_end: `${turns}: ロックダウン解除！${data.name}に自由に出入りできるようになりました`,
     virus_e: `${turns}: ウイルスが強化！感染力が${data.prob}になりました。`,
     virus_c: `${turns}: ウイルスが強化！回復までの最短ターン数が${data.turnsRequiredForHeal}になりました。`,
+    virus_d: `${turns}: ウイルスが強化！ウイルスによる死亡率が${data.prob}になりました。`,
   };
 };

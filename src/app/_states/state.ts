@@ -2,7 +2,7 @@ import { Ball, createBalls, updateBalls } from "@/app/_states/balls";
 import { Keys, updateKeys } from "@/app/_states/keys";
 import { Player, updatePlayer } from "@/app/_states/player";
 import { SceneState, updateSceneState } from "@/app/_states/sceneState";
-import { Virus, updateVirus } from "@/app/_states/virus";
+import { Virus, initializeVirus, updateVirus } from "@/app/_states/virus";
 import { Pref, initializePrefs, updatePrefs } from "@/app/_states/pref";
 import { ParamsModel } from "@/app/_params/params";
 import { policies } from "@/app/_functions/_policies/policies";
@@ -16,7 +16,7 @@ export enum PlayingState {
   playing,
   pausing,
   finishing,
-  tutorial
+  tutorial,
 }
 
 export enum Objects {
@@ -36,7 +36,7 @@ export type GameState = {
   editing: Objects;
   events: [number, string, any][];
   policyData: PolicyData;
-  tutorialMessage: string
+  tutorialMessage: string;
 };
 
 export const initializeGameState = (
@@ -68,7 +68,7 @@ export const initializeGameState = (
       map = maps.kyushu;
       break;
     case "tutorial":
-      map = maps.tutorial
+      map = maps.tutorial;
       break;
     default:
       map = maps.kanto;
@@ -81,7 +81,7 @@ export const initializeGameState = (
     player: {
       points: isTutorial ? 0 : params.INITIAL_POINT,
       pt: params.INITIAL_DELTA_POINT,
-      zero: isTutorial
+      zero: isTutorial,
     },
     sceneState: {
       turns: 0,
@@ -97,22 +97,11 @@ export const initializeGameState = (
     },
     balls: createBalls(params, map, isTutorial),
     prefs: initializePrefs(params, map.prefIds),
-    virus: {
-      prob: params.VIRUS_INITIAL_PROB,
-      turnEvent: mapName == "tutorial" ? {} : { 500: 0, 1000: 1, 1500: 0 },
-      turnsRequiredForHeal: params.TURNS_REQUIRED_FOR_HEAL,
-      turnsRequiredForDead: params.TURNS_REQUIRED_FOR_DEAD,
-      turnsRequiredForReinfect: params.TURNS_REQUIRED_FOR_REINFECT,
-      turnsJudgeHeal: params.TURNS_JUDGE_HEAL,
-      turnsJudgeDead: params.TURNS_JUDGE_DEAD,
-      healProb: params.HEAL_PROB,
-      deadProb: params.DEAD_PROB,
-    },
-
+    virus: initializeVirus(mapName, params),
     editing: Objects.none,
     events: [[0, "game_start", {}]],
     policyData: initializePolicydata(params),
-    tutorialMessage: ""
+    tutorialMessage: "",
   };
 };
 
