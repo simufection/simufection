@@ -34,10 +34,12 @@
             width: 45px;
             height: 45px;
         }
+
         @include mq(tb) {
             width: 30px;
             height: 30px;
         }
+
         @include mq(min) {
             width: 15px;
             height: 15px;
@@ -58,10 +60,10 @@
         top: 90%;
         translate: -50% 0;
         font-size: $fs-sub-title;
-        animation: ugoki 1.5s infinite alternate;
+        animation: title 1.5s infinite alternate;
         animation-timing-function: cubic-bezier(0.1, 0.5, 1);
 
-        @keyframes ugoki {
+        @keyframes title {
             0% {
                 opacity: 0.1;
             }
@@ -73,8 +75,8 @@
     }
 
     &__ranking-button {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
         position: absolute;
         right: 10px;
         top: 10px;
@@ -84,10 +86,12 @@
             width: 90px;
             height: 90px;
         }
+
         @include mq(sp) {
             width: 60px;
             height: 60px;
         }
+
         @include mq(min) {
             width: 30px;
             height: 30px;
