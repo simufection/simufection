@@ -21,6 +21,7 @@ export const pcr = (state: GameState, params: ParamsModel) => {
       if (balls[i].infectedState == InfectedState.infected) {
         if (Math.random() < params.POSITIVE_RATE) {
           balls[i].stop = true;
+          balls[i].forecolor=params.COLOR_PCRED;
           data.positive++;
         }
       } else if (Math.random() < params.FALSE_POSITIVE_RATE) {

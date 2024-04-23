@@ -324,7 +324,7 @@ const updateBallState = (
       if (balls[j].infectedState == InfectedState.dead || balls[j].masked)
         continue;
 
-      if (balls[i].infectedState == InfectedState.infected) {
+      if (balls[i].infectedState == InfectedState.infected&&!balls[i].stop) {
         if (
           isOverlapTo(balls[i], [balls[j].x, balls[j].y]) &&
           (balls[i].first
@@ -351,7 +351,7 @@ const updateBallState = (
             virus.turnsRequiredForReinfect
           );
         }
-      } else if (balls[j].infectedState == InfectedState.infected) {
+      } else if (balls[j].infectedState == InfectedState.infected&&!balls[j].stop) {
         if (
           isOverlapTo(balls[j], [balls[i].x, balls[i].y]) &&
           (balls[j].first
