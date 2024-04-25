@@ -136,8 +136,8 @@ const GameView = () => {
   );
 
   const detectSensor = () => {
-    const isAndroid = navigator.userAgent.match(/Android.+Mobile/);
-    return isAndroid ? TouchSensor : PointerSensor
+    const isMobile = navigator.userAgent.match(/iPhone|Android.+Mobile/);
+    return isMobile ? TouchSensor : PointerSensor
   };
   const sensors = useSensors(useSensor(detectSensor()));
 
