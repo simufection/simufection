@@ -4,6 +4,11 @@ import {
   DragEndEvent,
   DragStartEvent,
   getClientRect,
+  MouseSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors
 } from "@dnd-kit/core";
 import {
   updateBackGround,
@@ -130,6 +135,12 @@ const GameView = () => {
     params?.INTERVAL * 1000 ?? 30
   );
 
+  const detectSensor = () => {
+    const isPointer = window.matchMedia("(min-width: 960px)").matches;
+    return isPointer ? PointerSensor : TouchSensor 
+  }
+  const sensors = useSensors(useSensor(detectSensor()))
+
   return (
     <div className={`p-game`}>
       <DndContext
@@ -157,6 +168,7 @@ const GameView = () => {
             setHandlers(getPointerStopPosition(setDraggingPos));
           }
         }}
+        sensors={sensors}
       >
         <Droppable id="canvas" className="p-game__canvas-container">
           <canvas
