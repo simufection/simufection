@@ -34,6 +34,7 @@ export type Policy = {
   image?: StaticImageData;
   cooltime?: number;
   previewArea: PolicyPreviewArea;
+  firstCooltime?: number;
 };
 
 export enum PolicyPreviewArea {
@@ -214,7 +215,8 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_PCR"],
       isActive: true,
       image: pcrImage,
-      previewArea: PolicyPreviewArea.all
+      previewArea: PolicyPreviewArea.all,
+      firstCooltime: 500
     },
   ];
 };

@@ -8,7 +8,7 @@ import {
   PointerSensor,
   TouchSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from "@dnd-kit/core";
 import {
   updateBackGround,
@@ -137,9 +137,9 @@ const GameView = () => {
 
   const detectSensor = () => {
     const isPointer = window.matchMedia("(min-width: 960px)").matches;
-    return isPointer ? PointerSensor : TouchSensor 
-  }
-  const sensors = useSensors(useSensor(detectSensor()))
+    return isPointer ? PointerSensor : TouchSensor;
+  };
+  const sensors = useSensors(useSensor(detectSensor()));
 
   return (
     <div className={`p-game`}>
@@ -208,7 +208,9 @@ const GameView = () => {
                     (e) => e[1] == `policy_${policy.key}`
                   );
                   const lastTurn =
-                    events.length > 0 ? events[events.length - 1][0] : null;
+                    events.length > 0
+                      ? events[events.length - 1][0]
+                      : policy.firstCooltime;
                   return (
                     <PolicyIcon
                       key={policy.key}
