@@ -27,6 +27,10 @@ import {
   getPointerPosition,
   getPointerStopPosition,
 } from "@/app/_functions/getPointerPosition";
+import {
+  getTouchPosition,
+  getTouchStopPosition,
+} from "@/app/_functions/getTouchPosition";
 import { eventMessage } from "@/app/_params/eventMessage";
 import { stateIsPlaying } from "@/app/_params/consts";
 import { PlayingState, updateGameState } from "@/app/_states/state";
@@ -135,9 +139,10 @@ const GameView = () => {
     params?.INTERVAL * 1000 ?? 30
   );
 
+  const isMobile = navigator.userAgent.match(/iPhone|Android.+Mobile/)
+
   const detectSensor = () => {
-    const isPointer = window.matchMedia("(min-width: 960px)").matches;
-    return isPointer ? PointerSensor : TouchSensor;
+    return isMobile ? TouchSensor : PointerSensor
   };
   const sensors = useSensors(useSensor(detectSensor()));
 
@@ -154,7 +159,7 @@ const GameView = () => {
           if (!active.data.current || !active.data.current.func) {
             return;
           }
-          const mousePos = await getPointerPosition();
+          const mousePos = isMobile ? await getTouchPosition() : await getPointerPosition();
 
           const cvsRect = getClientRect(document.getElementById("screen")!);
           const cvsPos = { x: cvsRect.left, y: cvsRect.top };
@@ -165,7 +170,9 @@ const GameView = () => {
             setDraggingPolicy(event.active.data.current.data);
           }
           if (!handlers) {
-            setHandlers(getPointerStopPosition(setDraggingPos));
+            isMobile 
+            ? setHandlers(getTouchStopPosition(setDraggingPos))
+            : setHandlers(getPointerStopPosition(setDraggingPos));
           }
         }}
         sensors={sensors}
