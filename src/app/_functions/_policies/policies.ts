@@ -39,7 +39,7 @@ export type Policy = {
 
 export enum PolicyPreviewArea {
   all,
-  pref
+  pref,
 }
 
 export const mapPos = (
@@ -52,19 +52,15 @@ export const mapPos = (
   const ratio = sw / params.MAX_WIDTH;
 
   const [diffX, diffY] = [mousePos.x - cvsPos.x, mousePos.y - cvsPos.y];
-  if (
-    diffX < 0 ||
-    diffY < 0 ||
-    diffX > params.MAX_WIDTH ||
-    diffY > params.MAX_HEIGHT
-  ) {
-    return false;
-  }
+
   const [mapWidth, mapLength] = [map.map.length, map.map[0].length];
   const [x, y] = [
     Math.floor((diffX * mapWidth) / (ratio * params.MAX_WIDTH)),
     Math.floor((diffY * mapLength) / (ratio * params.MAX_HEIGHT)),
   ];
+  if (x < 0 || y < 0 || x > params.MAX_WIDTH || y > params.MAX_HEIGHT) {
+    return false;
+  }
   return { x: x, y: y };
 };
 
@@ -91,7 +87,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       isActive: true,
       image: vaccineImage,
       cooltime: 100,
-      previewArea: PolicyPreviewArea.all
+      previewArea: PolicyPreviewArea.all,
     },
     {
       key: "e",
@@ -115,7 +111,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_MEDICINE"],
       isActive: true,
       image: medicineImage,
-      previewArea: PolicyPreviewArea.all
+      previewArea: PolicyPreviewArea.all,
     },
     {
       key: "d",
@@ -134,7 +130,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       isActive: true,
       image: disposableMaskImage,
       cooltime: 500,
-      previewArea: PolicyPreviewArea.all
+      previewArea: PolicyPreviewArea.all,
     },
     {
       key: "m",
@@ -152,7 +148,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_MASK"],
       isActive: false,
       image: maskImage,
-      previewArea: PolicyPreviewArea.all
+      previewArea: PolicyPreviewArea.all,
     },
     {
       key: "l",
@@ -197,7 +193,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       initPoint: params["POINTS_FOR_LOCKDOWN"],
       isActive: true,
       image: lockDownImage,
-      previewArea: PolicyPreviewArea.pref
+      previewArea: PolicyPreviewArea.pref,
     },
     {
       key: "p",
@@ -216,7 +212,7 @@ export const policies = (params: ParamsModel): Policy[] => {
       isActive: true,
       image: pcrImage,
       previewArea: PolicyPreviewArea.all,
-      firstCooltime: 500
+      firstCooltime: 500,
     },
   ];
 };
