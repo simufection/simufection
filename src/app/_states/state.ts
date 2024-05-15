@@ -99,7 +99,7 @@ export const initializeGameState = (
     prefs: initializePrefs(params, map.prefIds),
     virus: initializeVirus(mapName, params),
     editing: Objects.none,
-    events: [[0, "game_start", {}]],
+    events: isTutorial ? [] : [[0, "game_start", {}]],
     policyData: initializePolicydata(params),
     tutorialMessage: "",
   };
