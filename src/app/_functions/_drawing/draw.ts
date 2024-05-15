@@ -30,7 +30,7 @@ export const drawGameScreen = (
   ctx.font = "15px Arial";
   ctx.fillStyle = COLORS.BLACK;
 
-  ctx.fillText((50 * Math.floor(turns / 50)).toString(), 10, 30);
+  ctx.fillText(`${10 * (Math.floor(turns / 50))}日`, 10, 30);
 };
 
 const drawScaleLine = (ctx: CanvasRenderingContext2D, params: ParamsModel) => {

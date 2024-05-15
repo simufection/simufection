@@ -34,10 +34,10 @@ const ResultView = () => {
       <div className="p-result__score-container">
         <div className="p-result__score">スコア　　：　　{score}</div>
         <div className="p-result__score">
-          ターン数　：　　{gameState.sceneState.turns}
+          クリア日数：　　{Math.floor(gameState.sceneState.turns / 5)}日
         </div>
         <div className="p-result__score">
-          死者数　　：　　{gameState.sceneState.deadCount}
+          死者数　　：　　{gameState.sceneState.deadCount}人
         </div>
       </div>
       <div className="p-result__rank">

@@ -27,6 +27,7 @@ export const calcScore = (state: GameState, params: ParamsModel) => {
   const score = Math.floor(
     isClear ? 100000 * Math.exp(-((sum_infected + sum_dead) / 1e6)) : 0
   );
+  // Axios.post("/api/addLog", { action: "clear" })
   return score;
 };
 
