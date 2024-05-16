@@ -1,20 +1,13 @@
-import { getRandomString } from "@/services/randomString";
 import { sql } from "@vercel/postgres";
 
 export async function POST(req: Request) {
   const data = await req.json();
 
-
   const currentTime = new Date();
   const oneMinutesAgo = new Date(currentTime.getTime() - 60 * 1000);
 
-
-
   try {
-    console.log(`SELECT id FROM access_counter where ur_id = ${data.id} AND time >= ${oneMinutesAgo.toISOString()};`)
     const res1 = await sql`SELECT id FROM access_counter where ur_id = ${data.id} AND time >= ${oneMinutesAgo.toISOString()} AND action = ${data.action};`;
-
-
 
     if (res1.rows.length > 0) return new Response(
       JSON.stringify({ success: false, error: "データが重複している可能性があります" })

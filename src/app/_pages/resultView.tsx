@@ -23,7 +23,9 @@ const ResultView = () => {
   if (!gameState || !params) return null;
 
   useEffect(() => {
-    setScore(calcScore(gameState, params, userId) ?? 0);
+    if (!score) {
+      setScore(calcScore(gameState, params, userId) ?? 0);
+    }
   }, []);
 
   return (
