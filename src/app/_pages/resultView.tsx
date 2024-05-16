@@ -5,7 +5,7 @@ import SendScoreInput from "@/app/_components/sendScoreInput";
 import { scoreToRank } from "@/app/_functions/_game/rank";
 import { calcScore } from "@/app/_functions/_game/score";
 import { PlayingState } from "@/app/_states/state";
-import { GameStateContext } from "@/app/contextProvoder";
+import { GameStateContext, UserDataContext } from "@/app/contextProvoder";
 import homeImage from "@/assets/img/home-icon.png";
 import virusImage1 from "@/assets/img/virus1.png";
 import virusImage2 from "@/assets/img/virus2.png";
@@ -18,10 +18,14 @@ const ResultView = () => {
   const { gameState, score, updateGameStateForce, params, setScore, mapName } =
     useContext(GameStateContext)!;
 
+  const { userId } = useContext(UserDataContext)!;
+
   if (!gameState || !params) return null;
 
   useEffect(() => {
-    setScore(calcScore(gameState, params) ?? 0);
+    if (!score) {
+      setScore(calcScore(gameState, params, userId) ?? 0);
+    }
   }, []);
 
   return (

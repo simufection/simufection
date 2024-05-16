@@ -2,7 +2,11 @@
 import { useParams, useRouter } from "next/navigation";
 import GameView from "@/app/_pages/gameView";
 import { useEffect, useContext } from "react";
-import { GameSizeContext, GameStateContext } from "@/app/contextProvoder";
+import {
+  GameSizeContext,
+  GameStateContext,
+  UserDataContext,
+} from "@/app/contextProvoder";
 import Loading from "@/app/loading";
 import { Axios } from "@/services/axios";
 import { Params } from "@/app/_params/params";
@@ -14,6 +18,8 @@ import TitleView from "@/app/_pages/titleView";
 import RankingView from "../_pages/rankingView";
 import ResultView from "../_pages/resultView";
 import TutorialView from "../_pages/tutorialView";
+import { getRandomString } from "@/services/randomString";
+import { DataAnalysis } from "../_pages/dataAnalysis";
 
 const Page = () => {
   const { root } = useParams();
@@ -31,6 +37,7 @@ const Page = () => {
   const { calcGameSize } = useContext(GameSizeContext)!;
   const version = appVersion;
   const ver = `${version.split(".")[0]}.${version.split(".")[1]}`;
+  const { userId, setUserId } = useContext(UserDataContext)!;
 
   const router = useRouter();
 
@@ -58,7 +65,14 @@ const Page = () => {
           console.log("params load error");
         });
     }
-    // Axios.post("/api/addLog", { action: "visit" });
+
+    if (localStorage.getItem("simufection_user")) {
+      setUserId(localStorage.getItem("simufection_user"));
+    } else {
+      const id = getRandomString(20);
+      setUserId(id);
+      localStorage.setItem("simufection_user", id);
+    }
   }, []);
 
   useEffect(() => {
@@ -66,11 +80,13 @@ const Page = () => {
       setTutorialParams({ ...params, ...diffParams });
       updateGameStateForce(initializeGameState(params, mapName));
       calcGameSize(params);
+      Axios.post("/api/addLog", { action: "visit", id: userId });
     }
   }, [params]);
 
   useEffect(() => {
     if (root == "ranking") return;
+    if (root == "data-analysis") return;
     switch (gameState?.playingState) {
       case PlayingState.title:
         router.push("/title");
@@ -107,6 +123,8 @@ const Page = () => {
       );
     case "result":
       return <ResultView />;
+    case "data-analysis":
+      return <DataAnalysis />;
     default:
       return <Loading />;
   }
