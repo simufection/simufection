@@ -34,29 +34,32 @@ const ResultView = () => {
       <div className="p-result__score-container">
         <div className="p-result__score">スコア　　：　　{score}</div>
         <div className="p-result__score">
-          ターン数　：　　{gameState.sceneState.turns}
+          クリア日数：　　{Math.floor(gameState.sceneState.turns / 5)}日
         </div>
         <div className="p-result__score">
-          死者数　　：　　{gameState.sceneState.deadCount}
+          死者数　　：　　{gameState.sceneState.deadCount}人
         </div>
       </div>
-      <div className="p-result__rank">
-        <Image
-          className="p-result__rank-image"
-          src={scoreToRank(score).image}
-          alt="rank"
-        />
-        <div
-          className={`p-result__rank-name u-${
-            colorList[scoreToRank(score).index]
-          }`}
-        >
-          {scoreToRank(score).name}
-        </div>
-      </div>
-      {gameState.sceneState.contactedCount === 1 ||
-      mapName == "tutorial" ? null : (
-        <SendScoreInput />
+      {mapName == "tutorial" ? null : (
+        <>
+          <div className="p-result__rank">
+            <Image
+              className="p-result__rank-image"
+              src={scoreToRank(score).image}
+              alt="rank"
+            />
+            <div
+              className={`p-result__rank-name u-${
+                colorList[scoreToRank(score).index]
+              }`}
+            >
+              {scoreToRank(score).name}
+            </div>
+          </div>
+          {gameState.sceneState.contactedCount === 1 ? null : (
+            <SendScoreInput />
+          )}
+        </>
       )}
       <Button
         className="p-result__restart-button u-tr"
@@ -65,7 +68,6 @@ const ResultView = () => {
           updateGameStateForce({ playingState: PlayingState.title })
         }
       />
-
       <RankingButton
         playingState={PlayingState.finishing}
         className="p-result__ranking-button"

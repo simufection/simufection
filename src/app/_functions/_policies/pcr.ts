@@ -5,6 +5,7 @@ import { GameState } from "@/app/_states/state";
 export const pcr = (state: GameState, params: ParamsModel) => {
   const balls = [...state.balls];
   const data = { all: 0, positive: 0 };
+  let counter_false_negative = 0;
 
   for (let i = 0; i < balls.length; i++) {
     if (balls[i].infectedState == InfectedState.dead) continue;
@@ -21,8 +22,10 @@ export const pcr = (state: GameState, params: ParamsModel) => {
       if (balls[i].infectedState == InfectedState.infected) {
         if (Math.random() < params.POSITIVE_RATE) {
           balls[i].stop = true;
-          balls[i].forecolor=params.COLOR_PCRED;
+          balls[i].forecolor = params.COLOR_PCRED;
           data.positive++;
+        } else {
+          counter_false_negative++;
         }
       } else if (Math.random() < params.FALSE_POSITIVE_RATE) {
         balls[i].stop = true;
@@ -32,5 +35,13 @@ export const pcr = (state: GameState, params: ParamsModel) => {
       }
     }
   }
+  if (counter_false_negative == 0) {
+    for (let i = 0; i < balls.length; i++) {
+      if (balls[i].infectedState == InfectedState.infected) {
+        balls[i].stop = false;
+      }
+    }
+  }
+
   return { balls: balls, data: data };
 };

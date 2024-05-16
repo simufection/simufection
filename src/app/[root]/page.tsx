@@ -57,8 +57,8 @@ const Page = () => {
           setParams(Params);
           console.log("params load error");
         });
-      // setParams(Params);
     }
+    // Axios.post("/api/addLog", { action: "visit" });
   }, []);
 
   useEffect(() => {

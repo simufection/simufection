@@ -28,14 +28,14 @@ export const tutorialEventsData = (gameState: GameState, tutorialTurns: number):
             return { playingState: PlayingState.playing, tutorialMessage: "" }
         }
     },
-    { condition: gameState.sceneState.turns >= 150, messages: ["このように動いているマップ内のボールは人を表します。", "青い人は健康な人です。"], func: (_) => { return { playingState: PlayingState.tutorial } } },
+    { condition: gameState.sceneState.turns >= 100, messages: ["このように動いているマップ内のボールは人を表します。", "青い人は健康な人です。"], func: (_) => { return { playingState: PlayingState.tutorial } } },
     {
         condition: gameState.tutorialMessage == "clicked", func: (_) => {
             return { playingState: PlayingState.playing, tutorialMessage: "" }
         }
     },
     {
-        condition: gameState.sceneState.turns >= 200, messages: ["最初の感染者が出現しました。", "赤い色は感染者を表します。感染者は接触すると確率で他の人にも感染させます。"], func: (params) => {
+        condition: gameState.sceneState.turns >= 150, messages: ["最初の感染者が出現しました。", "赤い色は感染者を表します。感染者は接触すると確率で他の人にも感染させます。"], func: (params) => {
             const { balls, map, sceneState } = { ...gameState }
             balls.push(createBall(false, params, map.map, undefined, { x: 105, y: 255 }, true))
             sceneState.turns = 0;
@@ -82,7 +82,7 @@ export const tutorialEventsData = (gameState: GameState, tutorialTurns: number):
         }
     },
     {
-        condition: gameState.tutorialMessage == "clicked", messages: ["「治療薬」の政策は感染後、回復するかどうかの抽選に必要なターン数を減らします。"], func: (_) => {
+        condition: gameState.tutorialMessage == "clicked", messages: ["「治療薬」の政策は感染者が回復する確率を上げます。"], func: (_) => {
             return { tutorialMessage: "" }
         },
         spotlightElement: "e"
@@ -100,7 +100,7 @@ export const tutorialEventsData = (gameState: GameState, tutorialTurns: number):
         spotlightElement: "l"
     },
     {
-        condition: gameState.tutorialMessage == "clicked", messages: ["「PCR検査」の政策は全体の半分を対象として検査が行われ、陽性となった人は自宅謹慎（感染させない）状態になります。", "偽陽性（感染していないのに陽性となる）や偽陰性（感染しているのに陰性と出る）人もいるので注意しましょう。"], func: (_) => {
+        condition: gameState.tutorialMessage == "clicked", messages: ["「PCR検査」の政策は全体の９割を対象として検査が行われ、陽性となった人は自宅謹慎（感染させない）状態になります。", "偽陽性（感染していないのに陽性となる）や偽陰性（感染しているのに陰性と出る）人もいるので注意しましょう。"], func: (_) => {
             return { tutorialMessage: "" }
         },
         spotlightElement: "p"
