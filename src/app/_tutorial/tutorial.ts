@@ -28,14 +28,14 @@ export const tutorialEventsData = (gameState: GameState, tutorialTurns: number):
             return { playingState: PlayingState.playing, tutorialMessage: "" }
         }
     },
-    { condition: gameState.sceneState.turns >= 150, messages: ["このように動いているマップ内のボールは人を表します。", "青い人は健康な人です。"], func: (_) => { return { playingState: PlayingState.tutorial } } },
+    { condition: gameState.sceneState.turns >= 100, messages: ["このように動いているマップ内のボールは人を表します。", "青い人は健康な人です。"], func: (_) => { return { playingState: PlayingState.tutorial } } },
     {
         condition: gameState.tutorialMessage == "clicked", func: (_) => {
             return { playingState: PlayingState.playing, tutorialMessage: "" }
         }
     },
     {
-        condition: gameState.sceneState.turns >= 200, messages: ["最初の感染者が出現しました。", "赤い色は感染者を表します。感染者は接触すると確率で他の人にも感染させます。"], func: (params) => {
+        condition: gameState.sceneState.turns >= 150, messages: ["最初の感染者が出現しました。", "赤い色は感染者を表します。感染者は接触すると確率で他の人にも感染させます。"], func: (params) => {
             const { balls, map, sceneState } = { ...gameState }
             balls.push(createBall(false, params, map.map, undefined, { x: 105, y: 255 }, true))
             sceneState.turns = 0;
