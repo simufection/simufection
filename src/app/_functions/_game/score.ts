@@ -1,6 +1,7 @@
 import { ParamsModel } from "@/app/_params/params";
 import { GameState, PlayingState } from "@/app/_states/state";
 import { Axios } from "@/services/axios";
+import { getRandomString } from "@/services/randomString";
 import { sendSlackMessage } from "@/services/sendSlackMessages";
 
 export interface SendScoreData {
@@ -12,7 +13,7 @@ export interface SendScoreData {
   events: [number, string, any][] | null;
 }
 
-export const calcScore = (state: GameState, params: ParamsModel) => {
+export const calcScore = (state: GameState, params: ParamsModel, userId: string) => {
   const contacted = state.sceneState.contactedCount;
   const all = params.MAX_BALLS;
   const turns = state.sceneState.turns;
@@ -27,7 +28,8 @@ export const calcScore = (state: GameState, params: ParamsModel) => {
   const score = Math.floor(
     isClear ? 100000 * Math.exp(-((sum_infected + sum_dead) / 1e6)) : 0
   );
-  // Axios.post("/api/addLog", { action: "clear" })
+
+  Axios.post("/api/addLog", { action: "clear", id: userId })
   return score;
 };
 
