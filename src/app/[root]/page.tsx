@@ -80,7 +80,9 @@ const Page = () => {
       setTutorialParams({ ...params, ...diffParams });
       updateGameStateForce(initializeGameState(params, mapName));
       calcGameSize(params);
-      Axios.post("/api/addLog", { action: "visit", id: userId });
+      if (root != "data-analysis") {
+        Axios.post("/api/addLog", { action: "visit", id: userId });
+      }
     }
   }, [params]);
 
