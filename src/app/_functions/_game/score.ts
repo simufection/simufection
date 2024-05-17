@@ -13,7 +13,11 @@ export interface SendScoreData {
   events: [number, string, any][] | null;
 }
 
-export const calcScore = (state: GameState, params: ParamsModel, userId: string) => {
+export const calcScore = (
+  state: GameState,
+  params: ParamsModel,
+  userId: string
+) => {
   const contacted = state.sceneState.contactedCount;
   const all = params.MAX_BALLS;
   const turns = state.sceneState.turns;
@@ -26,10 +30,20 @@ export const calcScore = (state: GameState, params: ParamsModel, userId: string)
   const isClear = survivor == 0 ? false : true;
 
   const score = Math.floor(
-    isClear ? 100000 * Math.exp(-((sum_infected + sum_dead) / 1e6)) : 0
+    isClear
+      ? 100000 *
+          Math.exp(
+            -(
+              (params.COEFFICIENT_OF_sum_infected * sum_infected +
+                params.COEFFICIENT_OF_sum_dead * sum_dead) /
+              1e6
+            )
+          )
+      : 0
   );
+  console.log(sum_infected, sum_dead);
 
-  Axios.post("/api/addLog", { action: "clear", id: userId })
+  Axios.post("/api/addLog", { action: "clear", id: userId });
   return score;
 };
 

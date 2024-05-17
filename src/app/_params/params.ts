@@ -60,4 +60,6 @@ export const Params: ParamsModel = {
   MASK_PROB: 0.8,
   VIRUS_EVENT_INTERVAL: 300,
   DEAD_PROB_RATE: 2,
+  COEFFICIENT_OF_sum_infected: 1,
+  COEFFICIENT_OF_sum_dead: 1,
 };
