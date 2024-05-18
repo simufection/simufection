@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const res3 = await sql`UPDATE score set (is_received, real_name) = (true, ${realName}) where id = ${resData.id}`;
+    const res3 = await sql`UPDATE score set (is_received, real_name) = (true, ${realName}) where id = ${resData[0].id}`;
 
     if (res3) {
       return new Response(
