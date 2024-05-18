@@ -16,14 +16,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const res2 =
-      await sql`SELECT id, ur_name from score where real_name=${realName} and is_received = true`;
+    // const res2 =
+    //   await sql`SELECT id, ur_name from score where real_name=${realName} and is_received = true`;
 
-    if (res2 && res2.rows.length > 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: "すでに受取済みの可能性があります" })
-      );
-    }
+    // if (res2 && res2.rows.length > 0) {
+    //   return new Response(
+    //     JSON.stringify({ success: false, error: "すでに受取済みの可能性があります" })
+    //   );
+    // }
 
     const resData = convertToCamelCase(res.rows)
     if (resData[0].isReceived) {

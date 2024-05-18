@@ -12,7 +12,7 @@ export const Prize = () => {
   const [pass, setPass] = useState("");
 
   const sendPrize = () => {
-    if (!name || !score || !realName) {
+    if (!name || !score) {
       alert("入力を完了してください");
       return;
     }
