@@ -52,7 +52,7 @@ export const Send = () => {
           value={pass}
           onChange={(e) => setPass(e.target.value)}
         />
-        <Button label="プライズを受け取る" onClick={send} />
+        <Button label="登録する" onClick={send} />
       </div>
     </>
   );
