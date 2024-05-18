@@ -20,6 +20,8 @@ import ResultView from "../_pages/resultView";
 import TutorialView from "../_pages/tutorialView";
 import { getRandomString } from "@/services/randomString";
 import { DataAnalysis } from "../_pages/dataAnalysis";
+import { Prize } from "../_pages/prize";
+import { Send } from "../_pages/send";
 
 const Page = () => {
   const { root } = useParams();
@@ -89,6 +91,8 @@ const Page = () => {
   useEffect(() => {
     if (root == "ranking") return;
     if (root == "data-analysis") return;
+    if (root == "prize") return;
+    if (root == "send") return;
     switch (gameState?.playingState) {
       case PlayingState.title:
         router.push("/title");
@@ -127,6 +131,10 @@ const Page = () => {
       return <ResultView />;
     case "data-analysis":
       return <DataAnalysis />;
+    case "prize":
+      return <Prize />;
+    case "send":
+      return <Send />;
     default:
       return <Loading />;
   }
